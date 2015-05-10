@@ -1,0 +1,28 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+    </style>
+
+    <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="ButtonBar" parent="BaseText">
+        <item name="android:textSize">50sp</item>
+    </style>
+
+    <style name="BaseText" parent="AppTheme">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="BigText" parent="BaseText">
+        <item name="android:textSize">30sp</item>
+    </style>
+    <style name="BiggerText" parent="BigText">
+        <item name="android:textSize">40sp</item>
+    </style>
+
+</resources>

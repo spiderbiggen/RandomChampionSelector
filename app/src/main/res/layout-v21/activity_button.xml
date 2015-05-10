@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#0099cc"
+    tools:context=".ButtonActivity"
+    style="@style/FullscreenTheme"
+    android:orientation="vertical">
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/startButton"
+        android:text="@string/select_button"
+        android:background="#33b5e5"
+        style="@style/ButtonBar"
+        android:layout_centerInParent="true"
+        android:padding="10sp"
+        android:textColor="#007799"
+        android:onClick="pickRandomChampion"
+        android:elevation="5dp"/>
+
+</RelativeLayout>
