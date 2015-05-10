@@ -2,38 +2,41 @@ package spiderbiggen.randomchampionselector;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
-
-import java.util.ArrayList;
-import java.util.Random;
-
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
 
 /**
- *
+ * Fullscreen activity
+ * Created by Stefan on 9-5-2015.
  */
 public class ButtonActivity extends Activity {
-    private ArrayList<Champion> champions = new ArrayList<>();
-
-    private String TANK;
-    private String FIGHTER;
-    private String MAGE;
-    private String ASSASSIN;
-    private String SUPPORT;
-    private String MARKSMAN;
-
-    private String MANA;
-    private String ENERGY;
-    private String BLOOD_WELL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         assignTranslatedStrings();
+        assignImages();
+        Champions.populateChampions();
 
-        populateChampions();
         setContentView(R.layout.activity_button);
+        populateSpinner();
+    }
+
+    private void populateSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
+        Button button = (Button) findViewById(R.id.startButton);
+
+        String[] types = new String[]{Champions.TANK, Champions.FIGHTER, Champions.MAGE, Champions.ASSASSIN, Champions.SUPPORT, Champions.MARKSMAN};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, R.id.textView, types);
+        spinner.setAdapter(adapter);
     }
 
 
@@ -43,34 +46,55 @@ public class ButtonActivity extends Activity {
     }
 
     public void assignTranslatedStrings(){
-        TANK = this.getString(R.string.tank);
-        FIGHTER = this.getString(R.string.fighter);
-        MAGE = this.getString(R.string.mage);
-        ASSASSIN = this.getString(R.string.assassin);
-        SUPPORT = this.getString(R.string.support);
-        MARKSMAN = this.getString(R.string.marksman);
+        Champions.TANK = this.getString(R.string.tank);
+        Champions.FIGHTER = this.getString(R.string.fighter);
+        Champions.MAGE = this.getString(R.string.mage);
+        Champions.ASSASSIN = this.getString(R.string.assassin);
+        Champions.SUPPORT = this.getString(R.string.support);
+        Champions.MARKSMAN = this.getString(R.string.marksman);
 
-        MANA = this.getString(R.string.mana);
-        ENERGY = this.getString(R.string.energy);
-        BLOOD_WELL = this.getString(R.string.blood_well);
+        Champions.MANA = this.getString(R.string.mana);
+        Champions.ENERGY = this.getString(R.string.energy);
+        Champions.BLOOD_WELL = this.getString(R.string.blood_well);
+
+
+        ChampionNames.AATROX = this.getString(R.string.aatrox);
     }
 
-    public void populateChampions(){
-        Champions.CHAMPIONS = new Champion[]{
-                new Champion("Aatrox", FIGHTER, 1983, 870, BLOOD_WELL, 150, 345),
-                new Champion("Ahri", MAGE, 1874, 1184, MANA, 550, 330),
-                new Champion("Akali", ASSASSIN, 2033, 200, ENERGY, 125, 350),
-                new Champion("Alistar", TANK,  2347, 925, MANA, 125, 330),
-                new Champion("Amumu", TANK, 2041, 967, MANA, 125, 335),
-                new Champion("Anivia", MAGE, 1658, 1247, MANA, 600, 325),
-                new Champion("Annie", MAGE, 1804, 1184, MANA, 625, 335),
-                new Champion("Ashe", MARKSMAN, 1871, 827, MANA, 600, 325),
-                new Champion("Azir", MAGE, 1884, 1065, MANA, 525, 335),
-                new Champion("Bard", SUPPORT, 1980, 1200, MANA, 500, 330),
-                new Champion("Blitzcrank", TANK, 2198, 947, MANA, 125, 325),
-                new Champion("Brand", MAGE, 1800, 1091, MANA, 550, 340),
-                new Champion("Braum", SUPPORT, 2055, 1076, MANA, 125, 335)
-        };
+    @SuppressWarnings("deprecation")
+    public void assignImages() {
+        ChampionImages.AATROX = getMyDrawable(R.drawable.aatrox);
+        ChampionImages.AHRI = getMyDrawable(R.drawable.ahri);
+        ChampionImages.AKALI = getMyDrawable(R.drawable.akali);
+        ChampionImages.ALISTAR = getMyDrawable(R.drawable.alistar);
+        ChampionImages.AMUMU = getMyDrawable(R.drawable.amumu);
+        ChampionImages.ANIVIA = getMyDrawable(R.drawable.anivia);
+        ChampionImages.ANNIE = getMyDrawable(R.drawable.annie);
+        ChampionImages.ASHE = getMyDrawable(R.drawable.ashe);
+        ChampionImages.AZIR = getMyDrawable(R.drawable.azir);
+        ChampionImages.BARD = getMyDrawable(R.drawable.bard);
+        ChampionImages.BLITZCRANK = getMyDrawable(R.drawable.blitzcrank);
+        ChampionImages.BRAND = getMyDrawable(R.drawable.brand);
+        ChampionImages.BRAUM = getMyDrawable(R.drawable.braum);
+        ChampionImages.CAITLYN = getMyDrawable(R.drawable.caitlyn);
+        ChampionImages.CASSIOPEIA = getMyDrawable(R.drawable.cassiopeia);
+        ChampionImages.CHOGATH = getMyDrawable(R.drawable.chogath);
+        ChampionImages.CORKI = getMyDrawable(R.drawable.corki);
+        ChampionImages.DARIUS = getMyDrawable(R.drawable.darius);
+        ChampionImages.DIANA = getMyDrawable(R.drawable.diana);
+        ChampionImages.DRMUNDO = getMyDrawable(R.drawable.drmundo);
+        ChampionImages.DRAVEN = getMyDrawable(R.drawable.draven);
+
+    }
+
+    public Drawable getMyDrawable(int id) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int dpi = displayMetrics.densityDpi;
+        if (Build.VERSION.SDK_INT >= 21) {
+            return this.getResources().getDrawableForDensity(id, dpi, this.getTheme());
+        } else {
+            return this.getResources().getDrawableForDensity(id, dpi);
+        }
     }
 
 }

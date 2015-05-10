@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="spiderbiggen.randomchampionselector" >
+    package="spiderbiggen.randomchampionselector"
+    android:installLocation="preferExternal">
 
     <application
         android:allowBackup="true"
@@ -11,6 +12,7 @@
             android:name=".ButtonActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,8 +22,12 @@
         </activity>
         <activity
             android:name=".ChampionActivity"
-            android:label="@string/title_activity_champion" >
+            android:label="@string/title_activity_champion"
+            android:screenOrientation="portrait">
         </activity>
     </application>
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="22" />
 
 </manifest>

@@ -1,10 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random Champion Selector</string>
 
     <string name="select_button">Select\nChampion</string>
     <string name="select_button2">New Champion</string>
-    <string name="title_activity_champion" translatable="false">Champion.NAME</string>
-
 
     <string name="health">Health</string>
     <string name="resourceName">Resource</string>
@@ -22,4 +21,5 @@
 
     <string name="range">Range</string>
     <string name="moveSpeedText">Movement Speed</string>
+    <string name="aatrox">Aatrox</string>
 </resources>

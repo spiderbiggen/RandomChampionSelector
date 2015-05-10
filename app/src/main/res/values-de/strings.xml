@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Random Champion Selector</string>
+    <string name="fighter">Kämpfer</string>
+    <string name="tank">Tank</string>
+    <string name="health">Leben</string>
+    <string name="blood_well">Blutbrunnen</string>
+    <string name="energy">Energie</string>
+    <string name="assassin">Assassine</string>
+    <string name="range">Reichweite</string>
+    <string name="resourceName">Ressource</string>
+    <string name="select_button">Wählen Sie\nein Champion</string>
+    <string name="support">Unterstützung</string>
+    <string name="moveSpeedText">Lauftempo</string>
+    <string name="marksman">Scharfschütze</string>
+    <string name="mana">Mana</string>
+    <string name="mage">Magier</string>
+    <string name="aatrox">Aatrox</string>
+    <string name="select_button2">Neue Champion</string>
+</resources>

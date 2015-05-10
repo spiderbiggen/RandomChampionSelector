@@ -1,11 +1,11 @@
 package spiderbiggen.randomchampionselector;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 
 public class ChampionActivity extends Activity {
@@ -38,6 +38,11 @@ public class ChampionActivity extends Activity {
         range.setText(champ.RANGE + "");
         TextView movSpeed = (TextView) findViewById(R.id.movSpeedValue);
         movSpeed.setText(champ.MOVEMENT_SPEED + "");
+
+        RelativeLayout grid = (RelativeLayout) findViewById(R.id.gridView);
+        Drawable image = champ.IMAGE;
+        image.setAlpha(100);
+        grid.setBackground(image);
         Runtime r = Runtime.getRuntime();
         r.gc();
     }
