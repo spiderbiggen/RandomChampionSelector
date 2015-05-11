@@ -8,6 +8,7 @@
     <string name="health">Health</string>
     <string name="resourceName">Resource</string>
 
+    <string name="all">All</string>
     <string name="tank">Tank</string>
     <string name="fighter">Fighter</string>
     <string name="mage">Mage</string>

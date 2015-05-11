@@ -10,6 +10,13 @@ import java.util.Random;
 public class Champions {
 
     public static ArrayList<Champion> CHAMPIONS;
+    public static ArrayList<Champion> TANKS;
+    public static ArrayList<Champion> FIGHTERS;
+    public static ArrayList<Champion> MAGES;
+    public static ArrayList<Champion> SUPPORTS;
+    public static ArrayList<Champion> MARKSMANS;
+    public static ArrayList<Champion> ASSASSINS;
+
     protected static String TANK;
     protected static String FIGHTER;
     protected static String MAGE;
@@ -19,15 +26,6 @@ public class Champions {
     protected static String MANA;
     protected static String ENERGY;
     protected static String BLOOD_WELL;
-
-    public static Champion pickRandomChampion(Champion champion){
-        Random rand = new Random();
-        Champion champ;
-        do {
-            champ = CHAMPIONS.get(rand.nextInt(CHAMPIONS.size()));
-        }while(champ.equals(champion));
-        return champ;
-    }
 
     public static void populateChampions() {
         CHAMPIONS = new ArrayList<>();
@@ -53,5 +51,64 @@ public class Champions {
         CHAMPIONS.add(new Champion("Diana", FIGHTER, 2119, 977, MANA, 150, 345, ChampionImages.DIANA));
         CHAMPIONS.add(new Champion("Dr. Mundo", FIGHTER, 2096, 0, null, 125, 345, ChampionImages.DRMUNDO));
         CHAMPIONS.add(new Champion("Draven", MARKSMAN, 1952, 1025, MANA, 550, 330, ChampionImages.DRAVEN));
+
+        categorizeChampions();
+    }
+
+    public static void categorizeChampions(){
+        FIGHTERS = new ArrayList<>();
+        TANKS = new ArrayList<>();
+        MAGES = new ArrayList<>();
+        SUPPORTS = new ArrayList<>();
+        MARKSMANS = new ArrayList<>();
+        ASSASSINS = new ArrayList<>();
+        for(Champion champ : CHAMPIONS){
+            if(champ.ROLE.equals(FIGHTER)){
+                FIGHTERS.add(champ);
+            }else if (champ.ROLE.equals(TANK)){
+                TANKS.add(champ);
+            }else if (champ.ROLE.equals(MAGE)){
+                MAGES.add(champ);
+            }else if (champ.ROLE.equals(SUPPORT)){
+                SUPPORTS.add(champ);
+            }else if (champ.ROLE.equals(MARKSMAN)){
+                MARKSMANS.add(champ);
+            }else if (champ.ROLE.equals(ASSASSIN)){
+                ASSASSINS.add(champ);
+            }
+        }
+    }
+
+    public static Champion pickRandomChampion(Champion champion){
+        Random rand = new Random();
+        Champion champ;
+        do {
+            champ = CHAMPIONS.get(rand.nextInt(CHAMPIONS.size()));
+        }while(champ.equals(champion));
+        return champ;
+    }
+
+    public static Champion pickRandomChampion(Champion champion, String championType) {
+        ArrayList<Champion> List = new ArrayList<>();
+        if(championType.equals(FIGHTER)){
+            List = FIGHTERS;
+        }else if (championType.equals(TANK)){
+            List = TANKS;
+        }else if (championType.equals(MAGE)){
+            List = MAGES;
+        }else if (championType.equals(SUPPORT)){
+            List = SUPPORTS;
+        }else if (championType.equals(MARKSMAN)){
+            List = MARKSMANS;
+        }else if (championType.equals(ASSASSIN)){
+            List = ASSASSINS;
+        }
+
+        Random rand = new Random();
+        Champion champ;
+        do {
+            champ = List.get(rand.nextInt(List.size()));
+        }while(champ.equals(champion));
+        return champ;
     }
 }

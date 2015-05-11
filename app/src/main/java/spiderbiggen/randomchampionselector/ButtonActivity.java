@@ -31,9 +31,8 @@ public class ButtonActivity extends Activity {
 
     private void populateSpinner() {
         Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
-        Button button = (Button) findViewById(R.id.startButton);
-
-        String[] types = new String[]{Champions.TANK, Champions.FIGHTER, Champions.MAGE, Champions.ASSASSIN, Champions.SUPPORT, Champions.MARKSMAN};
+        String all = this.getString(R.string.all);
+        String[] types = new String[]{all, Champions.TANK, Champions.FIGHTER, Champions.MAGE, Champions.ASSASSIN, Champions.SUPPORT, Champions.MARKSMAN};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, R.id.textView, types);
         spinner.setAdapter(adapter);
@@ -41,11 +40,19 @@ public class ButtonActivity extends Activity {
 
 
     public void pickRandomChampion(View view){
-        Intent openChampionIntent = new Intent(this, ChampionActivity.class);
-        startActivity(openChampionIntent);
+        Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
+        String all = this.getString(R.string.all);
+        if(spinner.getSelectedItem().equals(all)) {
+            Intent openChampionIntent = new Intent(this, ChampionActivity.class);
+            startActivity(openChampionIntent);
+        }else{
+            Intent openChampionIntent = new Intent(this, ChampionWithTypeActivity.class);
+            openChampionIntent.putExtra("Type", (String)spinner.getSelectedItem());
+            startActivity(openChampionIntent);
+        }
     }
 
-    public void assignTranslatedStrings(){
+    private void assignTranslatedStrings(){
         Champions.TANK = this.getString(R.string.tank);
         Champions.FIGHTER = this.getString(R.string.fighter);
         Champions.MAGE = this.getString(R.string.mage);
@@ -61,8 +68,8 @@ public class ButtonActivity extends Activity {
         ChampionNames.AATROX = this.getString(R.string.aatrox);
     }
 
-    @SuppressWarnings("deprecation")
-    public void assignImages() {
+
+    private void assignImages() {
         ChampionImages.AATROX = getMyDrawable(R.drawable.aatrox);
         ChampionImages.AHRI = getMyDrawable(R.drawable.ahri);
         ChampionImages.AKALI = getMyDrawable(R.drawable.akali);
@@ -87,7 +94,8 @@ public class ButtonActivity extends Activity {
 
     }
 
-    public Drawable getMyDrawable(int id) {
+    @SuppressWarnings("deprecation")
+    private Drawable getMyDrawable(int id) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int dpi = displayMetrics.densityDpi;
         if (Build.VERSION.SDK_INT >= 21) {

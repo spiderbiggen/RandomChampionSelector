@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random Champion Selector</string>
+    <string name="all">Alle</string>
     <string name="fighter">Kämpfer</string>
     <string name="tank">Tank</string>
     <string name="health">Leben</string>
