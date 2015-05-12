@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
  * Created by Stefan on 10-5-2015.
  */
 public class ChampionImages {
+
     protected static Drawable AATROX;
     protected static Drawable AHRI;
     protected static Drawable AKALI;
@@ -28,4 +29,10 @@ public class ChampionImages {
     protected static Drawable DIANA;
     protected static Drawable DRMUNDO;
     protected static Drawable DRAVEN;
+    protected static Drawable ELISE;
+    protected static Drawable EVELYNN;
+    protected static Drawable EZREAL;
+    protected static Drawable FIDDLESTICKS;
+    protected static Drawable FIORA;
+    protected static Drawable FIZZ;
 }

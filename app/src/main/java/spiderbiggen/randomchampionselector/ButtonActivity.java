@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 
 /**
@@ -91,7 +90,12 @@ public class ButtonActivity extends Activity {
         ChampionImages.DIANA = getMyDrawable(R.drawable.diana);
         ChampionImages.DRMUNDO = getMyDrawable(R.drawable.drmundo);
         ChampionImages.DRAVEN = getMyDrawable(R.drawable.draven);
-
+        ChampionImages.ELISE = getMyDrawable(R.drawable.elise);
+        ChampionImages.EVELYNN = getMyDrawable(R.drawable.evelynn);
+        ChampionImages.EZREAL = getMyDrawable(R.drawable.ezreal);
+        ChampionImages.FIDDLESTICKS = getMyDrawable(R.drawable.fiddlesticks);
+        ChampionImages.FIORA = getMyDrawable(R.drawable.fiora);
+        ChampionImages.FIZZ = getMyDrawable(R.drawable.fizz);
     }
 
     @SuppressWarnings("deprecation")

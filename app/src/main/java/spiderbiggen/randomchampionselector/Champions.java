@@ -51,6 +51,12 @@ public class Champions {
         CHAMPIONS.add(new Champion("Diana", FIGHTER, 2119, 977, MANA, 150, 345, ChampionImages.DIANA));
         CHAMPIONS.add(new Champion("Dr. Mundo", FIGHTER, 2096, 0, null, 125, 345, ChampionImages.DRMUNDO));
         CHAMPIONS.add(new Champion("Draven", MARKSMAN, 1952, 1025, MANA, 550, 330, ChampionImages.DRAVEN));
+        CHAMPIONS.add(new Champion("Elise", MAGE, 1889, 1174, MANA, 550, 330, ChampionImages.ELISE));
+        CHAMPIONS.add(new Champion("Evelynn", ASSASSIN, 2061, 1031, MANA, 125, 340, ChampionImages.EVELYNN));
+        CHAMPIONS.add(new Champion("Ezreal", MARKSMAN, 1844, 1076, MANA, 550, 325, ChampionImages.EZREAL));
+        CHAMPIONS.add(new Champion("Fiddlesticks", MAGE, 1884, 1353, MANA, 480, 335, ChampionImages.FIDDLESTICKS));
+        CHAMPIONS.add(new Champion("Fiora", FIGHTER, 2038, 967, MANA, 125, 350, ChampionImages.FIORA));
+        CHAMPIONS.add(new Champion("Fizz", ASSASSIN, 2020, 947, MANA, 175, 335, ChampionImages.FIZZ));
 
         categorizeChampions();
     }
