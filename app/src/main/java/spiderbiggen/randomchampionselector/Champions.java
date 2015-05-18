@@ -27,7 +27,7 @@ public class Champions {
     protected static String ENERGY;
 
     /**
-     * Populates the CHAMPIONS arraylist with all the champions.
+     * Populates the CHAMPIONS list with all the champions.
      */
     public static void populateChampions() {
         CHAMPIONS = new ArrayList<>();
