@@ -61,7 +61,6 @@ public class ButtonActivity extends Activity {
 
         Champions.MANA = this.getString(R.string.mana);
         Champions.ENERGY = this.getString(R.string.energy);
-        Champions.BLOOD_WELL = this.getString(R.string.blood_well);
 
 
         ChampionNames.AATROX = this.getString(R.string.aatrox);
@@ -96,6 +95,29 @@ public class ButtonActivity extends Activity {
         ChampionImages.FIDDLESTICKS = getMyDrawable(R.drawable.fiddlesticks);
         ChampionImages.FIORA = getMyDrawable(R.drawable.fiora);
         ChampionImages.FIZZ = getMyDrawable(R.drawable.fizz);
+        ChampionImages.GALIO = getMyDrawable(R.drawable.galio);
+        ChampionImages.GANGPLANK = getMyDrawable(R.drawable.gangplank);
+        ChampionImages.GAREN = getMyDrawable(R.drawable.garen);
+        ChampionImages.GNAR = getMyDrawable(R.drawable.gnar);
+        ChampionImages.GRAGAS = getMyDrawable(R.drawable.gragas);
+        ChampionImages.GRAVES = getMyDrawable(R.drawable.graves);
+        ChampionImages.HECARIM = getMyDrawable(R.drawable.hecarim);
+        ChampionImages.HEIMERDINGER = getMyDrawable(R.drawable.heimerdinger);
+        ChampionImages.IRELIA = getMyDrawable(R.drawable.irelia);
+        ChampionImages.JANNA = getMyDrawable(R.drawable.janna);
+        ChampionImages.JARVANIV = getMyDrawable(R.drawable.jarvaniv);
+        ChampionImages.JAX = getMyDrawable(R.drawable.jax);
+        ChampionImages.JAYCE = getMyDrawable(R.drawable.jayce);
+        ChampionImages.JINX = getMyDrawable(R.drawable.jinx);
+        ChampionImages.KALISTA = getMyDrawable(R.drawable.kalista);
+        ChampionImages.KARMA = getMyDrawable(R.drawable.karma);
+        ChampionImages.KARTHUS = getMyDrawable(R.drawable.karthus);
+        ChampionImages.KASSADIN = getMyDrawable(R.drawable.kassadin);
+        ChampionImages.KATARINA = getMyDrawable(R.drawable.katarina);
+        ChampionImages.KAYLE = getMyDrawable(R.drawable.kayle);
+        ChampionImages.KENNEN = getMyDrawable(R.drawable.kennen);
+        ChampionImages.KHAZIX = getMyDrawable(R.drawable.khazix);
+        ChampionImages.KOGMAW = getMyDrawable(R.drawable.kogmaw);
     }
 
     @SuppressWarnings("deprecation")

@@ -4,24 +4,17 @@
     <string name="select_button">Select\nChampion</string>
     <string name="select_button2">New Champion</string>
     <string name="title_activity_champion" translatable="false">Champion.NAME</string>
-
-
     <string name="health">Health</string>
     <string name="resourceName">Resource</string>
-
     <string name="all">All</string>
-
     <string name="tank">Tank</string>
     <string name="fighter">Fighter</string>
     <string name="mage">Mage</string>
     <string name="assassin">Assassin</string>
     <string name="support">Support</string>
     <string name="marksman">Marksman</string>
-
     <string name="mana">Mana</string>
     <string name="energy">Energy</string>
-    <string name="blood_well">Blood Well</string>
-
     <string name="range">Range</string>
     <string name="moveSpeedText">Movement Speed</string>
 </resources>

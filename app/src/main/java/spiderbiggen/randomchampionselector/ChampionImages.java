@@ -35,4 +35,27 @@ public class ChampionImages {
     protected static Drawable FIDDLESTICKS;
     protected static Drawable FIORA;
     protected static Drawable FIZZ;
+    protected static Drawable GALIO;
+    protected static Drawable GANGPLANK;
+    protected static Drawable GAREN;
+    protected static Drawable GNAR;
+    protected static Drawable GRAGAS;
+    protected static Drawable GRAVES;
+    protected static Drawable HECARIM;
+    protected static Drawable HEIMERDINGER;
+    protected static Drawable IRELIA;
+    protected static Drawable JANNA;
+    protected static Drawable JARVANIV;
+    protected static Drawable JAX;
+    protected static Drawable JAYCE;
+    protected static Drawable JINX;
+    protected static Drawable KALISTA;
+    protected static Drawable KARMA;
+    protected static Drawable KARTHUS;
+    protected static Drawable KASSADIN;
+    protected static Drawable KATARINA;
+    protected static Drawable KAYLE;
+    protected static Drawable KENNEN;
+    protected static Drawable KHAZIX;
+    protected static Drawable KOGMAW;
 }

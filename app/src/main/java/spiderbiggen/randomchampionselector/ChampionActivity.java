@@ -30,10 +30,12 @@ public class ChampionActivity extends Activity {
         role.setText(champ.ROLE);
         TextView health = (TextView) findViewById(R.id.healthValue);
         health.setText(champ.HEALTH + "");
-        TextView resource = (TextView) findViewById(R.id.resourceText);
-        resource.setText(champ.RESOURCE_TYPE);
-        TextView resourceValue = (TextView) findViewById(R.id.resourceValue);
-        resourceValue.setText(champ.RESOURCE + "");
+        if (champ.RESOURCE != 0 && champ.RESOURCE_TYPE != null) {
+            TextView resource = (TextView) findViewById(R.id.resourceText);
+            resource.setText(champ.RESOURCE_TYPE);
+            TextView resourceValue = (TextView) findViewById(R.id.resourceValue);
+            resourceValue.setText(champ.RESOURCE + "");
+        }
         TextView range = (TextView) findViewById(R.id.rangeValue);
         range.setText(champ.RANGE + "");
         TextView movSpeed = (TextView) findViewById(R.id.movSpeedValue);
