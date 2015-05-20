@@ -121,21 +121,6 @@ public class Champions {
     }
 
     /**
-     * Picks a semi-random {@link Champion} that is not the same as the previous one.
-     *
-     * @param champion previous champion
-     * @return a semi-random {@link Champion}
-     */
-    public static Champion pickRandomChampion(Champion champion){
-        Random rand = new Random();
-        Champion champ;
-        do {
-            champ = CHAMPIONS.get(rand.nextInt(CHAMPIONS.size()));
-        }while(champ.equals(champion));
-        return champ;
-    }
-
-    /**
      * Picks a semi-random {@link Champion} that is not the same as the previous one and is of a specific champion type.
      * @param champion previous champion
      * @param championType The champion type (role) the user wants
@@ -143,7 +128,9 @@ public class Champions {
      */
     public static Champion pickRandomChampion(Champion champion, String championType) {
         ArrayList<Champion> List = new ArrayList<>();
-        if(championType.equals(FIGHTER)){
+        if (championType.equals("All")) {
+            List = CHAMPIONS;
+        } else if (championType.equals(FIGHTER)) {
             List = FIGHTERS;
         }else if (championType.equals(TANK)){
             List = TANKS;

@@ -1,6 +1,7 @@
 package spiderbiggen.randomchampionselector;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,12 +14,15 @@ import android.widget.TextView;
 public class ChampionActivity extends Activity {
 
     private Champion champ;
+    private String championType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = this.getIntent();
+        championType = (String) intent.getSerializableExtra("Type");
         setContentView(R.layout.activity_champion);
-        champ = Champions.pickRandomChampion(champ);
+        champ = Champions.pickRandomChampion(champ, championType);
         populatePage();
 
     }
@@ -49,12 +53,10 @@ public class ChampionActivity extends Activity {
         Drawable image = getMyDrawable(resID);
         image.setAlpha(100);
         grid.setBackground(image);
-        Runtime r = Runtime.getRuntime();
-        r.gc();
     }
 
     public void pickRandomChampion(View view){
-        champ = Champions.pickRandomChampion(champ);
+        champ = Champions.pickRandomChampion(champ, championType);
         populatePage();
     }
 

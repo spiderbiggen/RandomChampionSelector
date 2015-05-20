@@ -37,14 +37,9 @@ public class ButtonActivity extends Activity {
     public void pickRandomChampion(View view){
         Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
         String all = this.getString(R.string.all);
-        if(spinner.getSelectedItem().equals(all)) {
-            Intent openChampionIntent = new Intent(this, ChampionActivity.class);
-            startActivity(openChampionIntent);
-        }else{
-            Intent openChampionIntent = new Intent(this, ChampionWithTypeActivity.class);
-            openChampionIntent.putExtra("Type", (String)spinner.getSelectedItem());
-            startActivity(openChampionIntent);
-        }
+        Intent openChampionIntent = new Intent(this, ChampionActivity.class);
+        openChampionIntent.putExtra("Type", (String) spinner.getSelectedItem());
+        startActivity(openChampionIntent);
     }
 
     private void assignTranslatedStrings(){
@@ -57,8 +52,5 @@ public class ButtonActivity extends Activity {
 
         Champions.MANA = this.getString(R.string.mana);
         Champions.ENERGY = this.getString(R.string.energy);
-
-
-        ChampionNames.AATROX = this.getString(R.string.aatrox);
     }
 }
