@@ -66,7 +66,6 @@ public class ButtonActivity extends Activity {
         ChampionNames.AATROX = this.getString(R.string.aatrox);
     }
 
-
     private void assignImages() {
         ChampionImages.AATROX = getMyDrawable(R.drawable.aatrox);
         ChampionImages.AHRI = getMyDrawable(R.drawable.ahri);
@@ -118,6 +117,13 @@ public class ButtonActivity extends Activity {
         ChampionImages.KENNEN = getMyDrawable(R.drawable.kennen);
         ChampionImages.KHAZIX = getMyDrawable(R.drawable.khazix);
         ChampionImages.KOGMAW = getMyDrawable(R.drawable.kogmaw);
+        ChampionImages.LEBLANC = getMyDrawable(R.drawable.leblanc);
+        ChampionImages.LEESIN = getMyDrawable(R.drawable.leesin);
+        ChampionImages.LEONA = getMyDrawable(R.drawable.leona);
+        ChampionImages.LISSANDRA = getMyDrawable(R.drawable.lissandra);
+        ChampionImages.LUCIAN = getMyDrawable(R.drawable.lucian);
+        ChampionImages.LULU = getMyDrawable(R.drawable.lulu);
+        ChampionImages.LUX = getMyDrawable(R.drawable.lux);
     }
 
     @SuppressWarnings("deprecation")

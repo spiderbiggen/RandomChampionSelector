@@ -58,4 +58,11 @@ public class ChampionImages {
     protected static Drawable KENNEN;
     protected static Drawable KHAZIX;
     protected static Drawable KOGMAW;
+    protected static Drawable LEBLANC;
+    protected static Drawable LEESIN;
+    protected static Drawable LEONA;
+    protected static Drawable LISSANDRA;
+    protected static Drawable LUCIAN;
+    protected static Drawable LULU;
+    protected static Drawable LUX;
 }

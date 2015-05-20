@@ -82,6 +82,13 @@ public class Champions {
         CHAMPIONS.add(new Champion("Kennen", MAGE, 1879, 200, ENERGY, 550, 335, ChampionImages.KENNEN));
         CHAMPIONS.add(new Champion("Kha'Zix", ASSASSIN, 2018, 1007, MANA, 125, 350, ChampionImages.KHAZIX));
         CHAMPIONS.add(new Champion("Kog'Maw", MARKSMAN, 2025, 1002, MANA, 500, 325, ChampionImages.KOGMAW));
+        CHAMPIONS.add(new Champion("LeBlanc", ASSASSIN, 1791, 1184, MANA, 525, 335, ChampionImages.LEBLANC));
+        CHAMPIONS.add(new Champion("Lee Sin", FIGHTER, 2016, 200, ENERGY, 125, 350, ChampionImages.LEESIN));
+        CHAMPIONS.add(new Champion("Leona", TANK, 2055, 982, MANA, 125, 335, ChampionImages.LEONA));
+        CHAMPIONS.add(new Champion("Lissandra", MAGE, 1934, 1154, MANA, 550, 325, ChampionImages.LISSANDRA));
+        CHAMPIONS.add(new Champion("Lucian", MARKSMAN, 1914, 996, MANA, 500, 335, ChampionImages.LUCIAN));
+        CHAMPIONS.add(new Champion("Lulu", SUPPORT, 1947, 1227, MANA, 550, 325, ChampionImages.LULU));
+        CHAMPIONS.add(new Champion("Lux", MAGE, 1821, 1184, MANA, 550, 330, ChampionImages.LUX));
 
         categorizeChampions();
     }
