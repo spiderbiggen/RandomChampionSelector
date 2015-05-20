@@ -1,7 +1,5 @@
 package spiderbiggen.randomchampionselector;
 
-import android.graphics.drawable.Drawable;
-
 import java.io.Serializable;
 
 /**
@@ -20,14 +18,13 @@ public class Champion implements Serializable{
 
     public final int RANGE;
     public final int MOVEMENT_SPEED;
-    public Drawable IMAGE;
 
 
     /**
      * Default constructor for object (only for test purposes).
      */
     public Champion() {
-        this("Name", "Fighter", 2000, 1000, "Mana", 75, 340, null);
+        this("Name", "Fighter", 2000, 1000, "Mana", 75, 340);
     }
 
     /**
@@ -40,9 +37,8 @@ public class Champion implements Serializable{
      * @param resource_type The resource type for this champion eg mana, energy, fury; can be none if this champion has no resource.
      * @param range The base auto attack range at max level.
      * @param movespeed The base movement speed of this champion.
-     * @param image The drawable to use for this champion.
      */
-    public Champion(String name, String role, int hp, int resource, String resource_type, int range, int movespeed, Drawable image) {
+    public Champion(String name, String role, int hp, int resource, String resource_type, int range, int movespeed) {
         NAME = name;
         ROLE = role;
         HEALTH = hp;
@@ -50,7 +46,6 @@ public class Champion implements Serializable{
         RESOURCE_TYPE = resource_type;
         RANGE = range;
         MOVEMENT_SPEED = movespeed;
-        IMAGE = image;
     }
 
     @Override

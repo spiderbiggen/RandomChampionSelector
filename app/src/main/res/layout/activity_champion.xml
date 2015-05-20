@@ -118,15 +118,12 @@
     </ScrollView>
 
     <Button
-            android:id="@+id/button"
-            style="@style/BigText"
+        android:id="@+id/button"
+        style="@style/BigText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="false"
-            android:layout_gravity="bottom"
+        android:layout_gravity="bottom"
         android:onClick="pickRandomChampion"
         android:text="@string/select_button2" />
 

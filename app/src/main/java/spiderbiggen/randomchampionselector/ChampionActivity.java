@@ -2,7 +2,9 @@ package spiderbiggen.randomchampionselector;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,7 +44,9 @@ public class ChampionActivity extends Activity {
         movSpeed.setText(champ.MOVEMENT_SPEED + "");
 
         RelativeLayout grid = (RelativeLayout) findViewById(R.id.gridView);
-        Drawable image = champ.IMAGE;
+        String formattedString = champ.NAME.replace(" ", "").replace("'", "").replace(".", "").toLowerCase();
+        int resID = getResources().getIdentifier(formattedString, "drawable", "spiderbiggen.randomchampionselector");
+        Drawable image = getMyDrawable(resID);
         image.setAlpha(100);
         grid.setBackground(image);
         Runtime r = Runtime.getRuntime();
@@ -53,4 +57,16 @@ public class ChampionActivity extends Activity {
         champ = Champions.pickRandomChampion(champ);
         populatePage();
     }
+
+    @SuppressWarnings("deprecation")
+    private Drawable getMyDrawable(int id) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int dpi = displayMetrics.densityDpi;
+        if (Build.VERSION.SDK_INT >= 21) {
+            return this.getResources().getDrawableForDensity(id, dpi, this.getTheme());
+        } else {
+            return this.getResources().getDrawableForDensity(id, dpi);
+        }
+    }
+
 }
