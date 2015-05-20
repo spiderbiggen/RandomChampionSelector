@@ -24,38 +24,43 @@ public class ChampionActivity extends Activity {
         setContentView(R.layout.activity_champion);
         champ = Champions.pickRandomChampion(champ, championType);
         populatePage();
-
     }
 
 
     private void populatePage() {
-
         TextView chName = (TextView) findViewById(R.id.nameValue);
-        chName.setText(champ.NAME);
+        chName.setText(champ.getName());
         TextView role = (TextView) findViewById(R.id.roleValue);
-        role.setText(champ.ROLE);
+        role.setText(champ.getRole());
         TextView health = (TextView) findViewById(R.id.healthValue);
-        health.setText(champ.HEALTH + "");
-        if (champ.RESOURCE != 0 && champ.RESOURCE_TYPE != null) {
-            TextView resource = (TextView) findViewById(R.id.resourceText);
-            resource.setText(champ.RESOURCE_TYPE);
-            TextView resourceValue = (TextView) findViewById(R.id.resourceValue);
-            resourceValue.setText(champ.RESOURCE + "");
+        health.setText(champ.getHealth() + "");
+        TextView resource = (TextView) findViewById(R.id.resourceText);
+        TextView resourceValue = (TextView) findViewById(R.id.resourceValue);
+        if (champ.getResource() != 0 && champ.getResourceType() != null) {
+            resource.setVisibility(View.VISIBLE);
+            resourceValue.setVisibility(View.VISIBLE);
+
+            resource.setText(champ.getResourceType());
+            resourceValue.setText(champ.getResource() + "");
+        } else {
+            resource.setVisibility(View.INVISIBLE);
+            resourceValue.setVisibility(View.INVISIBLE);
         }
         TextView range = (TextView) findViewById(R.id.rangeValue);
-        range.setText(champ.RANGE + "");
+        range.setText(champ.getRange() + "");
         TextView movSpeed = (TextView) findViewById(R.id.movSpeedValue);
-        movSpeed.setText(champ.MOVEMENT_SPEED + "");
+        movSpeed.setText(champ.getMovementSpeed() + "");
 
         RelativeLayout grid = (RelativeLayout) findViewById(R.id.gridView);
-        String formattedString = champ.NAME.replace(" ", "").replace("'", "").replace(".", "").toLowerCase();
-        int resID = getResources().getIdentifier(formattedString, "drawable", "spiderbiggen.randomchampionselector");
+
+        String formattedString = champ.getName().replace(" ", "").replace("'", "").replace(".", "").toLowerCase();
+        int resID = getResources().getIdentifier(formattedString, "drawable", getPackageName());
         Drawable image = getMyDrawable(resID);
         image.setAlpha(100);
         grid.setBackground(image);
     }
 
-    public void pickRandomChampion(View view){
+    public void pickRandomChampion(View view) {
         champ = Champions.pickRandomChampion(champ, championType);
         populatePage();
     }
@@ -70,5 +75,4 @@ public class ChampionActivity extends Activity {
             return this.getResources().getDrawableForDensity(id, dpi);
         }
     }
-
 }

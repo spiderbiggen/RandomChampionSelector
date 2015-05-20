@@ -89,6 +89,13 @@ public class Champions {
         CHAMPIONS.add(new Champion("Lucian", MARKSMAN, 1914, 996, MANA, 500, 335));
         CHAMPIONS.add(new Champion("Lulu", SUPPORT, 1947, 1227, MANA, 550, 325));
         CHAMPIONS.add(new Champion("Lux", MAGE, 1821, 1184, MANA, 550, 330));
+        CHAMPIONS.add(new Champion("Malphite", TANK, 2104, 962, MANA, 125, 335));
+        CHAMPIONS.add(new Champion("Malzahar", MAGE, 1874, 1091, MANA, 550, 340));
+        CHAMPIONS.add(new Champion("Maokai", TANK, 2102, 1109, MANA, 125, 335));
+        CHAMPIONS.add(new Champion("Master Yi", ASSASSIN, 2163, 965, MANA, 125, 355));
+        CHAMPIONS.add(new Champion("Miss Fortune", MARKSMAN, 2023, 922, MANA, 550, 325));
+        CHAMPIONS.add(new Champion("Mordekaiser", FIGHTER, 1915, 0, null, 125, 340));
+        CHAMPIONS.add(new Champion("Morgana", MAGE, 2009, 1361, MANA, 450, 335));
 
         categorizeChampions();
     }
@@ -96,25 +103,26 @@ public class Champions {
     /**
      * Categorizes all champions eg Fighters into a list of fighters and tanks in a list of tanks.
      */
-    public static void categorizeChampions(){
+    public static void categorizeChampions() {
         FIGHTERS = new ArrayList<>();
         TANKS = new ArrayList<>();
         MAGES = new ArrayList<>();
         SUPPORTS = new ArrayList<>();
         MARKSMANS = new ArrayList<>();
         ASSASSINS = new ArrayList<>();
-        for(Champion champ : CHAMPIONS){
-            if(champ.ROLE.equals(FIGHTER)){
+
+        for (Champion champ : CHAMPIONS) {
+            if (champ.getRole().equals(FIGHTER)) {
                 FIGHTERS.add(champ);
-            }else if (champ.ROLE.equals(TANK)){
+            } else if (champ.getRole().equals(TANK)) {
                 TANKS.add(champ);
-            }else if (champ.ROLE.equals(MAGE)){
+            } else if (champ.getRole().equals(MAGE)) {
                 MAGES.add(champ);
-            }else if (champ.ROLE.equals(SUPPORT)){
+            } else if (champ.getRole().equals(SUPPORT)) {
                 SUPPORTS.add(champ);
-            }else if (champ.ROLE.equals(MARKSMAN)){
+            } else if (champ.getRole().equals(MARKSMAN)) {
                 MARKSMANS.add(champ);
-            }else if (champ.ROLE.equals(ASSASSIN)){
+            } else if (champ.getRole().equals(ASSASSIN)) {
                 ASSASSINS.add(champ);
             }
         }
@@ -122,7 +130,8 @@ public class Champions {
 
     /**
      * Picks a semi-random {@link Champion} that is not the same as the previous one and is of a specific champion type.
-     * @param champion previous champion
+     *
+     * @param champion     previous champion
      * @param championType The champion type (role) the user wants
      * @return a semi-random {@link Champion}
      */
@@ -132,15 +141,15 @@ public class Champions {
             List = CHAMPIONS;
         } else if (championType.equals(FIGHTER)) {
             List = FIGHTERS;
-        }else if (championType.equals(TANK)){
+        } else if (championType.equals(TANK)) {
             List = TANKS;
-        }else if (championType.equals(MAGE)){
+        } else if (championType.equals(MAGE)) {
             List = MAGES;
-        }else if (championType.equals(SUPPORT)){
+        } else if (championType.equals(SUPPORT)) {
             List = SUPPORTS;
-        }else if (championType.equals(MARKSMAN)){
+        } else if (championType.equals(MARKSMAN)) {
             List = MARKSMANS;
-        }else if (championType.equals(ASSASSIN)){
+        } else if (championType.equals(ASSASSIN)) {
             List = ASSASSINS;
         }
 
@@ -148,7 +157,7 @@ public class Champions {
         Champion champ;
         do {
             champ = List.get(rand.nextInt(List.size()));
-        }while(champ.equals(champion));
+        } while (champ.equals(champion));
         return champ;
     }
 }
