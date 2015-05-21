@@ -26,6 +26,7 @@ public class ButtonActivity extends Activity {
     protected void onResume() {
         super.onResume();
         setContentView(R.layout.activity_button);
+        populateSpinner();
     }
 
     private void populateSpinner() {
