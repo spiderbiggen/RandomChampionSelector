@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-public class ChampionActivity extends Activity {
+public class ChampionActivity extends AppCompatActivity {
 
     private Champion champ;
     private String championType;
@@ -29,6 +30,7 @@ public class ChampionActivity extends Activity {
 
     private void populatePage() {
         TextView chName = (TextView) findViewById(R.id.nameValue);
+        setTitle(champ.getName());
         chName.setText(champ.getName());
         TextView role = (TextView) findViewById(R.id.roleValue);
         role.setText(champ.getRole());

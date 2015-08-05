@@ -37,6 +37,11 @@ public class ButtonActivity extends Activity {
         spinner.setAdapter(adapter);
     }
 
+    public void openChampionList(View view){
+        Intent openChampionIntent = new Intent(this, ListChampionsActivity.class);
+        startActivity(openChampionIntent);
+    }
+
     public void pickRandomChampion(View view) {
         Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
         String all = this.getString(R.string.all);

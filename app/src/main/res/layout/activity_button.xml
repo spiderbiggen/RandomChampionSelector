@@ -31,4 +31,17 @@
         android:layout_below="@+id/startButton"
         android:spinnerMode="dropdown" />
 
+    <Button
+        style="@style/ButtonBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View All Champions"
+        android:id="@+id/cListButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#33b5e5"
+        android:textColor="#007799"
+        android:onClick="openChampionList"/>
+
 </RelativeLayout>

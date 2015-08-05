@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sndroid="http://schemas.android.com/apk/res-auto"
     package="spiderbiggen.randomchampionselector"
     android:installLocation="preferExternal">
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="22" />
 
     <application
         android:allowBackup="true"
@@ -22,11 +27,21 @@
         <activity
             android:name=".ChampionActivity"
             android:label="@string/title_activity_champion"
-            android:screenOrientation="portrait">
+            android:parentActivityName=".ButtonActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="spiderbiggen.randomchampionselector.ButtonActivity" />
+        </activity>
+        <activity
+            android:name=".ListChampionsActivity"
+            android:label="@string/title_activity_list_champions"
+            android:parentActivityName=".ButtonActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="spiderbiggen.randomchampionselector.ButtonActivity" />
         </activity>
     </application>
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="22" />
 
 </manifest>
