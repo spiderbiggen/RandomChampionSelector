@@ -52,6 +52,7 @@ public class Champions {
         CHAMPIONS.add(new Champion("Darius", FIGHTER, 2163, 901, MANA, 125, 340));
         CHAMPIONS.add(new Champion("Diana", FIGHTER, 2119, 977, MANA, 150, 345));
         CHAMPIONS.add(new Champion("Dr. Mundo", FIGHTER, 2096, 0, null, 125, 345));
+        CHAMPIONS.add(new Champion("Ekko", ASSASSIN, 1940, 1130, MANA, 125, 340));
         CHAMPIONS.add(new Champion("Draven", MARKSMAN, 1952, 1025, MANA, 550, 330));
         CHAMPIONS.add(new Champion("Elise", MAGE, 1889, 1174, MANA, 550, 330));
         CHAMPIONS.add(new Champion("Evelynn", ASSASSIN, 2061, 1031, MANA, 125, 340));
@@ -126,6 +127,7 @@ public class Champions {
         CHAMPIONS.add(new Champion("Soraka", SUPPORT, 1855, 1371, MANA, 550, 325));
         CHAMPIONS.add(new Champion("Swain", MAGE, 1842, 1174, MANA, 500, 335));
         CHAMPIONS.add(new Champion("Syndra", MAGE, 1837, 1184, MANA, 550, 330));
+        CHAMPIONS.add(new Champion("Tahm Kench", SUPPORT, 2225, 1005, MANA, 200, 335));
         CHAMPIONS.add(new Champion("Talon", ASSASSIN, 2028, 1007, MANA, 125, 350));
         CHAMPIONS.add(new Champion("Taric", SUPPORT, 2149, 1301, MANA, 125, 340));
         CHAMPIONS.add(new Champion("Teemo", MARKSMAN, 1910, 947, MANA, 500, 330));
