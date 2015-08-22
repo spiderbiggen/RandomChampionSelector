@@ -16,4 +16,5 @@
     <string name="energy">Energy</string>
     <string name="range">Range</string>
     <string name="moveSpeedText">Movement Speed</string>
+    <string name="title_activity_list_champions">Champion</string>
 </resources>

@@ -44,13 +44,8 @@ public class ButtonActivity extends Activity {
 
     public void pickRandomChampion(View view) {
         Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
-        String all = this.getString(R.string.all);
         Intent openChampionIntent = new Intent(this, ChampionActivity.class);
-        if (spinner.getSelectedItem().equals(all)) {
-            openChampionIntent.putExtra("Type", "All");
-        } else {
-            openChampionIntent.putExtra("Type", (String) spinner.getSelectedItem());
-        }
+        openChampionIntent.putExtra("Type", (String) spinner.getSelectedItem());
         startActivity(openChampionIntent);
     }
 

@@ -1,6 +1,9 @@
 package spiderbiggen.randomchampionselector;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +18,16 @@ import java.util.List;
  */
 public class ChampionAdapter extends ArrayAdapter<Champion> {
 
+    private final Context context;
+
     public ChampionAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
+        this.context = context;
     }
 
     public ChampionAdapter(Context context, int resource, List<Champion> items) {
         super(context, resource, items);
+        this.context = context;
     }
 
     @Override
@@ -42,11 +49,20 @@ public class ChampionAdapter extends ArrayAdapter<Champion> {
             TextView nameV = (TextView) v.findViewById(R.id.championName);
             TextView roleV = (TextView) v.findViewById(R.id.championRole);
 
+            if(imgV !=null){
+                String formattedString = c.getName().replace(" ", "").replace("'", "").replace(".", "").toLowerCase() + "square";
+                int resID = context.getResources().getIdentifier(formattedString, "drawable", context.getPackageName());
+                Drawable image = getMyDrawable(resID);
+                imgV.setBackground(image);
+            }else {
+                System.out.println("Dammit");
+            }
+
+
             if(nameV != null) {
                 System.out.println("name");
                 nameV.setText(c.getName());
             }
-            System.out.println("nemeV = null");
 
             if (roleV != null) {
                 roleV.setText(c.getRole());
@@ -54,5 +70,16 @@ public class ChampionAdapter extends ArrayAdapter<Champion> {
         }
 
         return v;
+    }
+
+    @SuppressWarnings("deprecation")
+    private Drawable getMyDrawable(int id) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int dpi = displayMetrics.densityDpi;
+        if (Build.VERSION.SDK_INT >= 21) {
+            return context.getResources().getDrawableForDensity(id, dpi, context.getTheme());
+        } else {
+            return context.getResources().getDrawableForDensity(id, dpi);
+        }
     }
 }

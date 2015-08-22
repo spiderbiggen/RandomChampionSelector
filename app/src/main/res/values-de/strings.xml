@@ -16,4 +16,5 @@
     <string name="mana">Mana</string>
     <string name="mage">Magier</string>
     <string name="select_button2">Neue Champion</string>
+    <string name="title_activity_list_champions">Kampione</string>
 </resources>

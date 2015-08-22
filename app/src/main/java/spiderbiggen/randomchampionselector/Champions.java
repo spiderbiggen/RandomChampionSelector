@@ -198,10 +198,8 @@ public class Champions {
      * @return a semi-random {@link Champion}
      */
     public static Champion pickRandomChampion(Champion champion, String championType) {
-        ArrayList<Champion> List = new ArrayList<>();
-        if (championType.equals("All")) {
-            List = CHAMPIONS;
-        } else if (championType.equals(FIGHTER)) {
+        ArrayList<Champion> List;
+        if (championType.equals(FIGHTER)) {
             List = FIGHTERS;
         } else if (championType.equals(TANK)) {
             List = TANKS;
@@ -213,6 +211,8 @@ public class Champions {
             List = MARKSMANS;
         } else if (championType.equals(ASSASSIN)) {
             List = ASSASSINS;
+        } else {
+            List = CHAMPIONS;
         }
 
         Random rand = new Random();
