@@ -1,28 +1,50 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-
+    <style name="AppTheme" parent="android:Theme.Material">
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:elevation">2dp</item>
     </style>
 
-    <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@null</item>
+    <style name="AppTheme.Background" parent="AppTheme">
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:elevation">0dp</item>
     </style>
 
-    <style name="ButtonBar" parent="BaseText">
-        <item name="android:textSize">50sp</item>
-    </style>
+    <style name="AppTheme.HealthBar" parent="android:style/Widget.ProgressBar.Horizontal" />
 
-    <style name="BaseText" parent="AppTheme">
+    <style name="AppTheme.Text">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="BigText" parent="BaseText">
+
+    <style name="AppTheme.Text.Large">
         <item name="android:textSize">30sp</item>
     </style>
-    <style name="BiggerText" parent="BigText">
+
+    <style name="AppTheme.Text.Larger">
         <item name="android:textSize">40sp</item>
     </style>
 
+    <style name="AppTheme.SpinnerItemStyle">
+        <!--<item name="android:spinnerStyle">@style/SpinnerItemStyle</item>-->
+        <item name="android:spinnerItemStyle">@style/SpinnerItemStyle</item>
+    </style>
+
+    <style name="SpinnerItemStyle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.Background.Bar1">
+        <item name="android:background">#536dfe</item>
+    </style>
+
+    <style name="AppTheme.Button">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:colorButtonNormal">#304ffe</item>
+    </style>
 </resources>

@@ -9,7 +9,7 @@
     <string name="assassin">Assassine</string>
     <string name="range">Reichweite</string>
     <string name="resourceName">Ressource</string>
-    <string name="select_button">Wählen Sie\nein Champion</string>
+    <string name="select_button">Wählen Sie ein Champion</string>
     <string name="support">Unterstützung</string>
     <string name="moveSpeedText">Lauftempo</string>
     <string name="marksman">Scharfschütze</string>
@@ -17,4 +17,8 @@
     <string name="mage">Magier</string>
     <string name="select_button2">Neue Champion</string>
     <string name="title_activity_list_champions">Kampione</string>
+    <string name="none">Keine</string>
+    <string name="list_champions_button">Liste Aller Kampione</string>
+    <string name="melee">Handgemenge</string>
+    <string name="ranged">Reicht</string>
 </resources>

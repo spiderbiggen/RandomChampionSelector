@@ -1,25 +1,27 @@
 package spiderbiggen.randomchampionselector;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class ChampionActivity extends AppCompatActivity {
+import spiderbiggen.randomchampionselector.champion.Champion;
+import spiderbiggen.randomchampionselector.champion.Champions;
+import spiderbiggen.randomchampionselector.util.StringHolder;
 
+public class ChampionActivity extends Activity {
+
+    Boolean isRandom;
     private Champion champion;
     private String championType;
-    Boolean isRandom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,29 +44,36 @@ public class ChampionActivity extends AppCompatActivity {
     }
 
     private void populatePage() {
+        StringHolder strings = StringHolder.getInstance();
+
         TextView chName = (TextView) findViewById(R.id.nameValue);
         setTitle(champion.getName());
         chName.setText(champion.getName());
+
         TextView role = (TextView) findViewById(R.id.roleValue);
-        role.setText(champion.getRole());
-        TextView health = (TextView) findViewById(R.id.healthValue);
-        health.setText(champion.getHealth() + "");
+        role.setText(strings.roleEnumToString(champion.getRole()));
+
+        /*TextView health = (TextView) findViewById(R.id.healthValue);
+        health.setText(String.format("%d", champion.getHealth()));*/
+
+        int healthPercent = (champion.getHealth() - Champions.minHealth) * 100 / (Champions.maxHealth - Champions.minHealth);
+        ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar);
+        pb.setProgress(healthPercent);
+
         TextView resource = (TextView) findViewById(R.id.resourceText);
         TextView resourceValue = (TextView) findViewById(R.id.resourceValue);
-        if (champion.getResource() != 0 && champion.getResourceType() != null) {
+        if (champion.getResource() > 0) {
+            resource.setText(strings.resourceTypeEnumToString(champion.getResourceType()));
+            resourceValue.setText(String.format("%d", champion.getResource()));
             resource.setVisibility(View.VISIBLE);
             resourceValue.setVisibility(View.VISIBLE);
-
-            resource.setText(champion.getResourceType());
-            resourceValue.setText(champion.getResource() + "");
         } else {
             resource.setVisibility(View.INVISIBLE);
             resourceValue.setVisibility(View.INVISIBLE);
         }
+
         TextView range = (TextView) findViewById(R.id.rangeValue);
-        range.setText(champion.getRange() + "");
-        TextView movSpeed = (TextView) findViewById(R.id.movSpeedValue);
-        movSpeed.setText(champion.getMovementSpeed() + "");
+        range.setText(strings.attackTypeEnumToString(champion.getAttackType()));
 
         RelativeLayout grid = (RelativeLayout) findViewById(R.id.gridView);
 
@@ -80,7 +89,6 @@ public class ChampionActivity extends AppCompatActivity {
         populatePage();
     }
 
-    @SuppressWarnings("deprecation")
     private Drawable getMyDrawable(int id) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int dpi = displayMetrics.densityDpi;
@@ -89,11 +97,5 @@ public class ChampionActivity extends AppCompatActivity {
         } else {
             return this.getResources().getDrawableForDensity(id, dpi);
         }
-    }
-
-    @Nullable
-    @Override
-    public Intent getSupportParentActivityIntent() {
-        return isRandom ? new Intent(this, ButtonActivity.class) : new Intent(this, ListChampionsActivity.class);
     }
 }

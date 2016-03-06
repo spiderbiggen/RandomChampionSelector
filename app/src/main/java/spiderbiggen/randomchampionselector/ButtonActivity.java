@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+
+import spiderbiggen.randomchampionselector.champion.Champions;
+import spiderbiggen.randomchampionselector.util.StringHolder;
 
 /**
  * Fullscreen activity
@@ -16,8 +19,8 @@ public class ButtonActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        assignTranslatedStrings();
-        Champions.populateChampions();
+        new StringHolder(this);
+        Champions.populateChampions(this.getAssets());
         setContentView(R.layout.activity_button);
         populateSpinner();
     }
@@ -26,15 +29,17 @@ public class ButtonActivity extends Activity {
     protected void onResume() {
         super.onResume();
         setContentView(R.layout.activity_button);
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.mainBg);
+        Champions.pickRandomChampion(null, this.getString(R.string.all));
         populateSpinner();
     }
 
     private void populateSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
-        String all = this.getString(R.string.all);
-        String[] types = new String[]{all, Champions.TANK, Champions.FIGHTER, Champions.MAGE, Champions.ASSASSIN, Champions.SUPPORT, Champions.MARKSMAN};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, R.id.textView, types);
-        spinner.setAdapter(adapter);
+        Spinner spinner = (Spinner) findViewById(R.id.type_spinner);
+        /*String all = this.getString(R.string.all);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.types, android.R.layout.simple_spinner_item);*/
+        /*adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(adapter);*/
     }
 
     public void openChampionList(View view){
@@ -43,20 +48,9 @@ public class ButtonActivity extends Activity {
     }
 
     public void pickRandomChampion(View view) {
-        Spinner spinner = (Spinner) findViewById(R.id.typeSpinner);
+        Spinner spinner = (Spinner) findViewById(R.id.type_spinner);
         Intent openChampionIntent = new Intent(this, ChampionActivity.class);
-        openChampionIntent.putExtra("Type", (String) spinner.getSelectedItem());
+        openChampionIntent.putExtra("Type", spinner.getSelectedItem().toString());
         startActivity(openChampionIntent);
-    }
-
-    private void assignTranslatedStrings() {
-        Champions.TANK = this.getString(R.string.tank);
-        Champions.FIGHTER = this.getString(R.string.fighter);
-        Champions.MAGE = this.getString(R.string.mage);
-        Champions.ASSASSIN = this.getString(R.string.assassin);
-        Champions.SUPPORT = this.getString(R.string.support);
-        Champions.MARKSMAN = this.getString(R.string.marksman);
-        Champions.MANA = this.getString(R.string.mana);
-        Champions.ENERGY = this.getString(R.string.energy);
     }
 }

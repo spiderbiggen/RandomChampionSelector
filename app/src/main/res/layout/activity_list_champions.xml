@@ -1,15 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppTheme.Background"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
-    tools:context=".ListChampionsActivity"
-    android:padding="0dp">
+    tools:context=".ListChampionsActivity">
 
     <ListView
+        android:id="@+id/championList"
+        style="@style/AppTheme.Background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/championList"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentStart="false"
+        android:smoothScrollbar="true"
+        tools:listitem="@layout/list_champion_item" />
 </RelativeLayout>
