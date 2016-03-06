@@ -1,47 +1,62 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/FullscreenTheme"
+    android:id="@+id/mainBg"
+    style="@style/AppTheme"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
     android:orientation="vertical"
     tools:context=".ButtonActivity">
 
 
-    <Button
-        android:id="@+id/startButton"
-        style="@style/ButtonBar"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        style="@style/AppTheme.Background.Bar1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="#33b5e5"
-        android:onClick="pickRandomChampion"
-        android:padding="10sp"
-        android:text="@string/select_button"
-        android:textColor="#007799" />
-
-    <Spinner
-        android:id="@+id/typeSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/startButton"
-        android:layout_alignLeft="@+id/startButton"
-        android:layout_alignRight="@+id/startButton"
-        android:layout_alignStart="@+id/startButton"
-        android:layout_below="@+id/startButton"
-        android:spinnerMode="dropdown" />
-
-    <Button
-        style="@style/ButtonBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View All Champions"
-        android:id="@+id/cListButton"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:background="#33b5e5"
-        android:textColor="#007799"
-        android:onClick="openChampionList"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/start_button"
+            style="@style/AppTheme.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:onClick="pickRandomChampion"
+            android:singleLine="false"
+            android:text="@string/select_button" />
+
+        <Spinner
+            android:id="@+id/type_spinner"
+            style="@style/AppTheme.SpinnerItemStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/start_button"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="false"
+            android:layout_alignTop="@+id/start_button"
+            android:layout_toEndOf="@id/start_button"
+            android:layout_toRightOf="@+id/start_button"
+            android:elevation="0dp"
+            android:entries="@array/types"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:popupElevation="4dp"
+            android:spinnerMode="dropdown" />
+
+        <Button
+            android:id="@+id/cListButton"
+            style="@style/AppTheme.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/start_button"
+            android:layout_alignParentEnd="false"
+            android:layout_alignRight="@+id/type_spinner"
+            android:layout_below="@+id/start_button"
+            android:onClick="openChampionList"
+            android:text="@string/list_champions_button" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

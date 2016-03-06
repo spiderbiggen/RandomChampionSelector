@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import spiderbiggen.randomchampionselector.champion.Champion;
+import spiderbiggen.randomchampionselector.util.StringHolder;
+
 /**
  * Created by Stefan on 5-8-2015.
  */
@@ -32,7 +35,7 @@ public class ChampionAdapter extends ArrayAdapter<Champion> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
+        StringHolder strings = StringHolder.getInstance();
         View v = convertView;
 
         if (v == null) {
@@ -49,23 +52,20 @@ public class ChampionAdapter extends ArrayAdapter<Champion> {
             TextView nameV = (TextView) v.findViewById(R.id.championName);
             TextView roleV = (TextView) v.findViewById(R.id.championRole);
 
-            if(imgV !=null){
+            if (imgV != null) {
                 String formattedString = c.getName().replace(" ", "").replace("'", "").replace(".", "").toLowerCase() + "square";
                 int resID = context.getResources().getIdentifier(formattedString, "drawable", context.getPackageName());
                 Drawable image = getMyDrawable(resID);
                 imgV.setBackground(image);
-            }else {
-                System.out.println("Dammit");
             }
 
 
             if(nameV != null) {
-                System.out.println("name");
                 nameV.setText(c.getName());
             }
 
             if (roleV != null) {
-                roleV.setText(c.getRole());
+                roleV.setText(strings.roleEnumToString(c.getRole()));
             }
         }
 

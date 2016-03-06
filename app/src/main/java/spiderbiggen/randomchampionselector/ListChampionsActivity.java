@@ -1,19 +1,17 @@
 package spiderbiggen.randomchampionselector;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-public class ListChampionsActivity extends AppCompatActivity {
+import spiderbiggen.randomchampionselector.champion.Champion;
+import spiderbiggen.randomchampionselector.champion.Champions;
+
+public class ListChampionsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
