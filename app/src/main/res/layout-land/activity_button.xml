@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainBg"
@@ -8,8 +9,8 @@
     tools:context=".ButtonActivity">
 
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    <LinearLayout
+        android:id="@+id/buttonBar"
         style="@style/AppTheme.Background.Bar1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,11 +19,21 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/start_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/cListButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:layout_gravity="center"
+            android:layout_weight="0.4"
+            android:onClick="openChampionList"
+            android:text="@string/list_champions_button"
+            android:theme="@style/AppTheme.Button" />
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.4"
             android:onClick="pickRandomChampion"
             android:singleLine="false"
             android:text="@string/select_button"
@@ -30,12 +41,10 @@
 
         <Spinner
             android:id="@+id/type_spinner"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/start_button"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="false"
-            android:layout_alignTop="@+id/start_button"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
             android:elevation="0dp"
             android:entries="@array/types"
             android:focusable="true"
@@ -45,24 +54,13 @@
             android:spinnerMode="dropdown"
             android:theme="@style/AppTheme.Spinner" />
 
-        <Button
-            android:id="@+id/cListButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/start_button"
-            android:onClick="openChampionList"
-            android:text="@string/list_champions_button"
-            android:theme="@style/AppTheme.Button" />
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/relativeLayout"
+        android:layout_above="@+id/buttonBar"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />

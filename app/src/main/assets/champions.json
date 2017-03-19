@@ -1,0 +1,1069 @@
+{
+  "champions": [
+    {
+      "name": "Aatrox",
+      "role": "FIGHTER",
+      "health": 1983,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Ahri",
+      "role": "MAGE",
+      "health": 1874,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Akali",
+      "role": "ASSASSIN",
+      "health": 2033,
+      "resource": 200,
+      "resource_type": "ENERGY",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Alistar",
+      "role": "TANK",
+      "health": 2347,
+      "resource": 925,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Amumu",
+      "role": "TANK",
+      "health": 2041,
+      "resource": 967,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Anivia",
+      "role": "MAGE",
+      "health": 1658,
+      "resource": 1247,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Annie",
+      "role": "MAGE",
+      "health": 1804,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Ashe",
+      "role": "MARKSMAN",
+      "health": 1871,
+      "resource": 827,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Aurelion Sol",
+      "role": "MAGE",
+      "health": 1910,
+      "resource": 1200,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Azir",
+      "role": "MAGE",
+      "health": 1884,
+      "resource": 1065,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Bard",
+      "role": "SUPPORT",
+      "health": 1980,
+      "resource": 1200,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Blitzcrank",
+      "role": "TANK",
+      "health": 2198,
+      "resource": 947,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Brand",
+      "role": "MAGE",
+      "health": 1800,
+      "resource": 1091,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Braum",
+      "role": "SUPPORT",
+      "health": 2055,
+      "resource": 1076,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Caitlyn",
+      "role": "MARKSMAN",
+      "health": 1884,
+      "resource": 909,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Camille",
+      "role": "FIGHTER",
+      "health": 2021,
+      "resource": 883,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Cassiopeia",
+      "role": "MAGE",
+      "health": 1781,
+      "resource": 1391,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Cho'Gath",
+      "role": "TANK",
+      "health": 1934,
+      "resource": 952,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Corki",
+      "role": "MARKSMAN",
+      "health": 1907,
+      "resource": 934,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Darius",
+      "role": "FIGHTER",
+      "health": 2163,
+      "resource": 901,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Diana",
+      "role": "FIGHTER",
+      "health": 2119,
+      "resource": 977,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Dr. Mundo",
+      "role": "FIGHTER",
+      "health": 2096,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Draven",
+      "role": "MARKSMAN",
+      "health": 1952,
+      "resource": 1025,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Ekko",
+      "role": "ASSASSIN",
+      "health": 1940,
+      "resource": 1130,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Elise",
+      "role": "MAGE",
+      "health": 1889,
+      "resource": 1174,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Evelynn",
+      "role": "ASSASSIN",
+      "health": 2061,
+      "resource": 1031,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Ezreal",
+      "role": "MARKSMAN",
+      "health": 1844,
+      "resource": 1076,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Fiddlesticks",
+      "role": "MAGE",
+      "health": 1884,
+      "resource": 1353,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Fiora",
+      "role": "FIGHTER",
+      "health": 2038,
+      "resource": 967,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Fizz",
+      "role": "ASSASSIN",
+      "health": 2020,
+      "resource": 947,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Galio",
+      "role": "TANK",
+      "health": 2023,
+      "resource": 1169,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Gangplank",
+      "role": "FIGHTER",
+      "health": 2008,
+      "resource": 962,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Garen",
+      "role": "FIGHTER",
+      "health": 2248,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Gnar",
+      "role": "FIGHTER",
+      "health": 1645,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Gragas",
+      "role": "FIGHTER",
+      "health": 2097,
+      "resource": 1199,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Graves",
+      "role": "MARKSMAN",
+      "health": 1979,
+      "resource": 1002,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Hecarim",
+      "role": "FIGHTER",
+      "health": 2215,
+      "resource": 957,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Heimerdinger",
+      "role": "MAGE",
+      "health": 1751,
+      "resource": 987,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Illaoi",
+      "role": "FIGHTER",
+      "health": 2201,
+      "resource": 980,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Irelia",
+      "role": "FIGHTER",
+      "health": 2137,
+      "resource": 884,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Ivern",
+      "role": "SUPPORT",
+      "health": 2110,
+      "resource": 1470,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Janna",
+      "role": "SUPPORT",
+      "health": 1813,
+      "resource": 1498,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Jarvan IV",
+      "role": "TANK",
+      "health": 2101,
+      "resource": 982,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Jax",
+      "role": "FIGHTER",
+      "health": 2038,
+      "resource": 884,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Jayce",
+      "role": "FIGHTER",
+      "health": 2101,
+      "resource": 987,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Jhin",
+      "role": "MARKSMAN",
+      "health": 1985,
+      "resource": 1150,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Jinx",
+      "role": "MARKSMAN",
+      "health": 1912,
+      "resource": 1011,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Kalista",
+      "role": "MARKSMAN",
+      "health": 1929,
+      "resource": 827,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Karma",
+      "role": "MAGE",
+      "health": 1933,
+      "resource": 1224,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Karthus",
+      "role": "MAGE",
+      "health": 1791,
+      "resource": 1409,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Kassadin",
+      "role": "ASSASSIN",
+      "health": 1890,
+      "resource": 1538,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Katarina",
+      "role": "ASSASSIN",
+      "health": 1921,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Kayle",
+      "role": "FIGHTER",
+      "health": 2155,
+      "resource": 1002,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Kennen",
+      "role": "MAGE",
+      "health": 1879,
+      "resource": 200,
+      "resource_type": "ENERGY",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Kha'Zix",
+      "role": "ASSASSIN",
+      "health": 2018,
+      "resource": 1007,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Kled",
+      "role": "FIGHTER",
+      "health": 1530,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Kog'Maw",
+      "role": "MARKSMAN",
+      "health": 2025,
+      "resource": 1002,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "LeBlanc",
+      "role": "ASSASSIN",
+      "health": 1791,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Lee Sin",
+      "role": "FIGHTER",
+      "health": 2016,
+      "resource": 200,
+      "resource_type": "ENERGY",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Leona",
+      "role": "TANK",
+      "health": 2055,
+      "resource": 982,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Lissandra",
+      "role": "MAGE",
+      "health": 1934,
+      "resource": 1154,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Lucian",
+      "role": "MARKSMAN",
+      "health": 1914,
+      "resource": 996,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Lulu",
+      "role": "SUPPORT",
+      "health": 1947,
+      "resource": 1227,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Lux",
+      "role": "MAGE",
+      "health": 1821,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Malphite",
+      "role": "TANK",
+      "health": 2104,
+      "resource": 962,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Malzahar",
+      "role": "MAGE",
+      "health": 1874,
+      "resource": 1091,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Maokai",
+      "role": "TANK",
+      "health": 2102,
+      "resource": 1109,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Master Yi",
+      "role": "ASSASSIN",
+      "health": 2163,
+      "resource": 965,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Miss Fortune",
+      "role": "MARKSMAN",
+      "health": 2023,
+      "resource": 922,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Mordekaiser",
+      "role": "FIGHTER",
+      "health": 1915,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Morgana",
+      "role": "MAGE",
+      "health": 2009,
+      "resource": 1361,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Nami",
+      "role": "SUPPORT",
+      "health": 1747,
+      "resource": 1108,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Nasus",
+      "role": "FIGHTER",
+      "health": 2091,
+      "resource": 1041,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Nautilus",
+      "role": "TANK",
+      "health": 2038,
+      "resource": 1134,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Nidalee",
+      "role": "ASSASSIN",
+      "health": 1871,
+      "resource": 1061,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Nocturne",
+      "role": "ASSASSIN",
+      "health": 2028,
+      "resource": 869,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Nunu",
+      "role": "SUPPORT",
+      "health": 2128,
+      "resource": 998,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Olaf",
+      "role": "FIGHTER",
+      "health": 2178,
+      "resource": 1031,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Orianna",
+      "role": "MAGE",
+      "health": 1861,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Pantheon",
+      "role": "FIGHTER",
+      "health": 2058,
+      "resource": 845,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Poppy",
+      "role": "FIGHTER",
+      "health": 1936,
+      "resource": 745,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Quinn",
+      "role": "MARKSMAN",
+      "health": 1978,
+      "resource": 864,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Rammus",
+      "role": "TANK",
+      "health": 2026,
+      "resource": 871,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Rek'Sai",
+      "role": "FIGHTER",
+      "health": 2141,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Renekton",
+      "role": "FIGHTER",
+      "health": 2041,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Rengar",
+      "role": "ASSASSIN",
+      "health": 2116,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Riven",
+      "role": "FIGHTER",
+      "health": 2020,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Rumble",
+      "role": "FIGHTER",
+      "health": 1944,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Ryze",
+      "role": "FIGHTER",
+      "health": 2020,
+      "resource": 1277,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Sejuani",
+      "role": "TANK",
+      "health": 2215,
+      "resource": 1080,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Shaco",
+      "role": "ASSASSIN",
+      "health": 2010,
+      "resource": 977,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Shen",
+      "role": "TANK",
+      "health": 2016,
+      "resource": 200,
+      "resource_type": "ENERGY",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Shyvana",
+      "role": "FIGHTER",
+      "health": 2210,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Singed",
+      "role": "TANK",
+      "health": 1937,
+      "resource": 1056,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Sion",
+      "role": "TANK",
+      "health": 1784,
+      "resource": 1041,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Sivir",
+      "role": "MARKSMAN",
+      "health": 1910,
+      "resource": 1134,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Skarner",
+      "role": "FIGHTER",
+      "health": 2233,
+      "resource": 952,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Sona",
+      "role": "SUPPORT",
+      "health": 1791,
+      "resource": 1106,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Soraka",
+      "role": "SUPPORT",
+      "health": 1855,
+      "resource": 1371,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Swain",
+      "role": "MAGE",
+      "health": 1842,
+      "resource": 1174,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Syndra",
+      "role": "MAGE",
+      "health": 1837,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Tahm Kench",
+      "role": "SUPPORT",
+      "health": 2225,
+      "resource": 1005,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Talon",
+      "role": "ASSASSIN",
+      "health": 2028,
+      "resource": 1007,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Taric",
+      "role": "SUPPORT",
+      "health": 2149,
+      "resource": 1301,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Taliyah",
+      "role": "MAGE",
+      "health": 1975,
+      "resource": 1360,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Teemo",
+      "role": "MARKSMAN",
+      "health": 1910,
+      "resource": 947,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Thresh",
+      "role": "SUPPORT",
+      "health": 2074,
+      "resource": 1022,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Tristana",
+      "role": "MARKSMAN",
+      "health": 1937,
+      "resource": 791,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Trundle",
+      "role": "FIGHTER",
+      "health": 2248,
+      "resource": 1047,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Tryndamere",
+      "role": "FIGHTER",
+      "health": 2292,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Twisted Fate",
+      "role": "MAGE",
+      "health": 1916,
+      "resource": 912,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Twitch",
+      "role": "MARKSMAN",
+      "health": 1902,
+      "resource": 967,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Udyr",
+      "role": "FIGHTER",
+      "health": 2276,
+      "resource": 780,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Urgot",
+      "role": "MARKSMAN",
+      "health": 2100,
+      "resource": 1247,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Varus",
+      "role": "MARKSMAN",
+      "health": 1932,
+      "resource": 922,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Vayne",
+      "role": "MARKSMAN",
+      "health": 1909,
+      "resource": 827,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Veigar",
+      "role": "MAGE",
+      "health": 1887,
+      "resource": 1277,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Vel'Koz",
+      "role": "MAGE",
+      "health": 1800,
+      "resource": 1091,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Vi",
+      "role": "FIGHTER",
+      "health": 2028,
+      "resource": 1061,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Viktor",
+      "role": "MAGE",
+      "health": 1842,
+      "resource": 1174,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Vladimir",
+      "role": "MAGE",
+      "health": 1988,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Volibear",
+      "role": "TANK",
+      "health": 2046,
+      "resource": 780,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Warwick",
+      "role": "FIGHTER",
+      "health": 2046,
+      "resource": 780,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Wukong",
+      "role": "FIGHTER",
+      "health": 2023,
+      "resource": 912,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Xerath",
+      "role": "MAGE",
+      "health": 1874,
+      "resource": 1116,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Xin Zhao",
+      "role": "FIGHTER",
+      "health": 2070,
+      "resource": 869,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Yasuo",
+      "role": "FIGHTER",
+      "health": 1912,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Yorick",
+      "role": "FIGHTER",
+      "health": 2009,
+      "resource": 889,
+      "resource_type": "MANA",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Zac",
+      "role": "TANK",
+      "health": 2230,
+      "resource": 0,
+      "resource_type": "null",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Zed",
+      "role": "ASSASSIN",
+      "health": 1939,
+      "resource": 200,
+      "resource_type": "ENERGY",
+      "attack_type": "MELEE"
+    },
+    {
+      "name": "Ziggs",
+      "role": "MAGE",
+      "health": 1884,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Zilean",
+      "role": "SUPPORT",
+      "health": 1808,
+      "resource": 1381,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    },
+    {
+      "name": "Zyra",
+      "role": "MAGE",
+      "health": 1737,
+      "resource": 1184,
+      "resource_type": "MANA",
+      "attack_type": "RANGED"
+    }
+  ],
+  "abilities": []
+}

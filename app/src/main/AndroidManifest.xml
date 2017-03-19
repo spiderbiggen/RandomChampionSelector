@@ -14,24 +14,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ListChampionsActivity"
-            android:label="@string/title_activity_list_champions"
-            android:parentActivityName=".ButtonActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="spiderbiggen.randomchampionselector.ButtonActivity" />
-        </activity>
-        <activity
-            android:name=".ChampionActivity"
-            android:label="@string/title_activity_champion"
-            android:parentActivityName=".ListChampionsActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="spiderbiggen.randomchampionselector.ListChampionsActivity" />
         </activity>
     </application>
 </manifest>

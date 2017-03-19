@@ -1,7 +1,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/gridView"
     style="@style/AppTheme.Background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,7 +12,7 @@
         style="@style/AppTheme"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null">
+        android:background="#00000000">
 
         <TextView
             android:id="@+id/nameValue"
@@ -88,17 +87,20 @@
             android:layout_gravity="end"
             android:layout_toEndOf="@+id/resourceText"
             android:gravity="end" />
-
-        <Button
-            android:id="@+id/buttonRandom"
-            style="@style/AppTheme.Text.Large"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom"
-            android:onClick="pickRandomChampion"
-            android:text="@string/select_button2" />
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/champion_background"
+        style="@style/AppTheme.Background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bard"
+        android:translationZ="-1dp" />
 
 
 </RelativeLayout>

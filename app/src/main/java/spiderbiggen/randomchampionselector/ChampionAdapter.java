@@ -56,14 +56,11 @@ public class ChampionAdapter extends ArrayAdapter<Champion> {
                 String formattedString = c.getName().replace(" ", "").replace("'", "").replace(".", "").toLowerCase() + "square";
                 int resID = context.getResources().getIdentifier(formattedString, "drawable", context.getPackageName());
                 Drawable image = getMyDrawable(resID);
-                imgV.setBackground(image);
+                imgV.setImageDrawable(image);
             }
-
-
             if(nameV != null) {
                 nameV.setText(c.getName());
             }
-
             if (roleV != null) {
                 roleV.setText(strings.roleEnumToString(c.getRole()));
             }
@@ -81,5 +78,11 @@ public class ChampionAdapter extends ArrayAdapter<Champion> {
         } else {
             return context.getResources().getDrawableForDensity(id, dpi);
         }
+    }
+
+    public void setChampions(List<Champion> champions) {
+        this.clear();
+        this.addAll(champions);
+        this.notifyDataSetChanged();
     }
 }
