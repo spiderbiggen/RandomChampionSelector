@@ -3,7 +3,6 @@ package com.spiderbiggen.randomchampionselector.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ public class ListChampionsFragment extends Fragment implements IDataInteractor.O
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        View view = inflater.inflate(R.layout.activity_list_champions, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_champions, container, false);
 
         ListView lv = view.findViewById(R.id.championList);
         adapter = new ChampionAdapter(view.getContext(), R.layout.list_champion_item, new ArrayList<Champion>());
