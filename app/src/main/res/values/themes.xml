@@ -46,6 +46,7 @@
     <style name="AppTheme.Spinner">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:padding">4sp</item>
         <!--<item name="android:background">@drawable/spinner</item>-->
     </style>
 

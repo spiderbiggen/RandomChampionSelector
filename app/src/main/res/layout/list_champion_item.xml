@@ -18,7 +18,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="0sp"
+        android:layout_marginStart="0sp"
         android:orientation="vertical">
 
         <TextView
@@ -27,17 +27,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
-            android:text="Aatrox"
+            android:text="Medium Text"
             android:textAlignment="textStart" />
 
         <TextView
-            android:id="@+id/championRole"
+            android:id="@+id/championTitle"
             style="@style/AppTheme.Text.Large"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
+            android:gravity="start"
             android:text="Medium Text"
-            android:textAlignment="textEnd" />
+            android:textAlignment="textStart" />
     </LinearLayout>
 
 </LinearLayout>

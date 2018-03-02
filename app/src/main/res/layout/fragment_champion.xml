@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:useDefaultMargins="true"
-    tools:context=".RandomChampionActivity">
+    tools:context=".ButtonActivity">
 
     <RelativeLayout
         style="@style/AppTheme"
@@ -28,80 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/nameValue" />
 
-        <TextView
-            android:id="@+id/healthText"
-            style="@style/AppTheme.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/roleValue"
-            android:text="@string/health" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@style/AppTheme.HealthBar"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/healthText"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/healthText"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:indeterminate="false" />
-
-        <TextView
-            android:id="@+id/resourceText"
-            style="@style/AppTheme.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/healthText"
-            android:text="@string/resourceName" />
-
-        <TextView
-            android:id="@+id/resourceValue"
-            style="@style/AppTheme.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/resourceText"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/resourceText"
-            android:layout_gravity="end"
-            android:layout_toEndOf="@+id/resourceText"
-            android:gravity="end" />
-
-        <TextView
-            android:id="@+id/rangeText"
-            style="@style/AppTheme.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/resourceText"
-            android:text="@string/range" />
-
-        <TextView
-            android:id="@+id/rangeValue"
-            style="@style/AppTheme.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/rangeText"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/rangeText"
-            android:layout_gravity="end"
-            android:layout_toEndOf="@+id/resourceText"
-            android:gravity="end" />
     </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/champion_background"
-        style="@style/AppTheme.Background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false"
-        android:layout_alignParentTop="true"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bard"
-        android:translationZ="-1dp" />
-
 
 </RelativeLayout>
 
