@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
+import com.spiderbiggen.randomchampionselector.fragments.ChampionActivity;
 import com.spiderbiggen.randomchampionselector.model.Ability;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
@@ -50,7 +51,7 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
     }
 
     private void openMainScreen(ArrayList<String> message) {
-        Intent intent = new Intent(this, ButtonActivity.class);
+        Intent intent = new Intent(this, ChampionActivity.class);
         intent.putStringArrayListExtra(ButtonActivity.SPINNER_DATA_KEY, message);
         startActivity(intent);
     }

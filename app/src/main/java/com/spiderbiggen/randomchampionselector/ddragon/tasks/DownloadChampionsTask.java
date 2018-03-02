@@ -60,7 +60,6 @@ public class DownloadChampionsTask extends DownloadTask<String, List<Champion>> 
         if (result != null) {
             DatabaseManager databaseManager = DatabaseManager.getInstance();
             databaseManager.addChampions(result);
-            publishProgress(Progress.DOWNLOAD_SUCCESS, 100);
         }
         return result;
     }

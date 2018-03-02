@@ -1,38 +1,31 @@
 package com.spiderbiggen.randomchampionselector.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.spiderbiggen.randomchampionselector.ButtonActivity;
 import com.spiderbiggen.randomchampionselector.IDataInteractor;
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.adapters.ChampionAdapter;
 import com.spiderbiggen.randomchampionselector.model.Ability;
 import com.spiderbiggen.randomchampionselector.model.Champion;
+import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 
-public class ListChampionsFragment extends Fragment implements IDataInteractor.OnFinishedListener {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ListChampionsActivity extends ButtonActivity implements IDataInteractor.OnFinishedListener {
 
     private ChampionAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        View view = inflater.inflate(R.layout.fragment_list_champions, container, false);
-
-        ListView lv = view.findViewById(R.id.championList);
-        adapter = new ChampionAdapter(view.getContext(), R.layout.list_champion_item, new ArrayList<Champion>());
+        setContentView(R.layout.activity_list_champions);
+        ListView lv = findViewById(R.id.championList);
+        adapter = new ChampionAdapter(this, R.layout.list_champion_item, new ArrayList<Champion>());
         lv.setAdapter(adapter);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -42,13 +35,23 @@ public class ListChampionsFragment extends Fragment implements IDataInteractor.O
                 onFinishedChampionLoad(champion);
             }
         });
+        super.onCreate(savedInstanceState);
+        openChampionList(null);
+    }
 
-        return view;
+    @Override
+    public void openChampionList(View view) {
+        DatabaseManager.getInstance().findChampionList(this, getSelectedRole());
+    }
+
+    @Override
+    public void openChampion(View view) {
+        startActivity(getChampionIntent());
     }
 
     @Override
     public void onFinishedChampionListLoad(final List<Champion> champions) {
-        getActivity().runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapter.setChampions(champions);
@@ -58,14 +61,12 @@ public class ListChampionsFragment extends Fragment implements IDataInteractor.O
 
     @Override
     public void onFinishedChampionLoad(final Champion champion) {
-        FragmentManager fragmentManager = getFragmentManager();
-        final ChampionFragment championFragment = (ChampionFragment) fragmentManager.findFragmentByTag("rngChampion");
-        ListChampionsFragment listFragment = (ListChampionsFragment) fragmentManager.findFragmentByTag("listChampion");
-        fragmentManager.beginTransaction().show(championFragment).hide(listFragment).commit();
-        getActivity().runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                championFragment.updateChampion(champion);
+                Intent intent = getChampionIntent();
+                intent.putExtra(ChampionActivity.CHAMPION_KEY, champion);
+                startActivity(intent);
             }
         });
     }

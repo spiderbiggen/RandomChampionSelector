@@ -1,20 +1,19 @@
 package com.spiderbiggen.randomchampionselector.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.spiderbiggen.randomchampionselector.ButtonActivity;
 import com.spiderbiggen.randomchampionselector.IDataInteractor;
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
@@ -28,34 +27,42 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class ChampionFragment extends Fragment implements IDataInteractor.OnFinishedListener, ImageCallback {
+public class ChampionActivity extends ButtonActivity implements IDataInteractor.OnFinishedListener, ImageCallback {
 
-    public static final String KEY = "champion";
-    private static final String TAG = ChampionFragment.class.getSimpleName();
+    public static final String CHAMPION_KEY = "champion";
+    private static final String TAG = ChampionActivity.class.getSimpleName();
     private Champion champion = null;
     private ImageType imageType = ImageType.LOADING;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_champion);
+
+        if (savedInstanceState != null) {
+            champion = (Champion) savedInstanceState.getSerializable(CHAMPION_KEY);
+        }
+        Intent intent = getIntent();
+        champion = intent.hasExtra(CHAMPION_KEY) ? (Champion) intent.getSerializableExtra(CHAMPION_KEY) : champion;
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            reRollChampion(null);
-        } else {
-            updateChampion((Champion) savedInstanceState.getSerializable(KEY));
+        if (champion == null) {
+            reRollChampion(getSelectedRole());
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(KEY, champion);
-        super.onSaveInstanceState(outState);
+    public void openChampionList(View view) {
+        startActivity(getChampionListIntent());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        View view = inflater.inflate(R.layout.fragment_champion, container, false);
-        populatePage(view);
-        return view;
+    public void openChampion(View view) {
+        reRollChampion(getSelectedRole());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(CHAMPION_KEY, champion);
+        super.onSaveInstanceState(outState);
     }
 
     public void reRollChampion(String type) {
@@ -65,27 +72,27 @@ public class ChampionFragment extends Fragment implements IDataInteractor.OnFini
     public void updateChampion(Champion champion) {
         Log.d(TAG, "updateChampion() called with: champion = [" + champion + "]");
         this.champion = champion;
-        populatePage(getView());
+        populatePage();
     }
 
-    private void populatePage(View view) {
-        if (view == null || champion == null) {
+    private void populatePage() {
+        if (champion == null) {
             return;
         }
-        updateRotation(view);
-        new DDragon(getContext()).getChampionImage(champion, imageType, this);
-        TextView chName = view.findViewById(R.id.nameValue);
+        updateRotation();
+        new DDragon(this).getChampionImage(champion, imageType, this);
+        TextView chName = findViewById(R.id.nameValue);
         chName.setText(champion.getName());
 
-        TextView role = view.findViewById(R.id.roleValue);
+        TextView role = findViewById(R.id.roleValue);
         Log.d(TAG, "populatePage: " + role.getX());
         role.setText(champion.getCapitalizedTitle());
     }
 
-    private void updateRotation(View view) {
-        ImageView bg = getActivity().findViewById(R.id.champion_background);
+    private void updateRotation() {
+        ImageView bg = findViewById(R.id.champion_background);
         Log.d(TAG, "updateRotation: " + bg);
-        WindowManager systemService = (WindowManager) view.getContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager systemService = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         if (systemService == null) return;
         Display display = systemService.getDefaultDisplay();
         int rotation = display.getRotation();
@@ -99,7 +106,7 @@ public class ChampionFragment extends Fragment implements IDataInteractor.OnFini
 
     @Override
     public void onFinishedChampionLoad(final Champion champion) {
-        getActivity().runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 updateChampion(champion);
@@ -123,7 +130,7 @@ public class ChampionFragment extends Fragment implements IDataInteractor.OnFini
         if (type != imageType) return;
         if (!Objects.equals(this.champion, champion)) return;
 
-        ImageView bg = getActivity().findViewById(R.id.champion_background);
+        ImageView bg = findViewById(R.id.champion_background);
         if (bg == null) return;
         bg.setImageBitmap(bitmap);
         bg.setAlpha(0.8f);
