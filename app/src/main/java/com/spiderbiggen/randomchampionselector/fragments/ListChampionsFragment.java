@@ -1,8 +1,9 @@
-package spiderbiggen.randomchampionselector;
+package com.spiderbiggen.randomchampionselector.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,14 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-import spiderbiggen.randomchampionselector.champion.Ability;
-import spiderbiggen.randomchampionselector.champion.Champion;
-import spiderbiggen.randomchampionselector.util.database.DatabaseManager;
+import com.spiderbiggen.randomchampionselector.IDataInteractor;
+import com.spiderbiggen.randomchampionselector.R;
+import com.spiderbiggen.randomchampionselector.adapters.ChampionAdapter;
+import com.spiderbiggen.randomchampionselector.model.Ability;
+import com.spiderbiggen.randomchampionselector.model.Champion;
 
-public class ListChampionsActivity extends Fragment implements IDataInteractor.OnFinishedListener{
+public class ListChampionsFragment extends Fragment implements IDataInteractor.OnFinishedListener {
 
-    private final ListChampionsActivity instance = this;
     private ChampionAdapter adapter;
 
     @Override
@@ -30,8 +32,7 @@ public class ListChampionsActivity extends Fragment implements IDataInteractor.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.activity_list_champions, container, false);
 
-
-        ListView lv = (ListView) view.findViewById(R.id.championList);
+        ListView lv = view.findViewById(R.id.championList);
         adapter = new ChampionAdapter(view.getContext(), R.layout.list_champion_item, new ArrayList<Champion>());
         lv.setAdapter(adapter);
 
@@ -39,7 +40,7 @@ public class ListChampionsActivity extends Fragment implements IDataInteractor.O
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Champion champion = (Champion) parent.getItemAtPosition(position);
-                DatabaseManager.getInstance().findChampion(instance, champion);
+                onFinishedChampionLoad(champion);
             }
         });
 
@@ -47,17 +48,32 @@ public class ListChampionsActivity extends Fragment implements IDataInteractor.O
     }
 
     @Override
-    public void onFinishedChampionListLoad(List<Champion> champions) {
-        adapter.setChampions(champions);
+    public void onFinishedChampionListLoad(final List<Champion> champions) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.setChampions(champions);
+            }
+        });
     }
 
     @Override
-    public void onFinishedChampionLoad(Champion champion) {
+    public void onFinishedChampionLoad(final Champion champion) {
         FragmentManager fragmentManager = getFragmentManager();
-        ChampionFragment championFragment = (ChampionFragment) fragmentManager.findFragmentByTag("rngChampion");
-        ListChampionsActivity listFragment = (ListChampionsActivity) fragmentManager.findFragmentByTag("listChampion");
+        final ChampionFragment championFragment = (ChampionFragment) fragmentManager.findFragmentByTag("rngChampion");
+        ListChampionsFragment listFragment = (ListChampionsFragment) fragmentManager.findFragmentByTag("listChampion");
         fragmentManager.beginTransaction().show(championFragment).hide(listFragment).commit();
-        championFragment.updateChampion(champion);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                championFragment.updateChampion(champion);
+            }
+        });
+    }
+
+    @Override
+    public void onFinishedRoleListLoad(List<String> roles) {
+        throw new UnsupportedOperationException("Function not implemented");
     }
 
     @Override

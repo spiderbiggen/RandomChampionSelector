@@ -1,4 +1,4 @@
-package spiderbiggen.randomchampionselector.champion;
+package com.spiderbiggen.randomchampionselector.model;
 
 /**
  * Created by Stefan on 22-5-2015.
