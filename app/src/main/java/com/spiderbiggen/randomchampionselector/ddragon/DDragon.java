@@ -1,159 +1,136 @@
 package com.spiderbiggen.randomchampionselector.ddragon;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ColorSpace;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
-import com.spiderbiggen.randomchampionselector.ddragon.callback.ImageCallback;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.ImageType;
 import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadChampionsTask;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.LoadImageTask;
+import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
+import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadJsonTask;
 import com.spiderbiggen.randomchampionselector.model.Champion;
+import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
+import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 import com.spiderbiggen.randomchampionselector.util.internet.DownloadCallback;
 
 import java.io.File;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DDragon {
 
     private static final String TAG = DDragon.class.getSimpleName();
     private static final int CAPACITY = 256;
-    private static final String BASE_URL = "http://ddragon.leagueoflegends.com/cdn";
-    private static final String VERSION = "8.4.1";
+    private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
+    private static final String API_URL = BASE_URL + "/api";
+    private static final String CDN_URL = BASE_URL + "/cdn";
+    private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
     private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 8, 1000L, TimeUnit.MILLISECONDS,
             new ArrayBlockingQueue<Runnable>(CAPACITY, true), new ThreadPoolExecutor.CallerRunsPolicy());
+    private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
 
-    private final String versionedBaseUrl;
-    private final String version;
     private final Context context;
-    private FileStorage storage;
-
-    public DDragon(Context context, String version) {
-        this.context = context;
-        this.storage = new FileStorage(context);
-        this.version = version;
-        versionedBaseUrl = String.format("%s/%s", BASE_URL, version);
-    }
 
     public DDragon(Context context) {
-        this(context, VERSION);
+        this.context = context;
+    }
+
+    public void updateVersion(ProgressCallback callback) {
+        new DownloadJsonTask<>(getActiveNetworkInfo(), new VersionCallback(callback), String[].class)
+                .executeOnExecutor(executor, API_URL + "/versions.json");
     }
 
     public String getVersion() {
-        return version;
+        return version.get();
+    }
+
+    private String getVersionedCDNUrl() {
+        return String.format("%s/%s", CDN_URL, version.get());
     }
 
     public void getChampionList(DownloadCallback<List<Champion>> callback) {
         new DownloadChampionsTask(getActiveNetworkInfo(), callback).executeOnExecutor(executor, getChampionsUrl());
     }
 
-    public void getChampionImage(Champion champion, @NonNull ImageType type, ImageCallback callback) {
-        LoadImageTask.Entry entry;
-        switch (type) {
-            case SQUARE:
-                entry = getChampionSquareEntry(champion, callback);
-                break;
-            case LOADING:
-                entry = getChampionLoadingEntry(champion, callback);
-                break;
-            case SPLASH:
-                entry = getChampionSplashEntry(champion, callback);
-                break;
-            default:
-                return;
+    public Bitmap getChampionBitmap(Champion champion, @NonNull ImageType type) {
+        File file = getChampionFile(champion, type);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inMutable = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), options);
+        if (bitmap == null && file.delete()) {
+            downloadImage(champion, type);
         }
-        new LoadImageTask().executeOnExecutor(executor, entry);
+        return bitmap;
+    }
+
+    @NonNull
+    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type) {
+        return new FileStorage(context).getChampionImageFile(champion, type);
     }
 
     @NonNull
     private String getChampionsUrl() {
-        return String.format(versionedBaseUrl + "/data/en_GB/champion.json", version);
+        return String.format("%s/data/en_GB/champion.json", getVersionedCDNUrl());
     }
 
-    @NonNull
-    private LoadImageTask.Entry getChampionSplashEntry(Champion champion, ImageCallback callback) {
-        File dir = storage.getChampionSplashDir();
-        File file = new File(dir, champion.getId() + ".jpg");
-        return new LoadImageTask.Entry(file, champion, ImageType.SPLASH, callback);
-    }
-
-    @NonNull
-    private LoadImageTask.Entry getChampionLoadingEntry(Champion champion, ImageCallback callback) {
-        File dir = storage.getChampionLoadingDir();
-        File file = new File(dir, champion.getId() + ".jpg");
-        return new LoadImageTask.Entry(file, champion, ImageType.LOADING, callback);
-    }
-
-    @NonNull
-    private LoadImageTask.Entry getChampionSquareEntry(Champion champion, ImageCallback callback) {
-        File dir = storage.getChampionSquareDir();
-        File file = new File(dir, champion.getId() + ".jpg");
-        return new LoadImageTask.Entry(file, champion, ImageType.SQUARE, callback);
-    }
-
-    public DownloadImageTask downloadAllimages(List<Champion> champions, DownloadCallback<DownloadImageTask.Entry[]> callback) {
-        List<DownloadImageTask.Entry> entryList = new ArrayList<>();
-        for (Champion champion : champions) {
-            entryList.add(getDownloadEntry(getChampionLoadingEntry(champion, null)));
-            entryList.add(getDownloadEntry(getChampionSplashEntry(champion, null)));
-            entryList.add(getDownloadEntry(getChampionSquareEntry(champion, null)));
-        }
-        DownloadImageTask.Entry[] entries = new DownloadImageTask.Entry[entryList.size()];
+    public void downloadAllImages(List<Champion> champions, DownloadCallback<DownloadImageTask.Entry[]> callback) {
         NetworkInfo activeNetworkInfo = getActiveNetworkInfo();
-        DownloadImageTask task = new DownloadImageTask(activeNetworkInfo, callback);
-        task.executeOnExecutor(executor, entryList.toArray(entries));
-        return task;
+        AtomicInteger count = new AtomicInteger();
+        ImageType[] types = ImageType.values();
+        int typesLength = types.length;
+        int total = champions.size() * typesLength;
+        for (int i = 0, championsSize = champions.size(); i < championsSize; i++) {
+            Champion champion = champions.get(i);
+            DownloadImageTask.Entry[] entryList = new DownloadImageTask.Entry[typesLength];
+            for (int i1 = 0; i1 < typesLength; i1++) {
+                ImageType type = types[i1];
+                entryList[i1] = getDownloadImageEntry(champion, type);
+            }
+            DownloadImageTask task = new DownloadImageTask(activeNetworkInfo, callback, count, total);
+            task.executeOnExecutor(executor, entryList);
+        }
     }
 
-    private DownloadImageTask.Entry getDownloadEntry(LoadImageTask.Entry entry) {
-        return new DownloadImageTask.Entry(getChampionUrl(entry.getChampion(), entry.getType()), entry.getFile());
+    private void downloadImage(Champion champion, ImageType imageType) {
+        NetworkInfo activeNetworkInfo = getActiveNetworkInfo();
+        DownloadImageTask task = new DownloadImageTask(activeNetworkInfo);
+        DownloadImageTask.Entry entry = getDownloadImageEntry(champion, imageType);
+        task.executeOnExecutor(executor, entry);
+    }
+
+    private DownloadImageTask.Entry getDownloadImageEntry(Champion champion, ImageType imageType) {
+        return new DownloadImageTask.Entry(getChampionUrl(champion, imageType), getChampionFile(champion, imageType));
     }
 
     private String getChampionUrl(Champion champion, ImageType type) {
+        String champ = champion.getId();
+        String base = CDN_URL;
+        String pattern;
         switch (type) {
             case SQUARE:
-                return getChampionSquareUrl(champion);
+                pattern = "%s/img/champion/%s.png";
+                base = getVersionedCDNUrl();
+                break;
             case LOADING:
-                return getChampionLoadingUrl(champion);
+                pattern = "%s/img/champion/loading/%s_0.jpg";
+                break;
             case SPLASH:
-                return getChampionSplashUrl(champion);
+                pattern = "%s/img/champion/splash/%s_0.jpg";
+                break;
             default:
                 return null;
         }
-    }
-
-    private String getChampionSplashUrl(Champion champion) {
-        String champ = champion.getId();
-        return String.format("%s/img/champion/splash/%s_0.jpg", BASE_URL, champ);
-    }
-
-    private String getChampionLoadingUrl(Champion champion) {
-        String champ = champion.getId();
-        return String.format("%s/img/champion/loading/%s_0.jpg", BASE_URL, champ);
-    }
-
-    private String getChampionSquareUrl(Champion champion) {
-        String champ = champion.getId();
-        return String.format("%s/img/champion/%s.png", versionedBaseUrl, champ);
+        return String.format(pattern, base, champ);
     }
 
     @NonNull
@@ -163,5 +140,35 @@ public class DDragon {
             throw new RuntimeException("No network info could be found");
         }
         return cm.getActiveNetworkInfo();
+    }
+
+    private static class VersionCallback implements DownloadCallback<String[]> {
+
+        private final ProgressCallback callback;
+
+        private VersionCallback(@NonNull ProgressCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void handleException(Exception exception) {
+            // TODO maybe do something with this exception.
+        }
+
+        @Override
+        public void updateFromDownload(String[] result) {
+            if (result != null && result.length > 0)
+                DDragon.version.set(result[0]);
+        }
+
+        @Override
+        public void finishExecution() {
+            callback.finishExecution();
+        }
+
+        @Override
+        public void onProgressUpdate(int progressCode, int progress, int progressMax) {
+            callback.onProgressUpdate(progressCode, progress, progressMax);
+        }
     }
 }

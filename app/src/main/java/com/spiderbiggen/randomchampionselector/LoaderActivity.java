@@ -11,21 +11,22 @@ import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
-import com.spiderbiggen.randomchampionselector.fragments.ChampionActivity;
-import com.spiderbiggen.randomchampionselector.model.Ability;
+import com.spiderbiggen.randomchampionselector.activities.ChampionActivity;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
+import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
 import com.spiderbiggen.randomchampionselector.util.async.Progress;
+import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 import com.spiderbiggen.randomchampionselector.util.internet.DownloadCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class LoaderActivity extends AppCompatActivity implements IDataInteractor.OnFinishedListener {
+public class LoaderActivity extends AppCompatActivity implements IDataInteractor.OnFinishedRolesListener, ProgressCallback {
 
     private static final String TAG = LoaderActivity.class.getSimpleName();
-    DatabaseManager databaseManager;
+    private DatabaseManager databaseManager;
     private DDragon dDragon;
 
     @Override
@@ -39,25 +40,21 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         databaseManager = DatabaseManager.getInstance();
         databaseManager.useContext(getApplicationContext());
         dDragon = new DDragon(this);
-        downloadChampions();
+        startLoading();
     }
 
-    private void downloadChampions() {
+    private void startLoading() {
+        dDragon.updateVersion(this);
+    }
+
+    // Only called by version endpoint
+    @Override
+    public void finishExecution() {
         dDragon.getChampionList(new ChampionsCallback(this));
     }
 
     private void downloadAllImages(List<Champion> champions) {
-        dDragon.downloadAllimages(champions, new ImageCallback(this));
-    }
-
-    private void openMainScreen(ArrayList<String> message) {
-        Intent intent = new Intent(this, ChampionActivity.class);
-        intent.putStringArrayListExtra(ButtonActivity.SPINNER_DATA_KEY, message);
-        startActivity(intent);
-    }
-
-    public void throwException(Exception exception) {
-        Log.e(TAG, "throwException: ", exception);
+        dDragon.downloadAllImages(champions, new ImageCallback(this));
     }
 
     public void onProgressUpdate(int progressCode, int progress, int progressMax) {
@@ -73,6 +70,16 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         progressBar.setProgress(progress);
         progressBar.setMax(progressMax);
         updateProgressText(progressCode, progress, progressMax);
+    }
+
+    private void openMainScreen(ArrayList<String> message) {
+        Intent intent = new Intent(this, ChampionActivity.class);
+        intent.putStringArrayListExtra(ButtonActivity.SPINNER_DATA_KEY, message);
+        startActivity(intent);
+    }
+
+    public void throwException(Exception exception) {
+        Log.e(TAG, "handleException: ", exception);
     }
 
     private void updateProgressText(int progressCode, int progress, int progressMax) {
@@ -98,36 +105,22 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
     }
 
     @Override
-    public void onFinishedChampionListLoad(List<Champion> champions) {
-        throw new UnsupportedOperationException("Function not implemented");
-    }
-
-    @Override
-    public void onFinishedChampionLoad(Champion champion) {
-        throw new UnsupportedOperationException("Function not implemented");
-    }
-
-    @Override
     public void onFinishedRoleListLoad(List<String> roles) {
         Log.d(TAG, "onFinishedRoleListLoad() called with: roles = [" + roles + "]");
         openMainScreen(new ArrayList<>(roles));
     }
 
-    @Override
-    public void onFinishedAbilitiesLoad(List<Ability> abilities) {
-        throw new UnsupportedOperationException("Function not implemented");
-    }
-
     private static class ImageCallback implements DownloadCallback<DownloadImageTask.Entry[]> {
 
         private LoaderActivity activity;
+        private boolean finished;
 
         private ImageCallback(LoaderActivity activity) {
             this.activity = activity;
         }
 
         @Override
-        public void throwException(Exception exception) {
+        public void handleException(Exception exception) {
             activity.throwException(exception);
         }
 
@@ -138,12 +131,15 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
 
         @Override
         public void onProgressUpdate(int progressCode, int progress, int progressMax) {
+            finished = progress == progressMax;
             activity.onProgressUpdate(progressCode, progress, progressMax);
         }
 
         @Override
         public void finishExecution() {
-            activity.databaseManager.findRoleList(activity);
+            if (finished) {
+                activity.databaseManager.findRoleList(activity);
+            }
         }
     }
 
@@ -157,13 +153,12 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         }
 
         @Override
-        public void throwException(Exception exception) {
+        public void handleException(Exception exception) {
             activity.throwException(exception);
         }
 
         @Override
         public void updateFromDownload(List<Champion> result) {
-            System.out.println(result.get(0));
             champions = result;
         }
 

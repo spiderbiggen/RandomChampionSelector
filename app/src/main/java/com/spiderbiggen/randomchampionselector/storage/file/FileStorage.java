@@ -2,6 +2,9 @@ package com.spiderbiggen.randomchampionselector.storage.file;
 
 import android.content.Context;
 
+import com.spiderbiggen.randomchampionselector.model.Champion;
+import com.spiderbiggen.randomchampionselector.model.ImageType;
+
 import java.io.File;
 
 /**
@@ -25,15 +28,8 @@ public class FileStorage {
         return context.getDir(relPath.replaceAll("/", "_"), Context.MODE_PRIVATE);
     }
 
-    public File getChampionSquareDir() {
-        return getSubDir("img/champion/square");
+    public File getChampionImageFile(Champion champion, ImageType imageType) {
+        return new File(getSubDir("img/champion/" + imageType.name().toLowerCase()), champion.getId() + ".img");
     }
 
-    public File getChampionSplashDir() {
-        return getSubDir("img/champion/splash");
-    }
-
-    public File getChampionLoadingDir() {
-        return getSubDir("img/champion/loading");
-    }
 }

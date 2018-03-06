@@ -18,7 +18,7 @@ import java.util.List;
 @Dao
 public interface ChampionDAO {
 
-    @Query("SELECT * FROM champion WHERE roles LIKE '%'||:role||'%' ORDER BY name")
+    @Query("SELECT * FROM champion WHERE roles LIKE :role||'%' ORDER BY name")
     List<Champion> getAll(String role);
 
     @Query("SELECT * FROM champion ORDER BY name")

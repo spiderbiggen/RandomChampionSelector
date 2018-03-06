@@ -45,7 +45,7 @@ public abstract class DownloadTask<S, T> extends ProgressTask<S, T> {
     protected void onPostExecute(T result) {
         if (mCallback != null) {
             if (exception != null) {
-                mCallback.throwException(exception);
+                mCallback.handleException(exception);
             }
             if (result != null) {
                 mCallback.updateFromDownload(result);

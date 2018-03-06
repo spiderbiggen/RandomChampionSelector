@@ -6,10 +6,10 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.internet.DownloadCallback;
 import com.spiderbiggen.randomchampionselector.util.internet.DownloadTask;
 import com.spiderbiggen.randomchampionselector.util.internet.HttpRequest;
-import com.spiderbiggen.randomchampionselector.util.async.Progress;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created on 27-2-2018.
@@ -26,11 +27,19 @@ import java.net.HttpURLConnection;
 public class DownloadImageTask extends DownloadTask<DownloadImageTask.Entry, DownloadImageTask.Entry[]> {
 
     private static final String TAG = DownloadChampionsTask.class.getSimpleName();
+    private AtomicInteger count;
+    private int total;
 
     private boolean internet = true;
 
-    public DownloadImageTask(@NonNull NetworkInfo activeNetworkInfo, DownloadCallback<Entry[]> callback) {
+    public DownloadImageTask(@NonNull NetworkInfo networkInfo) {
+        this(networkInfo, null, new AtomicInteger(), 0);
+    }
+
+    public DownloadImageTask(@NonNull NetworkInfo activeNetworkInfo, DownloadCallback<Entry[]> callback, AtomicInteger count, int total) {
         super(activeNetworkInfo, callback);
+        this.count = count;
+        this.total = total;
     }
 
     @Override
@@ -41,7 +50,6 @@ public class DownloadImageTask extends DownloadTask<DownloadImageTask.Entry, Dow
     @Override
     protected Entry[] doInBackground(Entry... params) {
         try {
-            int count = 0;
             for (Entry entry : params) {
                 if (isCancelled()) {
                     break;
@@ -57,20 +65,19 @@ public class DownloadImageTask extends DownloadTask<DownloadImageTask.Entry, Dow
                     }
                 }
                 if (bitmap == null && internet) {
-                    Log.d(TAG, "doInBackground: Downloading from " + url);
                     if (url == null) {
                         throw new IllegalArgumentException("Url was null");
                     }
                     bitmap = downloadImage(url);
                     if (bitmap != null && (file.exists() || file.createNewFile())) {
                         try (FileOutputStream outputStream = new FileOutputStream(file)) {
-                            bitmap.compress(Bitmap.CompressFormat.WEBP, 100, outputStream);
+                            bitmap.compress(Bitmap.CompressFormat.WEBP, 85, outputStream);
                         } catch (IOException e) {
                             exception = e;
                         }
                     }
                 }
-                updateProgress(Progress.DOWNLOAD_SUCCESS, ++count, params.length);
+                updateProgress(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total);
             }
         } catch (Exception e) {
             exception = e;
@@ -81,9 +88,6 @@ public class DownloadImageTask extends DownloadTask<DownloadImageTask.Entry, Dow
     @Override
     protected void onPostExecute(Entry[] result) {
         super.onPostExecute(result);
-        if (exception != null) {
-            Log.e(TAG, "onPostExecute: ", exception);
-        }
     }
 
     /**
@@ -111,7 +115,7 @@ public class DownloadImageTask extends DownloadTask<DownloadImageTask.Entry, Dow
         private final String url;
         private final File file;
 
-        public Entry(@NonNull String url, @NonNull File file) {
+        public Entry(String url, @NonNull File file) {
             this.url = url;
             this.file = file;
         }

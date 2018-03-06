@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.spiderbiggen.randomchampionselector.fragments.ChampionActivity;
-import com.spiderbiggen.randomchampionselector.fragments.ListChampionsActivity;
+import com.spiderbiggen.randomchampionselector.activities.ChampionActivity;
+import com.spiderbiggen.randomchampionselector.activities.ListChampionsActivity;
 
 import java.util.ArrayList;
 
@@ -43,7 +43,6 @@ public abstract class ButtonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
-
     protected Spinner getRoleSpinner() {
         return findViewById(R.id.type_spinner);
     }
@@ -70,7 +69,6 @@ public abstract class ButtonActivity extends AppCompatActivity {
         intent.putExtra(SPINNER_DATA_KEY, spinnerData);
         Spinner s = getRoleSpinner();
         intent.putExtra(SPINNER_SELECTED_KEY, spinnerData.get(s.getSelectedItemPosition()));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
 }

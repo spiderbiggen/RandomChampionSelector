@@ -2,93 +2,83 @@ package com.spiderbiggen.randomchampionselector.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
-import com.spiderbiggen.randomchampionselector.ddragon.callback.ImageCallback;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.ImageType;
 import com.spiderbiggen.randomchampionselector.model.Champion;
+import com.spiderbiggen.randomchampionselector.model.ImageType;
 
 import java.util.List;
-import java.util.Objects;
 
-public class ChampionAdapter extends ArrayAdapter<Champion> {
+public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHolder> {
 
     private static final String TAG = ChampionAdapter.class.getSimpleName();
     private final Context context;
 
-    public ChampionAdapter(Context context, int textViewResourceId) {
-        super(context, textViewResourceId);
+    private final View.OnClickListener clickListener;
+    private List<Champion> champions;
+
+    public ChampionAdapter(final Context context, final List<Champion> champions, final View.OnClickListener clickListener) {
         this.context = context;
+        this.champions = champions;
+        this.clickListener = clickListener;
     }
 
-    public ChampionAdapter(Context context, int resource, List<Champion> items) {
-        super(context, resource, items);
-        this.context = context;
-    }
-
-    @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        View v = convertView;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // create a new view
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_champion_item, parent, false);
+        v.setOnClickListener(clickListener);
+        return new ViewHolder(v);
+    }
 
-        if (v == null) {
-            LayoutInflater vi;
-            vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.list_champion_item, null);
-        }
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Champion champion = champions.get(position);
 
-        ViewWrapper viewWrapper = new ViewWrapper(v, position);
-        Champion c = getItem(position);
-        if (c != null) {
-            new DDragon(context).getChampionImage(c, ImageType.SQUARE, viewWrapper);
-            TextView nameV = v.findViewById(R.id.championName);
-            if (nameV != null) {
-                nameV.setText(c.getName());
-            }
-            TextView titleV = v.findViewById(R.id.championTitle);
-            if (titleV != null) {
-                titleV.setText(c.getCapitalizedTitle());
-            }
-        }
+        DDragon dDragon = new DDragon(context);
+        Bitmap icon = dDragon.getChampionBitmap(champion, ImageType.SQUARE);
+        Bitmap backGround = dDragon.getChampionBitmap(champion, ImageType.SPLASH);
+        holder.nameView.setText(champion.getName());
+        holder.titleView.setText(champion.getCapitalizedTitle());
+        holder.iconView.setImageBitmap(icon);
+        holder.backGroundView.setImageBitmap(backGround);
+    }
 
-        return v;
+    @Override
+    public int getItemCount() {
+        return champions != null ? champions.size() : 0;
     }
 
     public void setChampions(List<Champion> champions) {
-        this.setNotifyOnChange(false);
-        this.clear();
-        this.addAll(champions);
-        this.notifyDataSetChanged();
-        this.setNotifyOnChange(true);
+        this.champions = champions;
+        notifyDataSetChanged();
     }
 
-    private class ViewWrapper implements ImageCallback {
+    public Champion getChampion(int position) {
+        if (position > getItemCount() || position < 0) return null;
+        return champions.get(position);
+    }
 
-        private View view;
-        private int position;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ViewWrapper(View view, int position) {
-            this.view = view;
-            this.position = position;
-        }
+        public ImageView backGroundView;
+        public ImageView iconView;
+        public TextView nameView;
+        public TextView titleView;
 
-        @Override
-        public void setImage(Bitmap bitmap, Champion champion, ImageType type) {
-            if (type != ImageType.SQUARE) return;
-            if (Objects.equals(getItem(position), champion)) {
-                ImageView imgV = view.findViewById(R.id.championIcon);
-                if (imgV != null && bitmap != null) {
-                    imgV.setImageBitmap(bitmap);
-                }
-            }
+        public ViewHolder(View itemView) {
+            super(itemView);
+            nameView = itemView.findViewById(R.id.championName);
+            titleView = itemView.findViewById(R.id.championTitle);
+            iconView = itemView.findViewById(R.id.championIcon);
+            backGroundView = itemView.findViewById(R.id.champion_background);
         }
     }
 }

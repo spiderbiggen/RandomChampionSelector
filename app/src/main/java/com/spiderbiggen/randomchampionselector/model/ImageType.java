@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.ddragon.tasks;
+package com.spiderbiggen.randomchampionselector.model;
 
 /**
  * Created on 1-3-2018.

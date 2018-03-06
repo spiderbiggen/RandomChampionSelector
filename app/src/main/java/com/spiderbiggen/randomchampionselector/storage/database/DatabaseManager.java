@@ -4,8 +4,8 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.util.Log;
 
-import com.spiderbiggen.randomchampionselector.IDataInteractor;
 import com.spiderbiggen.randomchampionselector.model.Champion;
+import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findRoleList(final OnFinishedListener listener) {
+    public void findRoleList(final OnFinishedRolesListener listener) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -67,7 +67,7 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findChampionList(final OnFinishedListener listener, final String role) {
+    public void findChampionList(final OnFinishedChampionListListener listener, final String role) {
         if (role == null || role.equalsIgnoreCase("all")) {
             findChampionList(listener);
             return;
@@ -83,7 +83,7 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findChampionList(final OnFinishedListener listener) {
+    public void findChampionList(final OnFinishedChampionListListener listener) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -95,11 +95,11 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findChampion(final OnFinishedListener listener, final Champion champion) {
+    public void findChampion(final OnFinishedChampionListener listener, final int championKey) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                final Champion champion1 = database.championDAO().getChampion(champion.getKey());
+                final Champion champion1 = database.championDAO().getChampion(championKey);
                 Log.d(TAG, "findChampion: " + champion1);
                 listener.onFinishedChampionLoad(champion1);
             }
@@ -107,7 +107,7 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findRandomChampion(final OnFinishedListener listener, final String role, final Champion champion) {
+    public void findRandomChampion(final OnFinishedChampionListener listener, final String role, final Champion champion) {
         Log.d(TAG, "findRandomChampion() called with: listener = [" + listener + "], role = [" + role + "], champion = [" + champion + "]");
         if (role == null || role.equalsIgnoreCase("all")) {
             findRandomChampion(listener, champion);
@@ -127,8 +127,7 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findRandomChampion(final OnFinishedListener listener, final Champion champion) {
-        Log.d(TAG, "findRandomChampion() called with: listener = [" + listener + "], champion = [" + champion + "]");
+    public void findRandomChampion(final OnFinishedChampionListener listener, final Champion champion) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -143,7 +142,7 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public void findAbilities(final OnFinishedListener listener, final Champion champion) {
+    public void findAbilities(final OnFinishedAbilitiesListener listener, final Champion champion) {
         throw new UnsupportedOperationException("Function not yet implemented");
     }
 }
