@@ -43,11 +43,9 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
         Champion champion = champions.get(position);
 
         DDragon dDragon = new DDragon(context);
-        Bitmap icon = dDragon.getChampionBitmap(champion, ImageType.SQUARE);
         Bitmap backGround = dDragon.getChampionBitmap(champion, ImageType.SPLASH);
         holder.nameView.setText(champion.getName());
         holder.titleView.setText(champion.getCapitalizedTitle());
-        holder.iconView.setImageBitmap(icon);
         holder.backGroundView.setImageBitmap(backGround);
     }
 
@@ -69,7 +67,6 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView backGroundView;
-        public ImageView iconView;
         public TextView nameView;
         public TextView titleView;
 
@@ -77,7 +74,6 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
             super(itemView);
             nameView = itemView.findViewById(R.id.championName);
             titleView = itemView.findViewById(R.id.championTitle);
-            iconView = itemView.findViewById(R.id.championIcon);
             backGroundView = itemView.findViewById(R.id.champion_background);
         }
     }
