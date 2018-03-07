@@ -18,12 +18,7 @@ import java.util.ArrayList;
  */
 public abstract class ButtonActivity extends AppCompatActivity {
 
-    public static final String SPINNER_DATA_KEY = "spinner_data";
-    public static final String SPINNER_SELECTED_KEY = "spinner_selected";
-
     private static final String TAG = ButtonActivity.class.getSimpleName();
-
-    private ArrayList<String> spinnerData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
