@@ -11,8 +11,8 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -62,9 +62,7 @@
                     android:id="@+id/roleValue"
                     style="@style/AppTheme.Text.Large"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp" />
+                    android:layout_height="wrap_content" />
 
             </RelativeLayout>
 
@@ -81,8 +79,8 @@
         android:onClick="openChampion"
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
-        app:srcCompat="@drawable/ic_cached_24dp"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"/>
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
+        app:srcCompat="@drawable/ic_cached_24dp" />
 
 
 </android.support.design.widget.CoordinatorLayout>
