@@ -1,14 +1,15 @@
 package com.spiderbiggen.randomchampionselector.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Display;
-import android.view.Surface;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,12 +26,18 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
 
     public static final String CHAMPION_KEY = "champion";
     private static final String TAG = ChampionActivity.class.getSimpleName();
+    private static final ImageType imageType = ImageType.SPLASH;
     private Champion champion = null;
-    private ImageType imageType = ImageType.LOADING;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_champion);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        //noinspection ConstantConditions
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState != null) {
             champion = (Champion) savedInstanceState.getSerializable(CHAMPION_KEY);
@@ -39,10 +46,22 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
         champion = intent.hasExtra(CHAMPION_KEY) ? (Champion) intent.getSerializableExtra(CHAMPION_KEY) : champion;
         super.onCreate(savedInstanceState);
         if (champion == null) {
-            reRollChampion(getSelectedRole());
+            reRollChampion(null);
         } else {
             populatePage();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_scrolling, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -52,7 +71,7 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
 
     @Override
     public void openChampion(View view) {
-        reRollChampion(getSelectedRole());
+        reRollChampion(null);
     }
 
     @Override
@@ -75,25 +94,20 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
         if (champion == null) {
             return;
         }
-        updateRotation();
         Bitmap bitmap = new DDragon(this).getChampionBitmap(champion, imageType);
         ImageView bg = findViewById(R.id.champion_background);
         if (bg != null && bitmap != null) {
             bg.setImageBitmap(bitmap);
         }
-        TextView chName = findViewById(R.id.nameValue);
-        chName.setText(champion.getName());
+        CollapsingToolbarLayout actionBar = findViewById(R.id.toolbar_layout);
+        if (actionBar != null) {
+            Log.d(TAG, "populatePage: Setting (sub)title");
+            actionBar.setTitle(champion.getName());
+        }
         TextView role = findViewById(R.id.roleValue);
         role.setText(champion.getCapitalizedTitle());
     }
 
-    private void updateRotation() {
-        WindowManager systemService = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        if (systemService == null) return;
-        Display display = systemService.getDefaultDisplay();
-        int rotation = display.getRotation();
-        imageType = (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) ? ImageType.LOADING : ImageType.SPLASH;
-    }
 
     @Override
     public void onFinishedChampionLoad(final Champion champion) {

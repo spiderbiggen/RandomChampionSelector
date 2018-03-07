@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.spiderbiggen.randomchampionselector.activities.ListChampionsActivity;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
 import com.spiderbiggen.randomchampionselector.activities.ChampionActivity;
@@ -73,7 +74,7 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
     }
 
     private void openMainScreen(ArrayList<String> message) {
-        Intent intent = new Intent(this, ChampionActivity.class);
+        Intent intent = new Intent(this, ListChampionsActivity.class);
         intent.putStringArrayListExtra(ButtonActivity.SPINNER_DATA_KEY, message);
         startActivity(intent);
     }

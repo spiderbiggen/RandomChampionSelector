@@ -19,19 +19,9 @@
     <string name="moveSpeedText">Movement Speed</string>
 
     <string name="title_activity_list_champions">Champions</string>
-    <string name="none">None</string>
-    <string name="melee">Melee</string>
-    <string name="ranged">Ranged</string>
+
     <string name="list_champions_button">View All Champions</string>
 
-    <string-array name="types">
-        <item>@string/all</item>
-        <item>@string/tank</item>
-        <item>@string/fighter</item>
-        <item>@string/mage</item>
-        <item>@string/assassin</item>
-        <item>@string/support</item>
-        <item>@string/marksman</item>
-    </string-array>
+    <string name="action_settings">Settings</string>
 
 </resources>

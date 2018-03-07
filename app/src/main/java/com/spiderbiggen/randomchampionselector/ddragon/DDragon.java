@@ -3,7 +3,6 @@ package com.spiderbiggen.randomchampionselector.ddragon;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ColorSpace;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
@@ -113,6 +112,10 @@ public class DDragon {
     }
 
     private String getChampionUrl(Champion champion, ImageType type) {
+        return getChampionUrl(champion, type, 0);
+    }
+
+    private String getChampionUrl(Champion champion, ImageType type, int skinId) {
         String champ = champion.getId();
         String base = CDN_URL;
         String pattern;
@@ -121,11 +124,11 @@ public class DDragon {
                 pattern = "%s/img/champion/%s.png";
                 base = getVersionedCDNUrl();
                 break;
-            case LOADING:
-                pattern = "%s/img/champion/loading/%s_0.jpg";
-                break;
+//            case LOADING:
+//                pattern = "%s/img/champion/loading/%s_0.jpg";
+//                break;
             case SPLASH:
-                pattern = "%s/img/champion/splash/%s_0.jpg";
+                pattern = "%s/img/champion/splash/%s_" + skinId + ".jpg";
                 break;
             default:
                 return null;

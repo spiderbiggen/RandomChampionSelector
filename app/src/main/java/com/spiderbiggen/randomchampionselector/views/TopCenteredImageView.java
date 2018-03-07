@@ -62,7 +62,7 @@ public class TopCenteredImageView extends android.support.v7.widget.AppCompatIma
         if (xScale > yScale) {
             scale = xScale;
         } else {
-            float dX = (yScale - xScale) * width;
+            float dX = -0.5f * (yScale - xScale) * width;
             matrix.setTranslate(dX, 0);
             scale = yScale;
         }

@@ -27,29 +27,10 @@ public abstract class ButtonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent = getIntent();
-        spinnerData = intent.getStringArrayListExtra(SPINNER_DATA_KEY);
-        Spinner s = getRoleSpinner();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_dropdown_item, spinnerData);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        s.setAdapter(adapter);
-        String selected = intent.getStringExtra(SPINNER_SELECTED_KEY);
-        if (selected != null) {
-            int index = spinnerData.indexOf(selected);
-            if (index >= 0) {
-                s.setSelection(index);
-            }
-        }
         super.onCreate(savedInstanceState);
     }
 
-    protected Spinner getRoleSpinner() {
-        return findViewById(R.id.type_spinner);
-    }
 
-    protected String getSelectedRole() {
-        return spinnerData.get(getRoleSpinner().getSelectedItemPosition());
-    }
 
     public abstract void openChampionList(View view);
 
@@ -66,9 +47,6 @@ public abstract class ButtonActivity extends AppCompatActivity {
     }
 
     private Intent getButtonIntent(Intent intent) {
-        intent.putExtra(SPINNER_DATA_KEY, spinnerData);
-        Spinner s = getRoleSpinner();
-        intent.putExtra(SPINNER_SELECTED_KEY, spinnerData.get(s.getSelectedItemPosition()));
         return intent;
     }
 }

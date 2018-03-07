@@ -7,6 +7,5 @@ package com.spiderbiggen.randomchampionselector.model;
  */
 public enum ImageType {
     SQUARE,
-    LOADING,
     SPLASH
 }

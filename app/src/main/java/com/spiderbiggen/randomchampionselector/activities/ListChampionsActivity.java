@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
 
 import com.spiderbiggen.randomchampionselector.ButtonActivity;
 import com.spiderbiggen.randomchampionselector.R;
@@ -30,6 +32,9 @@ public class ListChampionsActivity extends ButtonActivity implements IDataIntera
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_list_champions);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         recyclerView = findViewById(R.id.championList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -40,24 +45,20 @@ public class ListChampionsActivity extends ButtonActivity implements IDataIntera
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Spinner s = getRoleSpinner();
-        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                DatabaseManager.getInstance().findChampionList(ListChampionsActivity.this, parent.getItemAtPosition(position).toString());
-            }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_scrolling, menu);
+        return true;
+    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void openChampionList(View view) {
-        DatabaseManager.getInstance().findChampionList(this, getSelectedRole());
+        DatabaseManager.getInstance().findChampionList(this, null);
     }
 
     @Override
