@@ -124,9 +124,6 @@ public class DDragon {
                 pattern = "%s/img/champion/%s.png";
                 base = getVersionedCDNUrl();
                 break;
-//            case LOADING:
-//                pattern = "%s/img/champion/loading/%s_0.jpg";
-//                break;
             case SPLASH:
                 pattern = "%s/img/champion/splash/%s_" + skinId + ".jpg";
                 break;
