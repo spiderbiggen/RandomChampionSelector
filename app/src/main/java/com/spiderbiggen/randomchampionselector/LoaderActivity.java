@@ -113,6 +113,7 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
 
         private LoaderActivity activity;
         private boolean finished;
+        private int lastProgressId;
 
         private ImageCallback(LoaderActivity activity) {
             this.activity = activity;
@@ -131,7 +132,12 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         @Override
         public void onProgressUpdate(int progressCode, int progress, int progressMax) {
             finished = progress == progressMax;
-            activity.onProgressUpdate(progressCode, progress, progressMax);
+            if (progressCode == Progress.ERROR || progressCode >= lastProgressId) {
+                activity.onProgressUpdate(progressCode, progress, progressMax);
+                if (progressCode != Progress.ERROR) {
+                    lastProgressId = progressCode;
+                }
+            }
         }
 
         @Override
