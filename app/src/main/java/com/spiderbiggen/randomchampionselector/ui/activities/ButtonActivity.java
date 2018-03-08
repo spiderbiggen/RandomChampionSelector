@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector;
+package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,13 +7,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
-import com.spiderbiggen.randomchampionselector.activities.ChampionActivity;
-import com.spiderbiggen.randomchampionselector.activities.ListChampionsActivity;
-
-import java.util.ArrayList;
+import com.spiderbiggen.randomchampionselector.R;
 
 /**
  * Fullscreen activity

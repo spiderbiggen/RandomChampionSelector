@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.adapters;
+package com.spiderbiggen.randomchampionselector.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;

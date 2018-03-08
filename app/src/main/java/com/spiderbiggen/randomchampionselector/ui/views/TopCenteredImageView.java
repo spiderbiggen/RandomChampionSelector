@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.views;
+package com.spiderbiggen.randomchampionselector.ui.views;
 
 import android.content.Context;
 import android.graphics.Matrix;

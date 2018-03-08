@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.activities;
+package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.spiderbiggen.randomchampionselector.ButtonActivity;
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;

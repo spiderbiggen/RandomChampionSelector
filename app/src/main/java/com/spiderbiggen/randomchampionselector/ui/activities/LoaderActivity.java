@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector;
+package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,7 +9,7 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.spiderbiggen.randomchampionselector.activities.ListChampionsActivity;
+import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
 import com.spiderbiggen.randomchampionselector.model.Champion;

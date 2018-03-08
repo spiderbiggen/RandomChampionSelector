@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.activities;
+package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.spiderbiggen.randomchampionselector.ButtonActivity;
 import com.spiderbiggen.randomchampionselector.R;
-import com.spiderbiggen.randomchampionselector.adapters.ChampionAdapter;
+import com.spiderbiggen.randomchampionselector.ui.adapters.ChampionAdapter;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
