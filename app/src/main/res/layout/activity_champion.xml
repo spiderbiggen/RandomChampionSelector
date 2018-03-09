@@ -59,10 +59,17 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/roleValue"
+                    android:id="@+id/champion_title"
                     style="@style/AppTheme.Text.Large"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/champion_blurb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/champion_title"
+                    android:layout_marginTop="8dp" />
 
             </RelativeLayout>
 
@@ -79,7 +86,7 @@
         android:onClick="openChampion"
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 

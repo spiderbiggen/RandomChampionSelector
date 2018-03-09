@@ -36,7 +36,7 @@
         android:onClick="openChampion"
         app:layout_anchor="@+id/championList"
         app:layout_anchorGravity="right|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,10 +1,13 @@
 package com.spiderbiggen.randomchampionselector.ddragon;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadChampionsTask;
@@ -79,7 +82,9 @@ public class DDragon {
 
     @NonNull
     private String getChampionsUrl() {
-        return String.format("%s/data/en_GB/champion.json", getVersionedCDNUrl());
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        String locale = p.getString("pref_language", "en_US");
+        return String.format("%s/data/%s/championFull.json", getVersionedCDNUrl(), locale);
     }
 
     public void downloadAllImages(List<Champion> champions, DownloadCallback<DownloadImageTask.Entry[]> callback) {

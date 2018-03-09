@@ -40,6 +40,14 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".ui.activities.ListChampionsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.spiderbiggen.randomchampionselector.ui.activities.ListChampionsActivity" />
+        </activity>
     </application>
 
 </manifest>

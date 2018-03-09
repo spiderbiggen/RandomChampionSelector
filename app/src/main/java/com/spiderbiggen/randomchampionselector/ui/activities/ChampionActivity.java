@@ -88,8 +88,10 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
             Log.d(TAG, "populatePage: Setting (sub)title");
             actionBar.setTitle(champion.getName());
         }
-        TextView role = findViewById(R.id.roleValue);
-        role.setText(champion.getCapitalizedTitle());
+        TextView title = findViewById(R.id.champion_title);
+        title.setText(champion.getCapitalizedTitle());
+        TextView blurb = findViewById(R.id.champion_blurb);
+        blurb.setText(champion.getLore());
     }
 
 

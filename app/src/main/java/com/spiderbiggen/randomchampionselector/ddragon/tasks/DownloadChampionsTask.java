@@ -2,7 +2,6 @@ package com.spiderbiggen.randomchampionselector.ddragon.tasks;
 
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,7 +16,6 @@ import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.internet.DownloadCallback;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +57,13 @@ public class DownloadChampionsTask extends DownloadJsonTask<List<Champion>> {
                 object = object.getAsJsonObject("data");
                 List<Champion> list = new ArrayList<>();
                 Set<Map.Entry<String, JsonElement>> entries = object.entrySet();
+                int count = 0, total = entries.size();
                 for (Map.Entry<String, JsonElement> entry : entries) {
                     Champion champion = context.deserialize(entry.getValue(), Champion.class);
                     if (champion != null) {
                         list.add(champion);
                     }
+                    updateProgress(Progress.DOWNLOAD_SUCCESS, ++count, total);
                 }
                 return list;
             }

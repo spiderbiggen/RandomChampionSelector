@@ -36,7 +36,7 @@ public interface ChampionDAO {
     @Query("SELECT * FROM champion WHERE id = :id")
     Champion getChampion(int id);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Champion... champions);
 
     @Delete

@@ -1,6 +1,7 @@
 package com.spiderbiggen.randomchampionselector.util.async;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * Created on 1-3-2018.
@@ -20,6 +21,7 @@ public abstract class ProgressTask<S, T> extends AsyncTask<S, Integer, T> {
 
     @Override
     protected void onProgressUpdate(Integer... values) {
+        Log.d(TAG, "onProgressUpdate() called with: values = [" + values + "]");
         if (mCallback != null && values != null && values.length >= 3) {
             mCallback.onProgressUpdate(values[0], values[1], values[2]);
         }
