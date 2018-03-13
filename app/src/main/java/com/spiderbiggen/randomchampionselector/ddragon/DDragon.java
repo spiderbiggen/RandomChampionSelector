@@ -4,75 +4,96 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadChampionsTask;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadJsonTask;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
+import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
-import com.spiderbiggen.randomchampionselector.util.internet.DownloadCallback;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+/**
+ * Created on 13-3-2018.
+ *
+ * @author Stefan Breetveld
+ */
 
 public class DDragon {
 
     private static final String TAG = DDragon.class.getSimpleName();
-    private static final int CAPACITY = 256;
     private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
-    private static final String API_URL = BASE_URL + "/api";
-    private static final String CDN_URL = BASE_URL + "/cdn";
     private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
-    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 8, 1000L, TimeUnit.MILLISECONDS,
-            new ArrayBlockingQueue<Runnable>(CAPACITY, true), new ThreadPoolExecutor.CallerRunsPolicy());
     private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
 
     private final Context context;
+    private final DDragonService service;
 
     public DDragon(Context context) {
         this.context = context;
+        this.service = createService();
     }
 
-    public void updateVersion(ProgressCallback callback) {
-        new DownloadJsonTask<>(getActiveNetworkInfo(), new VersionCallback(callback), String[].class)
-                .executeOnExecutor(executor, API_URL + "/versions.json");
+    public void updateVersion(@NonNull Consumer<? super String[]> onAfterSuccess) {
+        service.getVersions()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doAfterSuccess(s -> version.set(s[0]))
+                .subscribe(onAfterSuccess);
     }
 
     public String getVersion() {
         return version.get();
     }
 
-    private String getVersionedCDNUrl() {
-        return String.format("%s/%s", CDN_URL, version.get());
+
+    public void getChampionList(@NonNull Consumer<? super List<Champion>> onAfterSuccess) {
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        String locale = p.getString("pref_language", "en_US");
+        service.getChampions(getVersion(), locale)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(onAfterSuccess);
     }
 
-    public void getChampionList(DownloadCallback<List<Champion>> callback) {
-        new DownloadChampionsTask(getActiveNetworkInfo(), callback).executeOnExecutor(executor, getChampionsUrl());
-    }
-
-    public Bitmap getChampionBitmap(Champion champion, @NonNull ImageType type) {
+    public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) {
         File file = getChampionFile(champion, type);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), options);
-        if (bitmap == null && file.delete()) {
-            downloadImage(champion, type);
-        }
-        return bitmap;
+        return BitmapFactory.decodeFile(file.getPath(), options);
     }
 
     @NonNull
@@ -80,100 +101,87 @@ public class DDragon {
         return new FileStorage(context).getChampionImageFile(champion, type);
     }
 
-    @NonNull
-    private String getChampionsUrl() {
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        String locale = p.getString("pref_language", "en_US");
-        return String.format("%s/data/%s/championFull.json", getVersionedCDNUrl(), locale);
+    public void downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer) {
+        final AtomicInteger count = new AtomicInteger();
+        final ImageType[] types = ImageType.values();
+        final int typesLength = types.length;
+        final int total = champions.size() * typesLength;
+        final Observable<Pair<Champion, ImageType>> observable = Observable.create(emitter -> {
+            for (Champion champion : champions) {
+                for (ImageType type : types) {
+                    emitter.onNext(Pair.create(champion, type));
+                }
+            }
+            emitter.onComplete();
+        });
+        observable.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnComplete(consumer::finishExecution)
+                .subscribe(imageBlock -> {
+                    Champion champion = imageBlock.first;
+                    ImageType type = imageBlock.second;
+                    Call<ResponseBody> maybe = getChampionCall(champion, type, 0);
+                    Response<ResponseBody> response = maybe.execute();
+                    if (response.isSuccessful() && response.body() != null) {
+                        try (InputStream stream = response.body().byteStream()) {
+                            Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                            saveBitmap(getChampionFile(champion, type), bitmap);
+                        }
+                    }
+                    consumer.onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total);
+                });
     }
 
-    public void downloadAllImages(List<Champion> champions, DownloadCallback<DownloadImageTask.Entry[]> callback) {
-        NetworkInfo activeNetworkInfo = getActiveNetworkInfo();
-        AtomicInteger count = new AtomicInteger();
-        ImageType[] types = ImageType.values();
-        int typesLength = types.length;
-        int total = champions.size() * typesLength;
-        for (int i = 0, championsSize = champions.size(); i < championsSize; i++) {
-            Champion champion = champions.get(i);
-            DownloadImageTask.Entry[] entryList = new DownloadImageTask.Entry[typesLength];
-            for (int i1 = 0; i1 < typesLength; i1++) {
-                ImageType type = types[i1];
-                entryList[i1] = getDownloadImageEntry(champion, type);
+    private void saveBitmap(@NonNull final File file, final Bitmap bitmap) throws IOException {
+        if (bitmap != null && (file.exists() || file.createNewFile())) {
+            try (FileOutputStream outputStream = new FileOutputStream(file)) {
+                bitmap.compress(Bitmap.CompressFormat.WEBP, 85, outputStream);
             }
-            DownloadImageTask task = new DownloadImageTask(activeNetworkInfo, callback, count, total);
-            task.executeOnExecutor(executor, entryList);
         }
     }
 
-    private void downloadImage(Champion champion, ImageType imageType) {
-        NetworkInfo activeNetworkInfo = getActiveNetworkInfo();
-        DownloadImageTask task = new DownloadImageTask(activeNetworkInfo);
-        DownloadImageTask.Entry entry = getDownloadImageEntry(champion, imageType);
-        task.executeOnExecutor(executor, entry);
-    }
-
-    private DownloadImageTask.Entry getDownloadImageEntry(Champion champion, ImageType imageType) {
-        return new DownloadImageTask.Entry(getChampionUrl(champion, imageType), getChampionFile(champion, imageType));
-    }
-
-    private String getChampionUrl(Champion champion, ImageType type) {
-        return getChampionUrl(champion, type, 0);
-    }
-
-    private String getChampionUrl(Champion champion, ImageType type, int skinId) {
+    @NonNull
+    private Call<ResponseBody> getChampionCall(Champion champion, ImageType type, int skinId) {
         String champ = champion.getId();
-        String base = CDN_URL;
-        String pattern;
         switch (type) {
             case SQUARE:
-                pattern = "%s/img/champion/%s.png";
-                base = getVersionedCDNUrl();
-                break;
+                return service.getSquareImage(getVersion(), champ);
             case SPLASH:
-                pattern = "%s/img/champion/splash/%s_" + skinId + ".jpg";
-                break;
+                return service.getSplashImage(champ, skinId);
             default:
                 return null;
         }
-        return String.format(pattern, base, champ);
+    }
+
+    private DDragonService createService() {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<List<Champion>>() {}.getClass(), getChampionsDeserializer())
+                .create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
+                .build();
+        return retrofit.create(DDragonService.class);
     }
 
     @NonNull
-    private NetworkInfo getActiveNetworkInfo() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm == null) {
-            throw new RuntimeException("No network info could be found");
-        }
-        return cm.getActiveNetworkInfo();
-    }
-
-    private static class VersionCallback implements DownloadCallback<String[]> {
-
-        private final ProgressCallback callback;
-
-        private VersionCallback(@NonNull ProgressCallback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            // TODO maybe do something with this exception.
-        }
-
-        @Override
-        public void updateFromDownload(String[] result) {
-            if (result != null && result.length > 0)
-                DDragon.version.set(result[0]);
-        }
-
-        @Override
-        public void finishExecution() {
-            callback.finishExecution();
-        }
-
-        @Override
-        public void onProgressUpdate(int progressCode, int progress, int progressMax) {
-            callback.onProgressUpdate(progressCode, progress, progressMax);
-        }
+    private JsonDeserializer<List<Champion>> getChampionsDeserializer() {
+        return new JsonDeserializer<List<Champion>>() {
+            @Override
+            public List<Champion> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                JsonObject object = json.getAsJsonObject();
+                object = object.getAsJsonObject("data");
+                List<Champion> list = new ArrayList<>();
+                Set<Map.Entry<String, JsonElement>> entries = object.entrySet();
+                for (Map.Entry<String, JsonElement> entry : entries) {
+                    Champion champion = context.deserialize(entry.getValue(), Champion.class);
+                    if (champion != null) {
+                        list.add(champion);
+                    }
+                }
+                return list;
+            }
+        };
     }
 }

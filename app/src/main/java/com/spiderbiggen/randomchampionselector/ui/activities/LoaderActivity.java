@@ -11,19 +11,17 @@ import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
-import com.spiderbiggen.randomchampionselector.ddragon.tasks.DownloadImageTask;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
 import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
-import com.spiderbiggen.randomchampionselector.util.internet.DownloadCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class LoaderActivity extends AppCompatActivity implements IDataInteractor.OnFinishedRolesListener, ProgressCallback {
+public class LoaderActivity extends AppCompatActivity implements IDataInteractor.OnFinishedRolesListener {
 
     private static final String TAG = LoaderActivity.class.getSimpleName();
     private DatabaseManager databaseManager;
@@ -44,13 +42,11 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
     }
 
     private void startLoading() {
-        dDragon.updateVersion(this);
+        dDragon.updateVersion(this::downloadChampions);
     }
 
-    // Only called by version endpoint
-    @Override
-    public void finishExecution() {
-        dDragon.getChampionList(new ChampionsCallback(this));
+    private void downloadChampions(String[] strings) {
+        dDragon.getChampionList(this::downloadAllImages);
     }
 
     private void downloadAllImages(List<Champion> champions) {
@@ -109,10 +105,9 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         openMainScreen(new ArrayList<>(roles));
     }
 
-    private static class ImageCallback implements DownloadCallback<DownloadImageTask.Entry[]> {
+    private static class ImageCallback implements ProgressCallback {
 
         private LoaderActivity activity;
-        private boolean finished;
         private int lastProgressId;
 
         private ImageCallback(LoaderActivity activity) {
@@ -120,18 +115,7 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         }
 
         @Override
-        public void handleException(Exception exception) {
-            activity.throwException(exception);
-        }
-
-        @Override
-        public void updateFromDownload(DownloadImageTask.Entry[] result) {
-            //Do nothing;
-        }
-
-        @Override
         public void onProgressUpdate(int progressCode, int progress, int progressMax) {
-            finished = progress == progressMax;
             if (progressCode == Progress.ERROR || progressCode >= lastProgressId) {
                 activity.onProgressUpdate(progressCode, progress, progressMax);
                 if (progressCode != Progress.ERROR) {
@@ -142,39 +126,7 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
 
         @Override
         public void finishExecution() {
-            if (finished) {
-                activity.databaseManager.findRoleList(activity);
-            }
-        }
-    }
-
-    private static class ChampionsCallback implements DownloadCallback<List<Champion>> {
-
-        private List<Champion> champions;
-        private LoaderActivity activity;
-
-        private ChampionsCallback(LoaderActivity loaderActivity) {
-            this.activity = loaderActivity;
-        }
-
-        @Override
-        public void handleException(Exception exception) {
-            activity.throwException(exception);
-        }
-
-        @Override
-        public void updateFromDownload(List<Champion> result) {
-            champions = result;
-        }
-
-        @Override
-        public void onProgressUpdate(int progressCode, int progress, int progressMax) {
-            activity.onProgressUpdate(progressCode, progress, progressMax);
-        }
-
-        @Override
-        public void finishExecution() {
-            activity.downloadAllImages(champions);
+            activity.databaseManager.findRoleList(activity);
         }
     }
 }
