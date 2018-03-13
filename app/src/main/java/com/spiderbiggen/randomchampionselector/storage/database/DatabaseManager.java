@@ -8,6 +8,7 @@ import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -41,28 +42,21 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     public void addChampions(final List<Champion> champions) {
-        Champion[] arr = new Champion[champions.size()];
-        addChampions(champions.toArray(arr));
-    }
-
-    public void addChampions(Champion... champions) {
-        database.championDAO().insertAll(champions);
+        champions.removeAll(Collections.singletonList(null));
+        executor.execute(() -> database.championDAO().insertAll(champions));
     }
 
     @Override
     public void findRoleList(final OnFinishedRolesListener listener) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<String> strings = database.championDAO().getAllRoles();
-                Set<String> roles = new TreeSet<>();
-                roles.add("All");
-                for (String string : strings) {
-                    if (string == null) continue;
-                    Collections.addAll(roles, string.split(","));
-                }
-                listener.onFinishedRoleListLoad(new ArrayList<>(roles));
+        executor.execute(() -> {
+            List<String> strings = database.championDAO().getAllRoles();
+            Set<String> roles = new TreeSet<>();
+            roles.add("All");
+            for (String string : strings) {
+                if (string == null) continue;
+                Collections.addAll(roles, string.split(","));
             }
+            listener.onFinishedRoleListLoad(new ArrayList<>(roles));
         });
     }
 
@@ -72,37 +66,28 @@ public class DatabaseManager implements IDataInteractor {
             findChampionList(listener);
             return;
         }
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<Champion> champions = database.championDAO().getAll(role);
-                Log.d(TAG, "findChampionList: " + champions);
-                listener.onFinishedChampionListLoad(champions);
-            }
+        executor.execute(() -> {
+            final List<Champion> champions = database.championDAO().getAll(role);
+            Log.d(TAG, "findChampionList: " + champions);
+            listener.onFinishedChampionListLoad(champions);
         });
     }
 
     @Override
     public void findChampionList(final OnFinishedChampionListListener listener) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<Champion> champions = database.championDAO().getAll();
-                Log.d(TAG, "findChampionList: " + champions);
-                listener.onFinishedChampionListLoad(champions);
-            }
+        executor.execute(() -> {
+            final List<Champion> champions = database.championDAO().getAll();
+            Log.d(TAG, "findChampionList: " + champions);
+            listener.onFinishedChampionListLoad(champions);
         });
     }
 
     @Override
     public void findChampion(final OnFinishedChampionListener listener, final int championKey) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final Champion champion1 = database.championDAO().getChampion(championKey);
-                Log.d(TAG, "findChampion: " + champion1);
-                listener.onFinishedChampionLoad(champion1);
-            }
+        executor.execute(() -> {
+            final Champion champion1 = database.championDAO().getChampion(championKey);
+            Log.d(TAG, "findChampion: " + champion1);
+            listener.onFinishedChampionLoad(champion1);
         });
     }
 
@@ -113,31 +98,25 @@ public class DatabaseManager implements IDataInteractor {
             findRandomChampion(listener, champion);
             return;
         }
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Champion champion1;
-                do {
-                    champion1 = database.championDAO().getRandom(role);
-                } while (Objects.equals(champion, champion1));
-                Log.d(TAG, "findRandomChampion: " + champion1);
-                listener.onFinishedChampionLoad(champion1);
-            }
+        executor.execute(() -> {
+            Champion champion1;
+            do {
+                champion1 = database.championDAO().getRandom(role);
+            } while (Objects.equals(champion, champion1));
+            Log.d(TAG, "findRandomChampion: " + champion1);
+            listener.onFinishedChampionLoad(champion1);
         });
     }
 
     @Override
     public void findRandomChampion(final OnFinishedChampionListener listener, final Champion champion) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Champion champion1;
-                do {
-                    champion1 = database.championDAO().getRandom();
-                } while (Objects.equals(champion, champion1));
-                Log.d(TAG, "findRandomChampion: " + champion1);
-                listener.onFinishedChampionLoad(champion1);
-            }
+        executor.execute(() -> {
+            Champion champion1;
+            do {
+                champion1 = database.championDAO().getRandom();
+            } while (Objects.equals(champion, champion1));
+            Log.d(TAG, "findRandomChampion: " + champion1);
+            listener.onFinishedChampionLoad(champion1);
         });
     }
 

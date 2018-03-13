@@ -34,13 +34,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -102,34 +101,43 @@ public class DDragon {
     }
 
     public void downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer) {
-        final AtomicInteger count = new AtomicInteger();
-        final ImageType[] types = ImageType.values();
-        final int typesLength = types.length;
-        final int total = champions.size() * typesLength;
+        final List<Pair<Champion, ImageType>> newImages = getNewImages(champions);
         final Observable<Pair<Champion, ImageType>> observable = Observable.create(emitter -> {
-            for (Champion champion : champions) {
-                for (ImageType type : types) {
-                    emitter.onNext(Pair.create(champion, type));
-                }
+            for (Pair<Champion, ImageType> image : newImages) {
+                emitter.onNext(image);
             }
             emitter.onComplete();
         });
-        observable.observeOn(AndroidSchedulers.mainThread())
+        final AtomicInteger count = new AtomicInteger();
+        final int total = newImages.size();
+        observable.observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .doOnComplete(consumer::finishExecution)
-                .subscribe(imageBlock -> {
+                .doAfterNext(c -> consumer.onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total))
+                .subscribe((Pair<Champion, ImageType> imageBlock) -> {
                     Champion champion = imageBlock.first;
                     ImageType type = imageBlock.second;
-                    Call<ResponseBody> maybe = getChampionCall(champion, type, 0);
-                    Response<ResponseBody> response = maybe.execute();
-                    if (response.isSuccessful() && response.body() != null) {
-                        try (InputStream stream = response.body().byteStream()) {
+                    ResponseBody body = getChampionCall(champion, type, 0).blockingGet();
+                    if (body != null) {
+                        try (InputStream stream = body.byteStream()) {
                             Bitmap bitmap = BitmapFactory.decodeStream(stream);
                             saveBitmap(getChampionFile(champion, type), bitmap);
                         }
                     }
-                    consumer.onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total);
                 });
+    }
+
+    private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions) {
+        List<Pair<Champion, ImageType>> list = new ArrayList<>();
+        File file;
+        for (Champion champion : champions) {
+            for (ImageType type : ImageType.values()) {
+                file = getChampionFile(champion, type);
+                if (file.exists()) continue;
+                list.add(Pair.create(champion, type));
+            }
+        }
+        return list;
     }
 
     private void saveBitmap(@NonNull final File file, final Bitmap bitmap) throws IOException {
@@ -141,7 +149,7 @@ public class DDragon {
     }
 
     @NonNull
-    private Call<ResponseBody> getChampionCall(Champion champion, ImageType type, int skinId) {
+    private Maybe<ResponseBody> getChampionCall(Champion champion, ImageType type, int skinId) {
         String champ = champion.getId();
         switch (type) {
             case SQUARE:
@@ -155,7 +163,7 @@ public class DDragon {
 
     private DDragonService createService() {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<List<Champion>>() {}.getClass(), getChampionsDeserializer())
+                .registerTypeAdapter(new TypeToken<List<Champion>>() {}.getType(), getChampionsDeserializer())
                 .create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

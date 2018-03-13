@@ -6,7 +6,6 @@ import java.util.List;
 
 import io.reactivex.Maybe;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
@@ -28,8 +27,8 @@ public interface DDragonService {
     Maybe<List<Champion>> getChampions(@Path("version") String version, @Path("locale") String locale);
 
     @GET(CDN_URL + "/img/champion/splash/{champion}_{skin}.jpg")
-    Call<ResponseBody> getSplashImage(@Path("champion") String championKey, @Path("skin") int skinId);
+    Maybe<ResponseBody> getSplashImage(@Path("champion") String championKey, @Path("skin") int skinId);
 
-    @GET(CDN_URL + "/{version}/img/champion/{champion}.png0")
-    Call<ResponseBody> getSquareImage(@Path("version") String version, @Path("champion") String championKey);
+    @GET(CDN_URL + "/{version}/img/champion/{champion}.png")
+    Maybe<ResponseBody> getSquareImage(@Path("version") String version, @Path("champion") String championKey);
 }

@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
+import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 
 import java.util.List;
 import java.util.Locale;
@@ -208,7 +209,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
             case "pref_language":
-                new DDragon(this).getChampionList(null);
+                new DDragon(this).getChampionList(champions -> DatabaseManager.getInstance().addChampions(champions));
                 break;
         }
     }
