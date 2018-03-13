@@ -6,28 +6,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
-import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
@@ -66,12 +63,17 @@ public class DDragon {
         this.service = createService();
     }
 
-    public void updateVersion(@NonNull Consumer<? super String[]> onAfterSuccess) {
-        service.getVersions()
-                .observeOn(AndroidSchedulers.mainThread())
+    public Disposable updateVersion(@NonNull ProgressCallback consumer, @NonNull Action onComplete) {
+        return service.getVersions()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doAfterSuccess(s -> version.set(s[0]))
-                .subscribe(onAfterSuccess);
+                .doOnError(e -> consumer.onError())
+                .doOnEvent((strings, throwable) -> {
+                    consumer.finishExecution();
+                    onComplete.run();
+                })
+                .subscribe(l -> consumer.onDownloadSuccess(1, 1));
     }
 
     public String getVersion() {
@@ -79,34 +81,34 @@ public class DDragon {
     }
 
 
-    public void getChampionList(@NonNull Consumer<? super List<Champion>> onAfterSuccess) {
+    public Disposable getChampionList(ProgressCallback progress, @NonNull Consumer<? super List<Champion>> subscriber) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
         String locale = p.getString("pref_language", "en_US");
-        service.getChampions(getVersion(), locale)
-                .observeOn(AndroidSchedulers.mainThread())
+        AtomicInteger count = new AtomicInteger();
+        AtomicInteger total = new AtomicInteger();
+        Observable<Champion> championObservable = service.getChampions(getVersion(), locale)
                 .subscribeOn(Schedulers.io())
-                .subscribe(onAfterSuccess);
+                .flatMapObservable(source -> {
+                    total.set(source.size());
+                    return Observable.fromIterable(source);
+                })
+                .observeOn(AndroidSchedulers.mainThread());
+        if (progress != null) {
+            championObservable
+                    .doOnComplete(progress::finishExecution)
+                    .doOnNext(champion -> progress.onDownloadSuccess(count.incrementAndGet(), total.get()));
+        }
+        return championObservable
+                .filter(champion -> champion != null)
+                .toList()
+                .subscribe(subscriber);
     }
 
-    public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) {
-        File file = getChampionFile(champion, type);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = false;
-        options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-        return BitmapFactory.decodeFile(file.getPath(), options);
-    }
-
-    @NonNull
-    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type) {
-        return new FileStorage(context).getChampionImageFile(champion, type);
-    }
-
-    public void downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer) {
+    public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) {
         final List<Pair<Champion, ImageType>> newImages = getNewImages(champions);
         final AtomicInteger count = new AtomicInteger();
         final int total = newImages.size();
-        final Observable<Pair<Champion, ImageType>> observable = Observable.fromIterable(newImages);
-        observable
+        return Observable.fromIterable(newImages)
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
@@ -124,8 +126,14 @@ public class DDragon {
                 )
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(consumer::finishExecution)
-                .doOnNext(bool -> consumer.onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total))
+                .doOnComplete(onComplete)
+                .doOnNext(bool -> consumer.onDownloadSuccess(count.incrementAndGet(), total))
                 .subscribe();
+    }
+
+    @NonNull
+    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type) {
+        return new FileStorage(context).getChampionImageFile(champion, type);
     }
 
     private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions) {
@@ -139,6 +147,14 @@ public class DDragon {
             }
         }
         return list;
+    }
+
+    public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) {
+        File file = getChampionFile(champion, type);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inMutable = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+        return BitmapFactory.decodeFile(file.getPath(), options);
     }
 
     private void saveBitmap(@NonNull final File file, final Bitmap bitmap) throws IOException {
@@ -156,9 +172,8 @@ public class DDragon {
             case SQUARE:
                 return service.getSquareImage(getVersion(), champ);
             case SPLASH:
-                return service.getSplashImage(champ, skinId);
             default:
-                return null;
+                return service.getSplashImage(champ, skinId);
         }
     }
 
@@ -176,21 +191,18 @@ public class DDragon {
 
     @NonNull
     private JsonDeserializer<List<Champion>> getChampionsDeserializer() {
-        return new JsonDeserializer<List<Champion>>() {
-            @Override
-            public List<Champion> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                JsonObject object = json.getAsJsonObject();
-                object = object.getAsJsonObject("data");
-                List<Champion> list = new ArrayList<>();
-                Set<Map.Entry<String, JsonElement>> entries = object.entrySet();
-                for (Map.Entry<String, JsonElement> entry : entries) {
-                    Champion champion = context.deserialize(entry.getValue(), Champion.class);
-                    if (champion != null) {
-                        list.add(champion);
-                    }
+        return (json, typeOfT, context) -> {
+            JsonObject object = json.getAsJsonObject();
+            object = object.getAsJsonObject("data");
+            List<Champion> list = new ArrayList<>();
+            Set<Map.Entry<String, JsonElement>> entries = object.entrySet();
+            for (Map.Entry<String, JsonElement> entry : entries) {
+                Champion champion = context.deserialize(entry.getValue(), Champion.class);
+                if (champion != null) {
+                    list.add(champion);
                 }
-                return list;
             }
+            return list;
         };
     }
 }

@@ -8,21 +8,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.spiderbiggen.randomchampionselector.R;
-import com.spiderbiggen.randomchampionselector.ui.adapters.ChampionAdapter;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
-import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
+import com.spiderbiggen.randomchampionselector.ui.adapters.ChampionAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ListChampionsActivity extends ButtonActivity implements IDataInteractor.OnFinishedChampionListListener, View.OnClickListener {
+import io.reactivex.disposables.Disposable;
+
+public class ListChampionsActivity extends ButtonActivity implements View.OnClickListener {
 
     private final ChampionAdapter adapter;
     private RecyclerView recyclerView;
+    private Disposable listFlowable;
 
     public ListChampionsActivity() {
-        adapter = new ChampionAdapter(this, new ArrayList<Champion>(), this);
+        adapter = new ChampionAdapter(this, new ArrayList<>(), this);
     }
 
     @Override
@@ -41,8 +42,19 @@ public class ListChampionsActivity extends ButtonActivity implements IDataIntera
     }
 
     @Override
+    protected void onStop() {
+        if (listFlowable != null && !listFlowable.isDisposed()) {
+            listFlowable.dispose();
+        }
+        super.onStop();
+    }
+
+    @Override
     public void openChampionList(View view) {
-        DatabaseManager.getInstance().findChampionList(this, null);
+        if (listFlowable != null && !listFlowable.isDisposed()) {
+            listFlowable.dispose();
+        }
+        listFlowable = DatabaseManager.getInstance().findChampionList(adapter::setChampions);
     }
 
     @Override
@@ -51,22 +63,11 @@ public class ListChampionsActivity extends ButtonActivity implements IDataIntera
     }
 
     @Override
-    public void onFinishedChampionListLoad(final List<Champion> champions) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                recyclerView.getLayoutManager().scrollToPosition(0);
-                adapter.setChampions(champions);
-            }
-        });
-    }
-
-    @Override
     public void onClick(View v) {
         int layoutPosition = recyclerView.getChildLayoutPosition(v);
         Champion champion = adapter.getChampion(layoutPosition);
         Intent intent = getChampionIntent();
-        intent.putExtra(ChampionActivity.CHAMPION_KEY, champion);
+        intent.putExtra(ChampionActivity.CHAMPION_KEY, champion.getKey());
         startActivity(intent);
     }
 }

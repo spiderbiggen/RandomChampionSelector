@@ -15,15 +15,17 @@ import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
-import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
+
+import io.reactivex.disposables.Disposable;
 
 
-public class ChampionActivity extends ButtonActivity implements IDataInteractor.OnFinishedChampionListener {
+public class ChampionActivity extends ButtonActivity {
 
     public static final String CHAMPION_KEY = "champion";
     private static final String TAG = ChampionActivity.class.getSimpleName();
     private static final ImageType imageType = ImageType.SPLASH;
     private Champion champion = null;
+    private Disposable championFlowable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,43 +37,48 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        int championKey = -1;
         if (savedInstanceState != null) {
-            champion = (Champion) savedInstanceState.getSerializable(CHAMPION_KEY);
+            championKey = savedInstanceState.getInt(CHAMPION_KEY);
         }
         Intent intent = getIntent();
-        champion = intent.hasExtra(CHAMPION_KEY) ? (Champion) intent.getSerializableExtra(CHAMPION_KEY) : champion;
+        championKey = intent.getIntExtra(CHAMPION_KEY, championKey);
         super.onCreate(savedInstanceState);
-        if (champion == null) {
-            reRollChampion(null);
-        } else {
-            populatePage();
-        }
-    }
 
-    @Override
-    public void openChampionList(View view) {
-        startActivity(getChampionListIntent());
-    }
-
-    @Override
-    public void openChampion(View view) {
-        reRollChampion(null);
+        championFlowable = championKey < 0 ? reRollChampion(null) : getChampionById(championKey);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(CHAMPION_KEY, champion);
+        outState.putInt(CHAMPION_KEY, champion.getKey());
         super.onSaveInstanceState(outState);
     }
 
-    public void reRollChampion(String type) {
-        DatabaseManager.getInstance().findRandomChampion(this, type, champion);
+    @Override
+    protected void onStop() {
+        dispose();
+        super.onStop();
     }
 
-    public void updateChampion(Champion champion) {
-        Log.d(TAG, "updateChampion() called with: champion = [" + champion + "]");
+    public Disposable reRollChampion(String type) {
+        dispose();
+        return DatabaseManager.getInstance().findRandomChampion(this::setChampion, type, champion);
+    }
+
+    public Disposable getChampionById(int id) {
+        dispose();
+        return DatabaseManager.getInstance().findChampion(this::setChampion, id);
+    }
+
+    public void setChampion(Champion champion) {
         this.champion = champion;
         populatePage();
+    }
+
+    private void dispose() {
+        if (championFlowable != null && !championFlowable.isDisposed()) {
+            championFlowable.dispose();
+        }
     }
 
     private void populatePage() {
@@ -94,14 +101,13 @@ public class ChampionActivity extends ButtonActivity implements IDataInteractor.
         blurb.setText(champion.getLore());
     }
 
+    @Override
+    public void openChampionList(View view) {
+        startActivity(getChampionListIntent());
+    }
 
     @Override
-    public void onFinishedChampionLoad(final Champion champion) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateChampion(champion);
-            }
-        });
+    public void openChampion(View view) {
+        reRollChampion(null);
     }
 }

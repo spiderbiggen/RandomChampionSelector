@@ -13,20 +13,23 @@ import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
-import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataInteractor;
-import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class LoaderActivity extends AppCompatActivity implements IDataInteractor.OnFinishedRolesListener {
+import io.reactivex.disposables.Disposable;
+
+public class LoaderActivity extends AppCompatActivity implements ProgressCallback {
 
     private static final String TAG = LoaderActivity.class.getSimpleName();
     private DatabaseManager databaseManager;
     private DDragon dDragon;
+    private List<Disposable> disposables = new ArrayList<>();
+    private Progress lastProgressId = Progress.IDLE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,21 +45,46 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
         startLoading();
     }
 
-    private void startLoading() {
-        dDragon.updateVersion(this::downloadChampions);
+    @Override
+    protected void onDestroy() {
+        for (Disposable disposable : disposables) {
+            if (!disposable.isDisposed())
+                disposable.dispose();
+        }
+        super.onDestroy();
     }
 
-    private void downloadChampions(String[] strings) {
-        dDragon.getChampionList(this::downloadAllImages);
+    private void startLoading() {
+        Log.d(TAG, "startLoading: ?");
+        disposables.add(dDragon.updateVersion(this, this::downloadChampions));
+    }
+
+    private void downloadChampions() {
+        Log.d(TAG, "downloadChampions: ?");
+        disposables.add(dDragon.getChampionList(this, this::downloadAllImages));
     }
 
     private void downloadAllImages(List<Champion> champions) {
-        champions.removeAll(Collections.<Champion>singletonList(null));
-        databaseManager.addChampions(champions);
-        dDragon.downloadAllImages(champions, new ImageCallback(this));
+        disposables.add(databaseManager.addChampions(champions));
+        disposables.add(dDragon.downloadAllImages(champions, this, this::fetchAllRoles));
     }
 
-    public void onProgressUpdate(int progressCode, int progress, int progressMax) {
+    private void fetchAllRoles() {
+        disposables.add(databaseManager.findRoleList(this::openMainScreen));
+    }
+
+    private void openMainScreen(Collection<String> message) {
+        Intent intent = new Intent(this, ListChampionsActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onProgressUpdate(Progress progressCode, int progress, int progressMax) {
+        if (progressCode != Progress.ERROR && progressCode.getPriority() < lastProgressId.getPriority())
+            return;
+
+        if (progressCode != Progress.ERROR) lastProgressId = progressCode;
+
         ProgressBar progressBar = findViewById(R.id.progressBar);
 
         if (progressCode == Progress.ERROR) {
@@ -65,71 +93,39 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
             progressBar.setProgressDrawable(progressDrawable);
         }
 
-        progressBar.setIndeterminate(progressCode < Progress.DOWNLOAD_SUCCESS);
+        progressBar.setIndeterminate(progressCode.getPriority() < Progress.DOWNLOAD_SUCCESS.getPriority());
         progressBar.setProgress(progress);
         progressBar.setMax(progressMax);
         updateProgressText(progressCode, progress, progressMax);
     }
 
-    private void openMainScreen(ArrayList<String> message) {
-        Intent intent = new Intent(this, ListChampionsActivity.class);
-        startActivity(intent);
+    @Override
+    public void finishExecution() {
+        lastProgressId = Progress.CONNECT_SUCCESS;
     }
 
-    public void throwException(Exception exception) {
-        Log.e(TAG, "handleException: ", exception);
-    }
-
-    private void updateProgressText(int progressCode, int progress, int progressMax) {
+    private void updateProgressText(Progress progressCode, int progress, int progressMax) {
         String text = "";
         switch (progressCode) {
-            case Progress.ERROR:
+            case ERROR:
                 text = "Error!";
                 break;
-            case Progress.CONNECT_SUCCESS:
-            case Progress.GET_INPUT_STREAM_SUCCESS:
+            case IDLE:
+                text = "Checking For Updates";
+                break;
+            case CONNECT_SUCCESS:
+            case GET_INPUT_STREAM_SUCCESS:
                 text = "Setting up Connection";
                 break;
-            case Progress.PROCESS_INPUT_STREAM_IN_PROGRESS:
-            case Progress.PROCESS_INPUT_STREAM_SUCCESS:
+            case PROCESS_INPUT_STREAM_IN_PROGRESS:
+            case PROCESS_INPUT_STREAM_SUCCESS:
                 text = "Processing...";
                 break;
-            case Progress.DOWNLOAD_SUCCESS:
+            case DOWNLOAD_SUCCESS:
                 text = String.format(Locale.ENGLISH, "Downloaded %d/%d", progress, progressMax);
                 break;
         }
         TextView textView = findViewById(R.id.progressText);
         textView.setText(text);
-    }
-
-    @Override
-    public void onFinishedRoleListLoad(List<String> roles) {
-        Log.d(TAG, "onFinishedRoleListLoad() called with: roles = [" + roles + "]");
-        openMainScreen(new ArrayList<>(roles));
-    }
-
-    private static class ImageCallback implements ProgressCallback {
-
-        private LoaderActivity activity;
-        private int lastProgressId;
-
-        private ImageCallback(LoaderActivity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        public void onProgressUpdate(int progressCode, int progress, int progressMax) {
-            if (progressCode == Progress.ERROR || progressCode >= lastProgressId) {
-                activity.onProgressUpdate(progressCode, progress, progressMax);
-                if (progressCode != Progress.ERROR) {
-                    lastProgressId = progressCode;
-                }
-            }
-        }
-
-        @Override
-        public void finishExecution() {
-            activity.databaseManager.findRoleList(activity);
-        }
     }
 }

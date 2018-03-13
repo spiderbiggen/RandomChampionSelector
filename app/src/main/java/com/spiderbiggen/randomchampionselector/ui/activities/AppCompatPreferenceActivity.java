@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector;
+package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector;
+package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 
@@ -61,28 +62,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                     index >= 0
                             ? listPreference.getEntries()[index]
                             : null);
-
-        } else if (preference instanceof RingtonePreference) {
-            // For ringtone preferences, look up the correct display value
-            // using RingtoneManager.
-            if (TextUtils.isEmpty(stringValue)) {
-                // Empty values correspond to 'silent' (no ringtone).
-                preference.setSummary(R.string.pref_ringtone_silent);
-
-            } else {
-                Ringtone ringtone = RingtoneManager.getRingtone(
-                        preference.getContext(), Uri.parse(stringValue));
-
-                if (ringtone == null) {
-                    // Clear the summary if there was a lookup error.
-                    preference.setSummary(null);
-                } else {
-                    // Set the summary to reflect the new ringtone display
-                    // name.
-                    String name = ringtone.getTitle(preference.getContext());
-                    preference.setSummary(name);
-                }
-            }
 
         } else {
             // For all other preferences, set the summary to the value's
@@ -205,7 +184,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
             case "pref_language":
-                new DDragon(this).getChampionList(champions -> DatabaseManager.getInstance().addChampions(champions));
+                new DDragon(this).getChampionList(null, champions -> DatabaseManager.getInstance().addChampions(champions));
                 break;
         }
     }

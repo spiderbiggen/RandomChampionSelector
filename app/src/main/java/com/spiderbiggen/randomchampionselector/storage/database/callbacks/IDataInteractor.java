@@ -1,9 +1,11 @@
 package com.spiderbiggen.randomchampionselector.storage.database.callbacks;
 
-import com.spiderbiggen.randomchampionselector.model.Ability;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 
 import java.util.List;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Stefan Breetveld on 18-3-2017.
@@ -13,35 +15,18 @@ import java.util.List;
  */
 public interface IDataInteractor {
 
-    void findChampionList(final OnFinishedChampionListListener listener, final String role);
+    Disposable findChampionList(final Consumer<List<Champion>> listener, final String role);
 
-    void findChampionList(final OnFinishedChampionListListener listener);
+    Disposable findChampionList(final Consumer<List<Champion>> listener);
 
-    void findRoleList(final OnFinishedRolesListener listener);
+    Disposable findRoleList(final Consumer<List<String>> listener);
 
-    void findChampion(final OnFinishedChampionListener listener, final int championKey);
+    Disposable findChampion(final Consumer<Champion> listener, final int championKey);
 
-    void findRandomChampion(final OnFinishedChampionListener listener, final String role, final Champion champion);
+    Disposable findRandomChampion(final Consumer<Champion> listener, final String role, final Champion champion);
 
-    void findRandomChampion(final OnFinishedChampionListener listener, final Champion champion);
+    Disposable findRandomChampion(final Consumer<Champion> listener, final Champion champion);
 
-    void findAbilities(final OnFinishedAbilitiesListener listener, final Champion champion);
+//    Disposable findAbilities(final Consumer<Ability> listener, final Champion champion);
 
-    interface OnFinishedChampionListener {
-        void onFinishedChampionLoad(Champion champion);
-    }
-
-    interface OnFinishedChampionListListener {
-        void onFinishedChampionListLoad(List<Champion> champions);
-    }
-
-    interface OnFinishedRolesListener {
-        void onFinishedRoleListLoad(List<String> roles);
-    }
-
-    interface OnFinishedAbilitiesListener {
-        void onFinishedAbilitiesLoad(List<Ability> abilities);
-    }
-
-    interface OnFinishedListener extends OnFinishedAbilitiesListener, OnFinishedChampionListener, OnFinishedChampionListListener, OnFinishedRolesListener {}
 }

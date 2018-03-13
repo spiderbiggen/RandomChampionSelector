@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.spiderbiggen.randomchampionselector.R;
-import com.spiderbiggen.randomchampionselector.SettingsActivity;
 
 /**
  * Fullscreen activity

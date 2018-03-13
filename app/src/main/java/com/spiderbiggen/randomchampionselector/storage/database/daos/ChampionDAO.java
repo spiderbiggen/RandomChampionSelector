@@ -11,6 +11,10 @@ import com.spiderbiggen.randomchampionselector.model.Champion;
 import java.util.Collection;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
+
 /**
  * On 26-2-2018.
  *
@@ -20,22 +24,22 @@ import java.util.List;
 public interface ChampionDAO {
 
     @Query("SELECT * FROM champion WHERE roles LIKE :role||'%' ORDER BY name")
-    List<Champion> getAll(String role);
+    Flowable<List<Champion>> getAll(String role);
 
     @Query("SELECT * FROM champion ORDER BY name")
-    List<Champion> getAll();
+    Flowable<List<Champion>> getAll();
 
     @Query("SELECT DISTINCT roles FROM champion")
-    List<String> getAllRoles();
+    Flowable<List<String>> getAllRoles();
 
     @Query("SELECT * FROM champion WHERE roles LIKE :role||'%' ORDER BY RANDOM() LIMIT 1")
-    Champion getRandom(String role);
+    Flowable<Champion> getRandom(String role);
 
     @Query("SELECT * FROM champion ORDER BY RANDOM() LIMIT 1")
-    Champion getRandom();
+    Flowable<Champion> getRandom();
 
     @Query("SELECT * FROM champion WHERE id = :id")
-    Champion getChampion(int id);
+    Flowable<Champion> getChampion(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Collection<Champion> champions);
