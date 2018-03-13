@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
@@ -102,29 +103,29 @@ public class DDragon {
 
     public void downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer) {
         final List<Pair<Champion, ImageType>> newImages = getNewImages(champions);
-        final Observable<Pair<Champion, ImageType>> observable = Observable.create(emitter -> {
-            for (Pair<Champion, ImageType> image : newImages) {
-                emitter.onNext(image);
-            }
-            emitter.onComplete();
-        });
         final AtomicInteger count = new AtomicInteger();
         final int total = newImages.size();
-        observable.observeOn(Schedulers.io())
+        final Observable<Pair<Champion, ImageType>> observable = Observable.fromIterable(newImages);
+        observable
                 .subscribeOn(Schedulers.io())
+                .flatMap(item -> Observable.just(item)
+                        .subscribeOn(Schedulers.io())
+                        .map(pair -> {
+                            ResponseBody body = getChampionCall(pair.first, pair.second, 0).blockingGet();
+                            File championFile = getChampionFile(pair.first, pair.second);
+                            if (body != null) {
+                                try (InputStream stream = body.byteStream()) {
+                                    Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                                    saveBitmap(championFile, bitmap);
+                                }
+                            }
+                            return true;
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(consumer::finishExecution)
-                .doAfterNext(c -> consumer.onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total))
-                .subscribe((Pair<Champion, ImageType> imageBlock) -> {
-                    Champion champion = imageBlock.first;
-                    ImageType type = imageBlock.second;
-                    ResponseBody body = getChampionCall(champion, type, 0).blockingGet();
-                    if (body != null) {
-                        try (InputStream stream = body.byteStream()) {
-                            Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                            saveBitmap(getChampionFile(champion, type), bitmap);
-                        }
-                    }
-                });
+                .doOnNext(bool -> consumer.onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count.incrementAndGet(), total))
+                .subscribe();
     }
 
     private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions) {

@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query;
 
 import com.spiderbiggen.randomchampionselector.model.Champion;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public interface ChampionDAO {
     Champion getChampion(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<Champion> champions);
+    void insertAll(Collection<Champion> champions);
 
     @Delete
     void delete(Champion champion);

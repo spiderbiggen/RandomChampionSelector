@@ -9,6 +9,7 @@ import com.spiderbiggen.randomchampionselector.storage.database.callbacks.IDataI
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -41,8 +42,8 @@ public class DatabaseManager implements IDataInteractor {
         database = Room.databaseBuilder(context, SimpleDatabase.class, "random_champion_main").fallbackToDestructiveMigration().build();
     }
 
-    public void addChampions(final List<Champion> champions) {
-        champions.removeAll(Collections.singletonList(null));
+    public void addChampions(final Collection<Champion> champions) {
+        champions.removeAll(Collections.<Champion>singletonList(null));
         executor.execute(() -> database.championDAO().insertAll(champions));
     }
 

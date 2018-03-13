@@ -18,6 +18,7 @@ import com.spiderbiggen.randomchampionselector.util.async.Progress;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,26 +51,24 @@ public class LoaderActivity extends AppCompatActivity implements IDataInteractor
     }
 
     private void downloadAllImages(List<Champion> champions) {
-        Log.d(TAG, "downloadAllImages() called with: champions = [" + champions + "]");
+        champions.removeAll(Collections.<Champion>singletonList(null));
         databaseManager.addChampions(champions);
         dDragon.downloadAllImages(champions, new ImageCallback(this));
     }
 
     public void onProgressUpdate(int progressCode, int progress, int progressMax) {
-        runOnUiThread(() -> {
-            ProgressBar progressBar = findViewById(R.id.progressBar);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
 
-            if (progressCode == Progress.ERROR) {
-                Drawable progressDrawable = progressBar.getIndeterminateDrawable().mutate();
-                progressDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
-                progressBar.setProgressDrawable(progressDrawable);
-            }
+        if (progressCode == Progress.ERROR) {
+            Drawable progressDrawable = progressBar.getIndeterminateDrawable().mutate();
+            progressDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+            progressBar.setProgressDrawable(progressDrawable);
+        }
 
-            progressBar.setIndeterminate(progressCode < Progress.DOWNLOAD_SUCCESS);
-            progressBar.setProgress(progress);
-            progressBar.setMax(progressMax);
-            updateProgressText(progressCode, progress, progressMax);
-        });
+        progressBar.setIndeterminate(progressCode < Progress.DOWNLOAD_SUCCESS);
+        progressBar.setProgress(progress);
+        progressBar.setMax(progressMax);
+        updateProgressText(progressCode, progress, progressMax);
     }
 
     private void openMainScreen(ArrayList<String> message) {
