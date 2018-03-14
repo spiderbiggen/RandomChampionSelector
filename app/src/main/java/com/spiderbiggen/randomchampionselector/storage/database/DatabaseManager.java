@@ -15,7 +15,6 @@ import java.util.TreeSet;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -87,16 +86,16 @@ public class DatabaseManager implements IDataInteractor {
     }
 
     @Override
-    public Disposable findRandomChampion(final Consumer<Champion> listener, final Champion champion) {
-        return findRandomChampion(listener, null, champion);
+    public Disposable findRandomChampion(final Consumer<Champion> listener, final int championKey) {
+        return findRandomChampion(listener, null, championKey);
     }
 
     @Override
-    public Disposable findRandomChampion(final Consumer<Champion> listener, final String role, final Champion champion) {
+    public Disposable findRandomChampion(final Consumer<Champion> listener, final String role, final int championKey) {
         return getRandomChampionSingle(role)
                 .subscribeOn(Schedulers.io())
                 .repeat()
-                .takeUntil(champion1 -> !champion1.equals(champion))
+                .takeUntil(champion -> champion.getKey() != championKey)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listener);
     }

@@ -23,9 +23,9 @@ public interface IDataInteractor {
 
     Disposable findChampion(final Consumer<Champion> listener, final int championKey);
 
-    Disposable findRandomChampion(final Consumer<Champion> listener, final String role, final Champion champion);
+    Disposable findRandomChampion(final Consumer<Champion> listener, final String role, final int championKey);
 
-    Disposable findRandomChampion(final Consumer<Champion> listener, final Champion champion);
+    Disposable findRandomChampion(final Consumer<Champion> listener, final int championKey);
 
 //    Disposable findAbilities(final Consumer<Ability> listener, final Champion champion);
 

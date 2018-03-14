@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,7 +23,7 @@ public class ChampionActivity extends ButtonActivity {
     public static final String CHAMPION_KEY = "champion";
     private static final String TAG = ChampionActivity.class.getSimpleName();
     private static final ImageType imageType = ImageType.SPLASH;
-    private Champion champion = null;
+    private int championKey = -1;
     private Disposable championFlowable;
 
     @Override
@@ -37,32 +36,40 @@ public class ChampionActivity extends ButtonActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int championKey = -1;
         if (savedInstanceState != null) {
             championKey = savedInstanceState.getInt(CHAMPION_KEY);
         }
         Intent intent = getIntent();
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey);
         super.onCreate(savedInstanceState);
+    }
 
+    private void loadChampion() {
+        dispose();
         championFlowable = championKey < 0 ? reRollChampion(null) : getChampionById(championKey);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(CHAMPION_KEY, champion.getKey());
+        outState.putInt(CHAMPION_KEY, championKey);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onResume() {
+        loadChampion();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
         dispose();
-        super.onDestroy();
+        super.onPause();
     }
 
     public Disposable reRollChampion(String type) {
         dispose();
-        return DatabaseManager.getInstance().findRandomChampion(this::setChampion, type, champion);
+        return DatabaseManager.getInstance().findRandomChampion(this::setChampion, type, championKey);
     }
 
     public Disposable getChampionById(int id) {
@@ -71,10 +78,11 @@ public class ChampionActivity extends ButtonActivity {
     }
 
     public void setChampion(Champion champion) {
-        this.champion = champion;
         if (champion == null) {
+            championKey = -1;
             return;
         }
+        championKey = champion.getKey();
         Bitmap bitmap = new DDragon(this).getChampionBitmap(champion, imageType);
         ImageView bg = findViewById(R.id.champion_background);
         if (bg != null && bitmap != null) {
@@ -94,11 +102,6 @@ public class ChampionActivity extends ButtonActivity {
         if (championFlowable != null && !championFlowable.isDisposed()) {
             championFlowable.dispose();
         }
-    }
-
-    @Override
-    public void openChampionList(View view) {
-        startActivity(getChampionListIntent());
     }
 
     @Override

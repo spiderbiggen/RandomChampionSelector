@@ -36,25 +36,30 @@ public class ListChampionsActivity extends ButtonActivity implements View.OnClic
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-
         super.onCreate(savedInstanceState);
-        openChampionList(null);
     }
 
     @Override
-    protected void onDestroy() {
-        if (listFlowable != null && !listFlowable.isDisposed()) {
-            listFlowable.dispose();
-        }
-        super.onDestroy();
+    protected void onResume() {
+        openChampionList();
+        super.onResume();
     }
 
     @Override
-    public void openChampionList(View view) {
+    protected void onPause() {
+        dispose();
+        super.onPause();
+    }
+
+    public void openChampionList() {
+        dispose();
+        listFlowable = DatabaseManager.getInstance().findChampionList(adapter::setChampions, null);
+    }
+
+    private void dispose() {
         if (listFlowable != null && !listFlowable.isDisposed()) {
             listFlowable.dispose();
         }
-        listFlowable = DatabaseManager.getInstance().findChampionList(adapter::setChampions);
     }
 
     @Override

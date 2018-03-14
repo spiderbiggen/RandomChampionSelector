@@ -41,8 +41,6 @@ public abstract class ButtonActivity extends AppCompatActivity {
         }
     }
 
-    public abstract void openChampionList(View view);
-
     public abstract void openChampion(View view);
 
     protected Intent getChampionIntent() {
