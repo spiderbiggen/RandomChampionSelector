@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -15,11 +12,9 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +22,7 @@ import android.view.ViewGroup;
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
+import com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference;
 
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +59,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                             ? listPreference.getEntries()[index]
                             : null);
 
+        } else if (preference instanceof SeekBarPreference) {
+            SeekBarPreference seekBarPreference = (SeekBarPreference) preference;
+            preference.setSummary(seekBarPreference.getSummary());
         } else {
             // For all other preferences, set the summary to the value's
             // simple string representation.
@@ -89,7 +88,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      *
      * @see #sBindPreferenceSummaryToValueListener
      */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
+    private static void bindPreferenceSummaryToValueString(Preference preference) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
@@ -100,6 +99,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
     }
+
+    /**
+     * Binds a preference's summary to its value. More specifically, when the
+     * preference's value is changed, its summary (line of text below the
+     * preference title) is updated to reflect the value. The summary is also
+     * immediately updated upon calling this method. The exact display format is
+     * dependent on the type of preference.
+     *
+     * @see #sBindPreferenceSummaryToValueListener
+     */
+    private static void bindPreferenceSummaryToValueInteger(Preference preference) {
+        // Set the listener to watch for value changes.
+        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+
+        // Trigger the listener immediately with the preference's
+        // current value.
+        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getInt(preference.getKey(), 0));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,8 +230,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-            ListPreference listPref = (ListPreference) findPreference("pref_language");
-            listPref.setEntryValues(SUPPORTED_LANGUAGES);
+            ListPreference prefLanguage = (ListPreference) findPreference("pref_language");
+            prefLanguage.setEntryValues(SUPPORTED_LANGUAGES);
             String[] localizedNames = new String[SUPPORTED_LANGUAGES.length];
             for (int i = 0, supported_languagesLength = SUPPORTED_LANGUAGES.length; i < supported_languagesLength; i++) {
                 String language = SUPPORTED_LANGUAGES[i];
@@ -218,9 +239,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 Locale locale = new Locale(part[0], part[1]);
                 localizedNames[i] = locale.getDisplayName(locale);
             }
-            listPref.setEntries(localizedNames);
-            listPref.setDefaultValue("en_US");
-            bindPreferenceSummaryToValue(listPref);
+            prefLanguage.setEntries(localizedNames);
+            prefLanguage.setDefaultValue("en_US");
+
+            ListPreference prefImageType = (ListPreference) findPreference("pref_image_type");
+            SeekBarPreference preference = (SeekBarPreference) findPreference("pref_image_quality");
+
+            bindPreferenceSummaryToValueString(prefLanguage);
+            bindPreferenceSummaryToValueString(prefImageType);
+            bindPreferenceSummaryToValueInteger(preference);
         }
 
         @Override
@@ -250,7 +277,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            bindPreferenceSummaryToValueString(findPreference("sync_frequency"));
         }
 
         @Override

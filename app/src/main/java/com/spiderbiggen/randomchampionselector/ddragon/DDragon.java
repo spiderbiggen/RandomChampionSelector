@@ -108,6 +108,9 @@ public class DDragon {
         final List<Pair<Champion, ImageType>> newImages = getNewImages(champions);
         final AtomicInteger count = new AtomicInteger();
         final int total = newImages.size();
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
+        int quality = preferences.getInt("pref_image_quality", 85);
         return Observable.fromIterable(newImages)
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
@@ -118,7 +121,7 @@ public class DDragon {
                             if (body != null) {
                                 try (InputStream stream = body.byteStream()) {
                                     Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                                    saveBitmap(championFile, bitmap);
+                                    saveBitmap(championFile, bitmap, format, quality);
                                 }
                             }
                             return true;
@@ -157,10 +160,10 @@ public class DDragon {
         return BitmapFactory.decodeFile(file.getPath(), options);
     }
 
-    private void saveBitmap(@NonNull final File file, final Bitmap bitmap) throws IOException {
+    private void saveBitmap(@NonNull final File file, final Bitmap bitmap, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
         if (bitmap != null && (file.exists() || file.createNewFile())) {
             try (FileOutputStream outputStream = new FileOutputStream(file)) {
-                bitmap.compress(Bitmap.CompressFormat.WEBP, 85, outputStream);
+                bitmap.compress(compressFormat, quality, outputStream);
             }
         }
     }

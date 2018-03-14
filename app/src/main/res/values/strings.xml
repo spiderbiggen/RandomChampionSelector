@@ -1,29 +1,9 @@
 <resources>
     <string name="app_name">Random Champion Selector</string>
 
-    <string name="select_button">Random Champion</string>
-    <string name="select_button2">Reroll Champion</string>
-    <string name="title_activity_champion" translatable="false">Champion.NAME</string>
-    <string name="health">Health</string>
-    <string name="resourceName">Resource</string>
-    <string name="all">All</string>
-    <string name="tank">Tank</string>
-    <string name="fighter">Fighter</string>
-    <string name="mage">Mage</string>
-    <string name="assassin">Assassin</string>
-    <string name="support">Support</string>
-    <string name="marksman">Marksman</string>
-    <string name="mana">Mana</string>
-    <string name="energy">Energy</string>
-    <string name="range">Range</string>
-    <string name="moveSpeedText">Movement Speed</string>
-
     <string name="title_activity_list_champions">Champions</string>
 
-    <string name="list_champions_button">View All Champions</string>
-
     <string name="action_settings">Settings</string>
-    <string name="pref_language">Language</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -31,25 +11,22 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
+    <string name="pref_title_language">Language</string>
 
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <string name="pref_title_image_type">Image type</string>
+    <string-array name="pref_image_type_titles">
+        <item>Webp</item>
+        <item>Png</item>
+        <item>Jpeg</item>
+    </string-array>
 
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
+    <string-array name="pref_image_type_values">
+        <item>WEBP</item>
+        <item>PNG</item>
+        <item>JPEG</item>
     </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
+
+    <string name="pref_title_image_quality">Image quality</string>
 
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
@@ -71,31 +48,10 @@
         <item>360</item>
         <item>-1</item>
     </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
     <string-array name="multi_select_list_preference_default_value" />
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="ok">@android:string/ok</string>
+    <string name="cancel">@android:string/cancel</string>
 
 </resources>
