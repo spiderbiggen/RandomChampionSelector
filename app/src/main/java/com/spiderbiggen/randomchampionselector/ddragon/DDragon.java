@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
@@ -105,19 +106,20 @@ public class DDragon {
     }
 
     public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) {
-        final List<Pair<Champion, ImageType>> newImages = getNewImages(champions);
-        final AtomicInteger count = new AtomicInteger();
-        final int total = newImages.size();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
         int quality = preferences.getInt("pref_image_quality", 85);
+        final List<Pair<Champion, ImageType>> newImages = getNewImages(champions, format);
+        final AtomicInteger count = new AtomicInteger();
+        final int total = newImages.size();
+        Log.d(TAG, "downloadAllImages: quality: [" + quality + "], CompressFormat: [" + format + "]");
         return Observable.fromIterable(newImages)
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
                         .map(pair -> {
                             ResponseBody body = getChampionCall(pair.first, pair.second, 0).blockingGet();
-                            File championFile = getChampionFile(pair.first, pair.second);
+                            File championFile = getChampionFile(pair.first, pair.second, format);
                             if (body != null) {
                                 try (InputStream stream = body.byteStream()) {
                                     Bitmap bitmap = BitmapFactory.decodeStream(stream);
@@ -134,17 +136,27 @@ public class DDragon {
                 .subscribe();
     }
 
-    @NonNull
-    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type) {
-        return new FileStorage(context).getChampionImageFile(champion, type);
+    public boolean deleteAllImages() {
+        try {
+            return new FileStorage(context).deleteImages();
+        } catch (IOException e) {
+            Log.e(TAG, "deleteAllImages: ", e);
+            return false;
+        }
     }
 
-    private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions) {
+    @NonNull
+    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type, Bitmap.CompressFormat format) {
+        return new FileStorage(context).getChampionImageFile(champion, type, format);
+    }
+
+
+    private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) {
         List<Pair<Champion, ImageType>> list = new ArrayList<>();
         File file;
         for (Champion champion : champions) {
             for (ImageType type : ImageType.values()) {
-                file = getChampionFile(champion, type);
+                file = getChampionFile(champion, type, format);
                 if (file.exists()) continue;
                 list.add(Pair.create(champion, type));
             }
@@ -153,7 +165,9 @@ public class DDragon {
     }
 
     public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) {
-        File file = getChampionFile(champion, type);
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
+        File file = getChampionFile(champion, type, format);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_4444;

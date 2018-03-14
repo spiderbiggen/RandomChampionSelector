@@ -13,8 +13,10 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,7 @@ import java.util.Locale;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = SettingsActivity.class.getSimpleName();
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -69,6 +72,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         }
         return true;
     };
+
+    private boolean reDownload = false;
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -163,12 +168,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     }
 
     @Override
+    public void onBackPressed() {
+        if (reDownload) {
+            TaskStackBuilder.create(this)
+                    // Add all of this activity's parents to the back stack
+                    .addNextIntentWithParentStack(new Intent(this, LoaderActivity.class))
+                    // Navigate up to the closest parent
+                    .startActivities();
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
+            if (reDownload) {
+                startActivity(new Intent(this, LoaderActivity.class));
+            } else if (!super.onMenuItemSelected(featureId, item)) {
                 NavUtils.navigateUpFromSameTask(this);
             }
+
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -203,9 +223,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG, "onSharedPreferenceChanged() called with: sharedPreferences = [" + sharedPreferences + "], key = [" + key + "]");
+        DDragon dDragon = new DDragon(this);
         switch (key) {
             case "pref_language":
-                new DDragon(this).getChampionList(null, champions -> DatabaseManager.getInstance().addChampions(champions));
+                dDragon.getChampionList(null, champions -> DatabaseManager.getInstance().addChampions(champions));
+                break;
+            case "pref_image_type":
+            case "pref_image_quality":
+                reDownload = true;
+                Log.d(TAG, "onSharedPreferenceChanged: " + dDragon.deleteAllImages());
                 break;
         }
     }
