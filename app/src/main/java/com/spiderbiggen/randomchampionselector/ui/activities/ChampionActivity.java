@@ -72,16 +72,6 @@ public class ChampionActivity extends ButtonActivity {
 
     public void setChampion(Champion champion) {
         this.champion = champion;
-        populatePage();
-    }
-
-    private void dispose() {
-        if (championFlowable != null && !championFlowable.isDisposed()) {
-            championFlowable.dispose();
-        }
-    }
-
-    private void populatePage() {
         if (champion == null) {
             return;
         }
@@ -92,13 +82,18 @@ public class ChampionActivity extends ButtonActivity {
         }
         CollapsingToolbarLayout actionBar = findViewById(R.id.toolbar_layout);
         if (actionBar != null) {
-            Log.d(TAG, "populatePage: Setting (sub)title");
             actionBar.setTitle(champion.getName());
         }
         TextView title = findViewById(R.id.champion_title);
         title.setText(champion.getCapitalizedTitle());
         TextView blurb = findViewById(R.id.champion_blurb);
         blurb.setText(champion.getLore());
+    }
+
+    private void dispose() {
+        if (championFlowable != null && !championFlowable.isDisposed()) {
+            championFlowable.dispose();
+        }
     }
 
     @Override

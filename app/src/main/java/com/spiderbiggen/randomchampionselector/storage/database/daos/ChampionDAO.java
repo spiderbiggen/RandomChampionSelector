@@ -38,7 +38,7 @@ public interface ChampionDAO {
     @Query("SELECT * FROM champion ORDER BY RANDOM() LIMIT 1")
     Flowable<Champion> getRandom();
 
-    @Query("SELECT * FROM champion WHERE id = :id")
+    @Query("SELECT * FROM champion WHERE `key` = :id")
     Flowable<Champion> getChampion(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
