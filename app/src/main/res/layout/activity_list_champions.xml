@@ -1,16 +1,42 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/AppTheme.Background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ListChampionsActivity">
+    tools:context=".ui.activities.ListChampionsActivity">
 
-    <ListView
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            android:fitsSystemWindows="true" />
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/championList"
-        style="@style/AppTheme.Background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:smoothScrollbar="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/list_champion_item" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="false"
-        android:smoothScrollbar="true"
-        tools:listitem="@layout/list_champion_item" />
-</RelativeLayout>
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="openChampion"
+        app:layout_anchor="@+id/championList"
+        app:layout_anchorGravity="right|bottom"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
+        app:srcCompat="@drawable/ic_cached_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>
