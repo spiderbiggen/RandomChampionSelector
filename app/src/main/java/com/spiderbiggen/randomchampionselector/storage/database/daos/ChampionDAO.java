@@ -5,6 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.spiderbiggen.randomchampionselector.model.Champion;
 
@@ -41,8 +42,16 @@ public interface ChampionDAO {
     @Query("SELECT * FROM champion WHERE `key` = :id")
     Flowable<Champion> getChampion(int id);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(Collection<Champion> champions);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(Collection<Champion> entities);
+
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    void update(Collection<Champion> entities);
+
+    default void insertAll(Collection<Champion> entities) {
+        insert(entities);
+        update(entities);
+    }
 
     @Delete
     void delete(Champion champion);
