@@ -57,10 +57,12 @@ public class DDragon {
     private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
 
     private final Context context;
+    private final FileStorage storage;
     private final DDragonService service;
 
     public DDragon(Context context) {
         this.context = context;
+        this.storage = FileStorage.getInstance(context);
         this.service = createService();
     }
 
@@ -136,20 +138,14 @@ public class DDragon {
                 .subscribe();
     }
 
-    public boolean deleteAllImages() {
-        try {
-            return new FileStorage(context).deleteImages();
-        } catch (IOException e) {
-            Log.e(TAG, "deleteAllImages: ", e);
-            return false;
-        }
+    public boolean deleteChampionImages() {
+        return storage.deleteChampionImageDir();
     }
 
     @NonNull
     private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type, Bitmap.CompressFormat format) {
-        return new FileStorage(context).getChampionImageFile(champion, type, format);
+        return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion.getId(), type.name().toLowerCase(), format.name().toLowerCase()));
     }
-
 
     private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) {
         List<Pair<Champion, ImageType>> list = new ArrayList<>();

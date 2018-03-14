@@ -73,7 +73,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         return true;
     };
 
-    private boolean reDownload = false;
+    private boolean redownload = false;
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -169,7 +169,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
-        if (reDownload) {
+        if (getAndResetRedownload()) {
             TaskStackBuilder.create(this)
                     // Add all of this activity's parents to the back stack
                     .addNextIntentWithParentStack(new Intent(this, LoaderActivity.class))
@@ -183,7 +183,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (reDownload) {
+            if (getAndResetRedownload()) {
                 startActivity(new Intent(this, LoaderActivity.class));
             } else if (!super.onMenuItemSelected(featureId, item)) {
                 NavUtils.navigateUpFromSameTask(this);
@@ -231,10 +231,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 break;
             case "pref_image_type":
             case "pref_image_quality":
-                reDownload = true;
-                Log.d(TAG, "onSharedPreferenceChanged: " + dDragon.deleteAllImages());
+                redownload = true;
+                dDragon.deleteChampionImages();
                 break;
         }
+    }
+
+    private boolean getAndResetRedownload() {
+        final boolean redownload = this.redownload;
+        this.redownload = false;
+        return redownload;
     }
 
     /**
