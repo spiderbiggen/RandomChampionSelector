@@ -42,11 +42,11 @@ public class ListChampionsActivity extends ButtonActivity implements View.OnClic
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         if (listFlowable != null && !listFlowable.isDisposed()) {
             listFlowable.dispose();
         }
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override

@@ -55,9 +55,9 @@ public class ChampionActivity extends ButtonActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         dispose();
-        super.onStop();
+        super.onDestroy();
     }
 
     public Disposable reRollChampion(String type) {
