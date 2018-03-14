@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +15,8 @@ import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
+
+import java.io.IOException;
 
 import io.reactivex.disposables.Disposable;
 
@@ -83,7 +86,12 @@ public class ChampionActivity extends ButtonActivity {
             return;
         }
         championKey = champion.getKey();
-        Bitmap bitmap = new DDragon(this).getChampionBitmap(champion, imageType);
+        Bitmap bitmap = null;
+        try {
+            bitmap = new DDragon(this).getChampionBitmap(champion, imageType);
+        } catch (IOException e) {
+            Log.e(TAG, "setChampion: ", e);
+        }
         ImageView bg = findViewById(R.id.champion_background);
         if (bg != null && bitmap != null) {
             bg.setImageBitmap(bitmap);

@@ -3,6 +3,7 @@ package com.spiderbiggen.randomchampionselector.storage.file;
 import android.content.Context;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Manage access to android file storage
@@ -28,37 +29,28 @@ public class FileStorage {
         return context.getDir(root.replaceAll("/", "_"), Context.MODE_PRIVATE);
     }
 
-    public File getSubDir(String root, String child) {
+    public File getSubDir(String root, String child) throws IOException {
         return getSubDir(getRootDir(root), child);
     }
 
-    public File getSubDir(File root, String child) {
+    public File getSubDir(File root, String child) throws IOException {
         File file = new File(root, child);
         if (file.exists() || file.mkdirs()) {
             return file;
         }
-        return null;
+        throw new IOException("Can't find or create a directory for " + file.getAbsolutePath());
     }
 
     public File getImageDir() {
         return getRootDir(IMG_ROOT_DIR);
     }
 
-    public File getChampionImageDir() {
-        return getSubDir(getImageDir(), CHAMPION_REL_DIR);
-    }
-
-    public boolean deleteChampionImageDir() {
-        return deleteRecursive(getChampionImageDir());
-    }
-
     /**
-     * Deletes all files in the images folder.
-     *
-     * @return true if all images were successfully deleted
+     * Create a directory for storing Champion Images
+     * @return
      */
-    public boolean deleteImages() {
-        return deleteRecursive(getImageDir());
+    public File getChampionImageDir() throws IOException {
+        return getSubDir(getImageDir(), CHAMPION_REL_DIR);
     }
 
     /**
@@ -69,7 +61,7 @@ public class FileStorage {
      * @param root the root file/dir to delete
      * @return true if everything was successfully deleted
      */
-    private boolean deleteRecursive(File root) {
+    public boolean deleteRecursive(File root) {
         boolean deleted = true;
         if (root.isDirectory()) {
             for (File child : root.listFiles()) {

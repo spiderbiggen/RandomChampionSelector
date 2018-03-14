@@ -26,8 +26,8 @@ import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -227,12 +227,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         DDragon dDragon = new DDragon(this);
         switch (key) {
             case "pref_language":
-                dDragon.getChampionList(null, champions -> DatabaseManager.getInstance().addChampions(champions));
+                dDragon.getChampionList(champions -> DatabaseManager.getInstance().addChampions(champions));
                 break;
             case "pref_image_type":
             case "pref_image_quality":
                 redownload = true;
-                dDragon.deleteChampionImages();
+                try {
+                    dDragon.deleteChampionImages();
+                } catch (IOException e) {
+                    Log.e(TAG, "onSharedPreferenceChanged: ", e);
+                }
                 break;
         }
     }
@@ -250,13 +254,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
-        private static final String[] SUPPORTED_LANGUAGES = {
-                "cs_CZ", "de_DE", "el_GR", "en_AU", "en_GB", "en_PH", "en_PL", "en_SG", "en_US",
-                "es_AR", "es_ES", "es_MX", "fr_FR", "hu_HU", "id_ID", "it_IT", "ja_JP", "ko_KR",
-                "ms_MY", "pl_PL", "pt_BR", "ro_RO", "ru_RU", "th_TH", "tr_TR", "vn_VN", "zh_CN",
-                "zh_MY", "zh_TW"
-        };
-
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -264,17 +261,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             setHasOptionsMenu(true);
 
             ListPreference prefLanguage = (ListPreference) findPreference("pref_language");
-            prefLanguage.setEntryValues(SUPPORTED_LANGUAGES);
-            String[] localizedNames = new String[SUPPORTED_LANGUAGES.length];
-            for (int i = 0, supported_languagesLength = SUPPORTED_LANGUAGES.length; i < supported_languagesLength; i++) {
-                String language = SUPPORTED_LANGUAGES[i];
-                String[] part = language.split("_");
-                Locale locale = new Locale(part[0], part[1]);
-                localizedNames[i] = locale.getDisplayName(locale);
-            }
-            prefLanguage.setEntries(localizedNames);
-            prefLanguage.setDefaultValue("en_US");
-
             ListPreference prefImageType = (ListPreference) findPreference("pref_image_type");
             SeekBarPreference preference = (SeekBarPreference) findPreference("pref_image_quality");
 

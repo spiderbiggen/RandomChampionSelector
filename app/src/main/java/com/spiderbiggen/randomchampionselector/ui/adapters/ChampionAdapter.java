@@ -3,6 +3,7 @@ package com.spiderbiggen.randomchampionselector.ui.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHolder> {
@@ -43,10 +45,14 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
         Champion champion = champions.get(position);
 
         DDragon dDragon = new DDragon(context);
-        Bitmap backGround = dDragon.getChampionBitmap(champion, ImageType.SPLASH);
+        try {
+            Bitmap backGround = dDragon.getChampionBitmap(champion, ImageType.SPLASH);
+            holder.backGroundView.setImageBitmap(backGround);
+        } catch (IOException e) {
+            Log.e(TAG, "onBindViewHolder: ", e);
+        }
         holder.nameView.setText(champion.getName());
         holder.titleView.setText(champion.getCapitalizedTitle());
-        holder.backGroundView.setImageBitmap(backGround);
     }
 
     @Override
@@ -64,13 +70,13 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
         return champions.get(position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView backGroundView;
-        public TextView nameView;
-        public TextView titleView;
+        private ImageView backGroundView;
+        private TextView nameView;
+        private TextView titleView;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.championName);
             titleView = itemView.findViewById(R.id.championTitle);

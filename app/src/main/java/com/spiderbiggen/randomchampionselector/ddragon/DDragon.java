@@ -66,17 +66,13 @@ public class DDragon {
         this.service = createService();
     }
 
-    public Disposable updateVersion(@NonNull ProgressCallback consumer, @NonNull Action onComplete) {
+    public Disposable updateVersion(@NonNull Action onComplete) {
         return service.getVersions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doAfterSuccess(s -> version.set(s[0]))
-                .doOnError(e -> consumer.onError())
-                .doOnEvent((strings, throwable) -> {
-                    consumer.finishExecution();
-                    onComplete.run();
-                })
-                .subscribe(l -> consumer.onDownloadSuccess(1, 1));
+                .doOnEvent((strings, throwable) -> onComplete.run())
+                .subscribe();
     }
 
     public String getVersion() {
@@ -84,30 +80,19 @@ public class DDragon {
     }
 
 
-    public Disposable getChampionList(ProgressCallback progress, @NonNull Consumer<? super List<Champion>> subscriber) {
+    public Disposable getChampionList(@NonNull Consumer<? super List<Champion>> subscriber) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
         String locale = p.getString("pref_language", "en_US");
-        AtomicInteger count = new AtomicInteger();
-        AtomicInteger total = new AtomicInteger();
-        Observable<Champion> championObservable = service.getChampions(getVersion(), locale)
+        return service.getChampions(getVersion(), locale)
                 .subscribeOn(Schedulers.io())
-                .flatMapObservable(source -> {
-                    total.set(source.size());
-                    return Observable.fromIterable(source);
-                })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (progress != null) {
-            championObservable
-                    .doOnComplete(progress::finishExecution)
-                    .doOnNext(champion -> progress.onDownloadSuccess(count.incrementAndGet(), total.get()));
-        }
-        return championObservable
+                .flatMapObservable(Observable::fromIterable)
                 .filter(champion -> champion != null)
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) {
+    public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) throws IOException {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
         int quality = preferences.getInt("pref_image_quality", 85);
@@ -138,16 +123,17 @@ public class DDragon {
                 .subscribe();
     }
 
-    public boolean deleteChampionImages() {
-        return storage.deleteChampionImageDir();
+    public boolean deleteChampionImages() throws IOException {
+        File dir = storage.getChampionImageDir();
+        return storage.deleteRecursive(dir);
     }
 
     @NonNull
-    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type, Bitmap.CompressFormat format) {
+    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type, Bitmap.CompressFormat format) throws IOException {
         return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion.getId(), type.name().toLowerCase(), format.name().toLowerCase()));
     }
 
-    private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) {
+    private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) throws IOException {
         List<Pair<Champion, ImageType>> list = new ArrayList<>();
         File file;
         for (Champion champion : champions) {
@@ -160,7 +146,7 @@ public class DDragon {
         return list;
     }
 
-    public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) {
+    public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) throws IOException {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
         File file = getChampionFile(champion, type, format);

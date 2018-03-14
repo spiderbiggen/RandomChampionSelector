@@ -15,9 +15,9 @@ import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,17 +56,23 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
     private void startLoading() {
         Log.d(TAG, "startLoading: ?");
-        disposables.add(dDragon.updateVersion(this, this::downloadChampions));
+        disposables.add(dDragon.updateVersion(this::downloadChampions));
     }
 
     private void downloadChampions() {
         Log.d(TAG, "downloadChampions: ?");
-        disposables.add(dDragon.getChampionList(this, this::downloadAllImages));
+        disposables.add(dDragon.getChampionList(this::downloadAllImages));
     }
 
     private void downloadAllImages(List<Champion> champions) {
         disposables.add(databaseManager.addChampions(champions));
-        disposables.add(dDragon.downloadAllImages(champions, this, this::fetchAllRoles));
+        try {
+            disposables.add(dDragon.downloadAllImages(champions, this, this::fetchAllRoles));
+        } catch (IOException e) {
+            onProgressUpdate(Progress.ERROR, 0, 0);
+            setProgressText(e.getMessage());
+            Log.e(TAG, "downloadAllImages: ", e);
+        }
     }
 
     private void fetchAllRoles() {
@@ -125,7 +131,12 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
                 text = String.format(Locale.ENGLISH, "Downloaded %d/%d", progress, progressMax);
                 break;
         }
+        setProgressText(text);
+    }
+
+    private void setProgressText(String text) {
         TextView textView = findViewById(R.id.progressText);
         textView.setText(text);
     }
+
 }

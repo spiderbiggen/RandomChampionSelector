@@ -2,10 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        android:defaultValue="en_US"
+        android:defaultValue="@string/pref_language_default"
         android:dialogTitle="@string/pref_title_language"
         android:key="pref_language"
-        android:title="@string/pref_title_language" />
+        android:title="@string/pref_title_language"
+        android:entryValues="@array/pref_language_values"
+        android:entries="@array/pref_language_titles"/>
 
     <ListPreference
         android:defaultValue="WEBP"
