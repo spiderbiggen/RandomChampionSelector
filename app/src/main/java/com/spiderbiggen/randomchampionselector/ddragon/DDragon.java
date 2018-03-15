@@ -112,16 +112,15 @@ public class DDragon {
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
                         .map(pair -> {
-                            Bitmap bitmap = null;
-                            if (pair.file.exists()) {
+                            pair.valid = pair.file.exists();
+                            if (pair.valid) {
                                 try (InputStream stream = new FileInputStream(pair.file)) {
-                                    bitmap = BitmapFactory.decodeStream(stream);
+                                    pair.valid = BitmapFactory.decodeStream(stream) != null;
                                 }
                             }
-                            pair.valid = bitmap != null;
                             return pair;
                         })
-                )
+                , 4)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(p -> callback.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total))
                 .doOnComplete(callback::finishExecution)
@@ -150,7 +149,7 @@ public class DDragon {
                             }
                             return pair;
                         })
-                )
+                , 8)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(p -> consumer.onDownloadSuccess(downloadCount.incrementAndGet(), total))
                 .doOnComplete(consumer::finishExecution)
