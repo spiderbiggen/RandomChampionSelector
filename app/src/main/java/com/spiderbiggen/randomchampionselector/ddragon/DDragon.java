@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,6 +19,7 @@ import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,27 +42,41 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.spiderbiggen.randomchampionselector.util.async.ProgressCallback.Progress.VERIFY_SUCCESS;
+
 /**
  * Created on 13-3-2018.
  *
  * @author Stefan Breetveld
  */
-
 public class DDragon {
 
-    private static final String TAG = DDragon.class.getSimpleName();
     private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
     private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
     private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
 
-    private final Context context;
-    private final FileStorage storage;
     private final DDragonService service;
+    private final String locale;
+    private final FileStorage storage;
+    private final Bitmap.CompressFormat format;
+    private final int quality;
 
-    public DDragon(Context context) {
-        this.context = context;
-        this.storage = FileStorage.getInstance(context);
+    public DDragon(String locale, FileStorage storage, Bitmap.CompressFormat format, int quality) {
         this.service = createService();
+        this.locale = locale;
+        this.storage = storage;
+        this.format = format;
+        this.quality = quality;
+    }
+
+    public static DDragon createDDragon(Context context) {
+        FileStorage fileStorage = new FileStorage(context);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String locale = preferences.getString("pref_language", "en_US");
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
+        int quality = preferences.getInt("pref_image_quality", 85);
+
+        return new DDragon(locale, fileStorage, format, quality);
     }
 
     public Disposable updateVersion(@NonNull Action onComplete) {
@@ -81,8 +94,6 @@ public class DDragon {
 
 
     public Disposable getChampionList(@NonNull Consumer<? super List<Champion>> subscriber) {
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        String locale = p.getString("pref_language", "en_US");
         return service.getChampions(getVersion(), locale)
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable(Observable::fromIterable)
@@ -92,35 +103,70 @@ public class DDragon {
                 .subscribe(subscriber);
     }
 
-    public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) throws IOException {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
-        int quality = preferences.getInt("pref_image_quality", 85);
-        final List<Pair<Champion, ImageType>> newImages = getNewImages(champions, format);
-        final AtomicInteger count = new AtomicInteger();
+    public Disposable verifyImages(List<Champion> champions, ProgressCallback callback, Consumer<List<Champion>> consumer) throws IOException {
+        final List<ImageDescriptor> newImages = getNewImages(champions, format);
+        final AtomicInteger downloadCount = new AtomicInteger();
         final int total = newImages.size();
-        Log.d(TAG, "downloadAllImages: quality: [" + quality + "], CompressFormat: [" + format + "]");
         return Observable.fromIterable(newImages)
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
                         .map(pair -> {
-                            ResponseBody body = getChampionCall(pair.first, pair.second, 0).blockingGet();
-                            File championFile = getChampionFile(pair.first, pair.second, format);
-                            if (body != null) {
-                                try (InputStream stream = body.byteStream()) {
-                                    Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                                    saveBitmap(championFile, bitmap, format, quality);
+                            Bitmap bitmap = null;
+                            if (pair.file.exists()) {
+                                try (InputStream stream = new FileInputStream(pair.file)) {
+                                    bitmap = BitmapFactory.decodeStream(stream);
                                 }
                             }
-                            return true;
+                            pair.valid = bitmap != null;
+                            return pair;
                         })
                 )
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(p -> callback.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total))
+                .doOnComplete(callback::finishExecution)
+                .filter(p -> !p.valid)
+                .map(pair -> pair.champion)
+                .distinct()
+                .toList()
+                .doOnSuccess(consumer)
+                .subscribe();
+    }
+
+    public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) throws IOException {
+        final List<ImageDescriptor> newImages = getNewImages(champions, format);
+        final AtomicInteger downloadCount = new AtomicInteger();
+        final int total = newImages.size();
+        return Observable.fromIterable(newImages)
+                .flatMap(item -> Observable.just(item)
+                        .subscribeOn(Schedulers.io())
+                        .map(pair -> {
+                            ResponseBody body = getChampionCall(pair.champion, pair.type, 0).blockingGet();
+                            if (body != null) {
+                                try (InputStream stream = body.byteStream()) {
+                                    Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                                    saveBitmap(pair.file, bitmap, format, quality);
+                                }
+                            }
+                            return pair;
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(p -> consumer.onDownloadSuccess(downloadCount.incrementAndGet(), total))
                 .doOnComplete(consumer::finishExecution)
                 .doOnComplete(onComplete)
-                .doOnNext(bool -> consumer.onDownloadSuccess(count.incrementAndGet(), total))
                 .subscribe();
+    }
+
+    private List<ImageDescriptor> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) throws IOException {
+        List<ImageDescriptor> list = new ArrayList<>();
+        for (Champion champion : champions) {
+            for (ImageType type : ImageType.values()) {
+                File file = getChampionFile(champion, type, format);
+                list.add(new ImageDescriptor(champion, type, file));
+            }
+        }
+        return list;
     }
 
     public boolean deleteChampionImages() throws IOException {
@@ -133,22 +179,7 @@ public class DDragon {
         return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion.getId(), type.name().toLowerCase(), format.name().toLowerCase()));
     }
 
-    private List<Pair<Champion, ImageType>> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) throws IOException {
-        List<Pair<Champion, ImageType>> list = new ArrayList<>();
-        File file;
-        for (Champion champion : champions) {
-            for (ImageType type : ImageType.values()) {
-                file = getChampionFile(champion, type, format);
-                if (file.exists()) continue;
-                list.add(Pair.create(champion, type));
-            }
-        }
-        return list;
-    }
-
     public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) throws IOException {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        final Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
         File file = getChampionFile(champion, type, format);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = false;
@@ -203,5 +234,18 @@ public class DDragon {
             }
             return list;
         };
+    }
+
+    private static class ImageDescriptor {
+        private Champion champion = null;
+        private ImageType type = ImageType.SPLASH;
+        private File file = null;
+        private boolean valid = true;
+
+        public ImageDescriptor(Champion champion, ImageType type, File file) {
+            this.champion = champion;
+            this.type = type;
+            this.file = file;
+        }
     }
 }

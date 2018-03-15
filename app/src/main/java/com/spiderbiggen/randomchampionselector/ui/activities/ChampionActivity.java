@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.R;
-import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
@@ -19,6 +18,8 @@ import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import java.io.IOException;
 
 import io.reactivex.disposables.Disposable;
+
+import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
 
 
 public class ChampionActivity extends ButtonActivity {
@@ -88,7 +89,7 @@ public class ChampionActivity extends ButtonActivity {
         championKey = champion.getKey();
         Bitmap bitmap = null;
         try {
-            bitmap = new DDragon(this).getChampionBitmap(champion, imageType);
+            bitmap = createDDragon(this).getChampionBitmap(champion, imageType);
         } catch (IOException e) {
             Log.e(TAG, "setChampion: ", e);
         }

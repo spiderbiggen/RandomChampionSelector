@@ -17,11 +17,12 @@ import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.disposables.Disposable;
+
+import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
 
 public class LoaderActivity extends AppCompatActivity implements ProgressCallback {
 
@@ -29,7 +30,6 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
     private DatabaseManager databaseManager;
     private DDragon dDragon;
     private List<Disposable> disposables = new ArrayList<>();
-    private Progress lastProgressId = Progress.IDLE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
         databaseManager = DatabaseManager.getInstance();
         databaseManager.useContext(getApplicationContext());
-        dDragon = new DDragon(this);
+        dDragon = createDDragon(this);
         startLoading();
     }
 
@@ -61,53 +61,54 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
     private void downloadChampions() {
         Log.d(TAG, "downloadChampions: ?");
-        disposables.add(dDragon.getChampionList(this::downloadAllImages));
+        disposables.add(dDragon.getChampionList(this::verifyImages));
+    }
+
+    private void verifyImages(List<Champion> champions) {
+        try {
+            disposables.add(dDragon.verifyImages(champions, this, this::downloadAllImages));
+        } catch (IOException e) {
+            onError();
+            setProgressText(e.getMessage());
+            Log.e(TAG, "verifyImages: ", e);
+        }
     }
 
     private void downloadAllImages(List<Champion> champions) {
         disposables.add(databaseManager.addChampions(champions));
         try {
-            disposables.add(dDragon.downloadAllImages(champions, this, this::fetchAllRoles));
+            disposables.add(dDragon.downloadAllImages(champions, this, this::openMainScreen));
         } catch (IOException e) {
-            onProgressUpdate(Progress.ERROR, 0, 0);
+            onError();
             setProgressText(e.getMessage());
             Log.e(TAG, "downloadAllImages: ", e);
         }
     }
 
-    private void fetchAllRoles() {
-        disposables.add(databaseManager.findRoleList(this::openMainScreen));
-    }
-
-    private void openMainScreen(Collection<String> message) {
+    private void openMainScreen() {
         Intent intent = new Intent(this, ListChampionsActivity.class);
         startActivity(intent);
     }
 
     @Override
-    public void onProgressUpdate(Progress progressCode, int progress, int progressMax) {
-        if (progressCode != Progress.ERROR && progressCode.getPriority() < lastProgressId.getPriority())
-            return;
-
-        if (progressCode != Progress.ERROR) lastProgressId = progressCode;
-
+    public void onProgressUpdate(Progress progress, int progressCount, int progressMax) {
         ProgressBar progressBar = findViewById(R.id.progressBar);
 
-        if (progressCode == Progress.ERROR) {
+        if (progress == Progress.ERROR) {
             Drawable progressDrawable = progressBar.getIndeterminateDrawable().mutate();
             progressDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
             progressBar.setProgressDrawable(progressDrawable);
         }
 
-        progressBar.setIndeterminate(progressCode.getPriority() < Progress.DOWNLOAD_SUCCESS.getPriority());
-        progressBar.setProgress(progress);
+        progressBar.setIndeterminate(progress.isIndeterminate());
+        progressBar.setProgress(progressCount);
         progressBar.setMax(progressMax);
-        updateProgressText(progressCode, progress, progressMax);
+        updateProgressText(progress, progressCount, progressMax);
     }
 
     @Override
     public void finishExecution() {
-        lastProgressId = Progress.CONNECT_SUCCESS;
+
     }
 
     private void updateProgressText(Progress progressCode, int progress, int progressMax) {
@@ -128,8 +129,10 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
                 text = "Processing...";
                 break;
             case DOWNLOAD_SUCCESS:
-                text = String.format(Locale.ENGLISH, "Downloaded %d/%d", progress, progressMax);
+                text = String.format(Locale.ENGLISH, "Downloading %d/%d", progress, progressMax);
                 break;
+            case VERIFY_SUCCESS:
+                text = String.format(Locale.ENGLISH, "Verifying %d/%d", progress, progressMax);
         }
         setProgressText(text);
     }

@@ -36,22 +36,23 @@ public interface ProgressCallback {
     void finishExecution();
 
     enum Progress {
-        ERROR(-1),
-        IDLE(0),
-        CONNECT_SUCCESS(1),
-        GET_INPUT_STREAM_SUCCESS(2),
-        PROCESS_INPUT_STREAM_IN_PROGRESS(3),
-        PROCESS_INPUT_STREAM_SUCCESS(4),
-        DOWNLOAD_SUCCESS(10);
+        ERROR(true),
+        IDLE(true),
+        CONNECT_SUCCESS(true),
+        GET_INPUT_STREAM_SUCCESS(true),
+        PROCESS_INPUT_STREAM_IN_PROGRESS(true),
+        PROCESS_INPUT_STREAM_SUCCESS(true),
+        DOWNLOAD_SUCCESS(false),
+        VERIFY_SUCCESS(false);
 
-        private final int priority;
+        private final boolean indeterminate;
 
-        Progress(int priority) {
-            this.priority = priority;
+        Progress(boolean indeterminate) {
+            this.indeterminate = indeterminate;
         }
 
-        public int getPriority() {
-            return priority;
+        public boolean isIndeterminate() {
+            return indeterminate;
         }
     }
 }

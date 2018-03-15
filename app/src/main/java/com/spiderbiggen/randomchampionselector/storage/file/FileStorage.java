@@ -12,27 +12,47 @@ import java.io.IOException;
  */
 public class FileStorage {
 
+    private static final String ROOT_PATH = "root";
     private static final String IMG_ROOT_DIR = "img";
     private static final String CHAMPION_REL_DIR = "champion";
 
-    private Context context;
+    private File root;
 
-    private FileStorage(Context context) {
-        this.context = context;
+    public FileStorage(Context context) {
+        this.root = context.getDir(ROOT_PATH, Context.MODE_PRIVATE);
     }
 
-    public static FileStorage getInstance(Context context) {
-        return new FileStorage(context);
+    /**
+     * Create a directory.
+     *
+     * @param child the effective directory
+     * @return a directory that is guaranteed to exist
+     * @throws IOException if the directory can't be created
+     */
+    public File getSubDir(String child) throws IOException {
+        return getSubDir(this.root, child);
     }
 
-    public File getRootDir(String root) {
-        return context.getDir(root.replaceAll("/", "_"), Context.MODE_PRIVATE);
-    }
-
+    /**
+     * Create a directory.
+     *
+     * @param root root directory
+     * @param child the effective directory
+     * @return a directory that is guaranteed to exist
+     * @throws IOException if the directory can't be created
+     */
     public File getSubDir(String root, String child) throws IOException {
-        return getSubDir(getRootDir(root), child);
+        return getSubDir(getSubDir(root), child);
     }
 
+    /**
+     * Create a directory.
+     *
+     * @param root root directory
+     * @param child the effective directory
+     * @return a directory that is guaranteed to exist
+     * @throws IOException if the directory can't be created
+     */
     public File getSubDir(File root, String child) throws IOException {
         File file = new File(root, child);
         if (file.exists() || file.mkdirs()) {
@@ -41,13 +61,21 @@ public class FileStorage {
         throw new IOException("Can't find or create a directory for " + file.getAbsolutePath());
     }
 
-    public File getImageDir() {
-        return getRootDir(IMG_ROOT_DIR);
+    /**
+     * Create a directory for storing any Images.
+     *
+     * @return a directory that is guaranteed to exist
+     * @throws IOException if the directory can't be created
+     */
+    public File getImageDir() throws IOException {
+        return getSubDir(IMG_ROOT_DIR);
     }
 
     /**
-     * Create a directory for storing Champion Images
-     * @return
+     * Create a directory for storing Champion Images.
+     *
+     * @return a directory that is guaranteed to exist
+     * @throws IOException if the directory can't be created
      */
     public File getChampionImageDir() throws IOException {
         return getSubDir(getImageDir(), CHAMPION_REL_DIR);

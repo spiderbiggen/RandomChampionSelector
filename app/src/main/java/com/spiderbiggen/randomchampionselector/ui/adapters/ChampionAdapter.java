@@ -18,6 +18,8 @@ import com.spiderbiggen.randomchampionselector.model.ImageType;
 import java.io.IOException;
 import java.util.List;
 
+import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
+
 public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHolder> {
 
     private static final String TAG = ChampionAdapter.class.getSimpleName();
@@ -44,7 +46,7 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         Champion champion = champions.get(position);
 
-        DDragon dDragon = new DDragon(context);
+        DDragon dDragon = createDDragon(context);
         try {
             Bitmap backGround = dDragon.getChampionBitmap(champion, ImageType.SPLASH);
             holder.backGroundView.setImageBitmap(backGround);
