@@ -1,5 +1,9 @@
 package com.spiderbiggen.randomchampionselector.util.async;
 
+import android.content.Context;
+
+import com.spiderbiggen.randomchampionselector.R;
+
 /**
  * Created on 1-3-2018.
  *
@@ -36,23 +40,35 @@ public interface ProgressCallback {
     void finishExecution();
 
     enum Progress {
-        ERROR(true),
-        IDLE(true),
-        CONNECT_SUCCESS(true),
-        GET_INPUT_STREAM_SUCCESS(true),
-        PROCESS_INPUT_STREAM_IN_PROGRESS(true),
-        PROCESS_INPUT_STREAM_SUCCESS(true),
-        DOWNLOAD_SUCCESS(false),
-        VERIFY_SUCCESS(false);
+        ERROR(true, R.string.progress_error),
+        IDLE(true, R.string.progress_idle),
+        DOWNLOAD_SUCCESS(false, R.string.progress_downloads),
+        VERIFY_SUCCESS(false, R.string.progress_verified);
 
         private final boolean indeterminate;
+        private final int stringResource;
 
-        Progress(boolean indeterminate) {
+        Progress(boolean indeterminate, int stringResource) {
             this.indeterminate = indeterminate;
+            this.stringResource = stringResource;
         }
 
+        /**
+         * Gets indeterminate
+         *
+         * @return value of indeterminate
+         */
         public boolean isIndeterminate() {
             return indeterminate;
+        }
+
+        /**
+         * Gets stringResource
+         *
+         * @return value of stringResource
+         */
+        public int getStringResource() {
+            return stringResource;
         }
     }
 }

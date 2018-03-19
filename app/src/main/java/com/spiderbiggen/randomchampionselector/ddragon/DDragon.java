@@ -54,6 +54,7 @@ public class DDragon {
     private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
     private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
     private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
+    private static final int MAX_CONCURRENCY = 8;
 
     private final DDragonService service;
     private final String locale;
@@ -79,12 +80,13 @@ public class DDragon {
         return new DDragon(locale, fileStorage, format, quality);
     }
 
-    public Disposable updateVersion(@NonNull Action onComplete) {
+    public Disposable updateVersion(@NonNull Action onComplete, @NonNull Consumer<Throwable> onError) {
         return service.getVersions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doAfterSuccess(s -> version.set(s[0]))
                 .doOnEvent((strings, throwable) -> onComplete.run())
+                .doOnError(onError)
                 .subscribe();
     }
 
@@ -93,17 +95,18 @@ public class DDragon {
     }
 
 
-    public Disposable getChampionList(@NonNull Consumer<? super List<Champion>> subscriber) {
+    public Disposable getChampionList(@NonNull Consumer<? super List<Champion>> subscriber, @NonNull Consumer<Throwable> onError) {
         return service.getChampions(getVersion(), locale)
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable(Observable::fromIterable)
                 .filter(champion -> champion != null)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(onError)
                 .subscribe(subscriber);
     }
 
-    public Disposable verifyImages(List<Champion> champions, ProgressCallback callback, Consumer<List<Champion>> consumer) throws IOException {
+    public Disposable verifyImages(List<Champion> champions, ProgressCallback callback, Consumer<List<ImageDescriptor>> consumer, @NonNull Consumer<Throwable> onError) throws IOException {
         final List<ImageDescriptor> newImages = getNewImages(champions, format);
         final AtomicInteger downloadCount = new AtomicInteger();
         final int total = newImages.size();
@@ -112,48 +115,50 @@ public class DDragon {
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
                         .map(pair -> {
-                            pair.valid = pair.file.exists();
-                            if (pair.valid) {
-                                try (InputStream stream = new FileInputStream(pair.file)) {
-                                    pair.valid = BitmapFactory.decodeStream(stream) != null;
+                            pair.setValid(pair.getFile().exists());
+                            if (pair.isValid()) {
+                                try (InputStream stream = new FileInputStream(pair.getFile())) {
+                                    pair.setValid(BitmapFactory.decodeStream(stream) != null);
                                 }
                             }
                             return pair;
-                        })
-                , 4)
+                        }), MAX_CONCURRENCY)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(p -> callback.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total))
                 .doOnComplete(callback::finishExecution)
-                .filter(p -> !p.valid)
-                .map(pair -> pair.champion)
+                .filter(p -> !p.isValid())
                 .distinct()
                 .toList()
                 .doOnSuccess(consumer)
+                .doOnError(onError)
                 .subscribe();
     }
 
-    public Disposable downloadAllImages(List<Champion> champions, @NonNull ProgressCallback consumer, Action onComplete) throws IOException {
-        final List<ImageDescriptor> newImages = getNewImages(champions, format);
+    public Disposable downloadAllImages(List<ImageDescriptor> champions, @NonNull ProgressCallback callback, @NonNull Action onComplete, @NonNull Consumer<Throwable> onError) throws IOException {
         final AtomicInteger downloadCount = new AtomicInteger();
-        final int total = newImages.size();
-        return Observable.fromIterable(newImages)
+        final int total = champions.size();
+        return Observable.fromIterable(champions)
+                .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
                         .map(pair -> {
-                            ResponseBody body = getChampionCall(pair.champion, pair.type, 0).blockingGet();
-                            if (body != null) {
-                                try (InputStream stream = body.byteStream()) {
-                                    Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                                    saveBitmap(pair.file, bitmap, format, quality);
+                            if (!pair.isValid()) {
+                                ResponseBody body = getChampionCall(pair.getChampion(), pair.getType(), 0).blockingGet();
+                                if (body != null) {
+                                    try (InputStream stream = body.byteStream()) {
+                                        Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                                        saveBitmap(pair.getFile(), bitmap, format, quality);
+                                    }
                                 }
                             }
                             return pair;
-                        })
-                , 8)
+                        }), MAX_CONCURRENCY)
+
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(p -> consumer.onDownloadSuccess(downloadCount.incrementAndGet(), total))
-                .doOnComplete(consumer::finishExecution)
+                .doOnNext(p -> callback.onDownloadSuccess(downloadCount.incrementAndGet(), total))
+                .doOnComplete(callback::finishExecution)
                 .doOnComplete(onComplete)
+                .doOnError(onError)
                 .subscribe();
     }
 
@@ -161,8 +166,8 @@ public class DDragon {
         List<ImageDescriptor> list = new ArrayList<>();
         for (Champion champion : champions) {
             for (ImageType type : ImageType.values()) {
-                File file = getChampionFile(champion, type, format);
-                list.add(new ImageDescriptor(champion, type, file));
+                File file = getChampionFile(champion.getId(), type, format);
+                list.add(new ImageDescriptor(champion.getId(), type, file));
             }
         }
         return list;
@@ -174,12 +179,12 @@ public class DDragon {
     }
 
     @NonNull
-    private File getChampionFile(@NonNull Champion champion, @NonNull ImageType type, Bitmap.CompressFormat format) throws IOException {
-        return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion.getId(), type.name().toLowerCase(), format.name().toLowerCase()));
+    private File getChampionFile(@NonNull String champion, @NonNull ImageType type, Bitmap.CompressFormat format) throws IOException {
+        return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion, type.name().toLowerCase(), format.name().toLowerCase()));
     }
 
     public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) throws IOException {
-        File file = getChampionFile(champion, type, format);
+        File file = getChampionFile(champion.getId(), type, format);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_4444;
@@ -195,14 +200,13 @@ public class DDragon {
     }
 
     @NonNull
-    private Maybe<ResponseBody> getChampionCall(Champion champion, ImageType type, int skinId) {
-        String champ = champion.getId();
+    private Maybe<ResponseBody> getChampionCall(String champion, ImageType type, int skinId) {
         switch (type) {
             case SQUARE:
-                return service.getSquareImage(getVersion(), champ);
+                return service.getSquareImage(getVersion(), champion);
             case SPLASH:
             default:
-                return service.getSplashImage(champ, skinId);
+                return service.getSplashImage(champion, skinId);
         }
     }
 
@@ -218,7 +222,6 @@ public class DDragon {
         return retrofit.create(DDragonService.class);
     }
 
-    @NonNull
     private JsonDeserializer<List<Champion>> getChampionsDeserializer() {
         return (json, typeOfT, context) -> {
             JsonObject object = json.getAsJsonObject();
@@ -235,16 +238,4 @@ public class DDragon {
         };
     }
 
-    private static class ImageDescriptor {
-        private Champion champion = null;
-        private ImageType type = ImageType.SPLASH;
-        private File file = null;
-        private boolean valid = true;
-
-        public ImageDescriptor(Champion champion, ImageType type, File file) {
-            this.champion = champion;
-            this.type = type;
-            this.file = file;
-        }
-    }
 }

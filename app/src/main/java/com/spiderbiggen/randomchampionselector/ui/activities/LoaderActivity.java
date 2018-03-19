@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
+import com.spiderbiggen.randomchampionselector.ddragon.ImageDescriptor;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
@@ -18,7 +19,6 @@ import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.disposables.Disposable;
 
@@ -55,33 +55,32 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
     }
 
     private void startLoading() {
-        Log.d(TAG, "startLoading: ?");
-        disposables.add(dDragon.updateVersion(this::downloadChampions));
+        disposables.add(dDragon.updateVersion(this::downloadChampions, this::catchError));
     }
 
     private void downloadChampions() {
-        Log.d(TAG, "downloadChampions: ?");
-        disposables.add(dDragon.getChampionList(this::verifyImages));
+        disposables.add(dDragon.getChampionList(this::handleChampionList, this::catchError));
     }
 
-    private void verifyImages(List<Champion> champions) {
+    private void handleChampionList(List<Champion> champions) {
+        disposables.add(databaseManager.addChampions(champions));
         try {
-            disposables.add(dDragon.verifyImages(champions, this, this::downloadAllImages));
+            disposables.add(dDragon.verifyImages(champions, this, this::downloadMissingOrCorruptImages, this::catchError));
         } catch (IOException e) {
-            onError();
-            setProgressText(e.getMessage());
-            Log.e(TAG, "verifyImages: ", e);
+            catchError(e);
         }
     }
 
-    private void downloadAllImages(List<Champion> champions) {
-        disposables.add(databaseManager.addChampions(champions));
+    private void catchError(Throwable t) {
+        Log.e(TAG, "catchError: ", t);
+        onError();
+    }
+
+    private void downloadMissingOrCorruptImages(List<ImageDescriptor> champions) {
         try {
-            disposables.add(dDragon.downloadAllImages(champions, this, this::openMainScreen));
+            disposables.add(dDragon.downloadAllImages(champions, this, this::openMainScreen, this::catchError));
         } catch (IOException e) {
-            onError();
-            setProgressText(e.getMessage());
-            Log.e(TAG, "downloadAllImages: ", e);
+            catchError(e);
         }
     }
 
@@ -103,43 +102,14 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
         progressBar.setIndeterminate(progress.isIndeterminate());
         progressBar.setProgress(progressCount);
         progressBar.setMax(progressMax);
-        updateProgressText(progress, progressCount, progressMax);
+
+        TextView textView = findViewById(R.id.progressText);
+        textView.setText(getString(progress.getStringResource(), progressCount, progressMax));
     }
 
     @Override
     public void finishExecution() {
 
-    }
-
-    private void updateProgressText(Progress progressCode, int progress, int progressMax) {
-        String text = "";
-        switch (progressCode) {
-            case ERROR:
-                text = "Error!";
-                break;
-            case IDLE:
-                text = "Checking For Updates";
-                break;
-            case CONNECT_SUCCESS:
-            case GET_INPUT_STREAM_SUCCESS:
-                text = "Setting up Connection";
-                break;
-            case PROCESS_INPUT_STREAM_IN_PROGRESS:
-            case PROCESS_INPUT_STREAM_SUCCESS:
-                text = "Processing...";
-                break;
-            case DOWNLOAD_SUCCESS:
-                text = String.format(Locale.ENGLISH, "Downloading %d/%d", progress, progressMax);
-                break;
-            case VERIFY_SUCCESS:
-                text = String.format(Locale.ENGLISH, "Verifying %d/%d", progress, progressMax);
-        }
-        setProgressText(text);
-    }
-
-    private void setProgressText(String text) {
-        TextView textView = findViewById(R.id.progressText);
-        textView.setText(text);
     }
 
 }

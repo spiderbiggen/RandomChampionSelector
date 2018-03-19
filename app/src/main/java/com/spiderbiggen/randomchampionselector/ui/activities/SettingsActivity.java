@@ -229,7 +229,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         DDragon dDragon = createDDragon(this);
         switch (key) {
             case "pref_language":
-                dDragon.getChampionList(champions -> DatabaseManager.getInstance().addChampions(champions));
+                redownload = true;
                 break;
             case "pref_image_type":
             case "pref_image_quality":
