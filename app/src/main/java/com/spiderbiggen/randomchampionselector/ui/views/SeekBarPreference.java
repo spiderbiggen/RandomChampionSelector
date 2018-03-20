@@ -11,7 +11,6 @@ package com.spiderbiggen.randomchampionselector.ui.views;
  */
 
 import android.content.Context;
-import android.os.Bundle;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -57,13 +56,15 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         if (mMin > mMax)
             throw new IllegalArgumentException("Minimum(" + mMin + ") value is larger than maximum(" + mMax + ")");
         if (mMin > mDefault)
-            throw new IllegalArgumentException("Minimum(" + mMin + ") value is larger than default value(" + mMax + ")");
+            throw new IllegalArgumentException("Minimum(" + mMin + ") value is larger than default value(" + mDefault + ")");
+
+        mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
+        setSummary(createSummary());
     }
 
     // DialogPreference methods :
     @Override
     protected View onCreateDialogView() {
-
         LinearLayout.LayoutParams params;
         LinearLayout layout = new LinearLayout(mContext);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -87,12 +88,11 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         mSeekBar.setOnSeekBarChangeListener(this);
         layout.addView(mSeekBar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        if (shouldPersist())
-            mValue = getPersistedInt(mDefault);
+        mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
 
         mSeekBar.setMax(mMax - mMin);
-        mSeekBar.setProgress(mValue - mMin);
-
+        updateProgress();
+        setSummary(createSummary());
         return layout;
     }
 
@@ -100,23 +100,19 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
     protected void onBindDialogView(View v) {
         super.onBindDialogView(v);
         mSeekBar.setMax(mMax - mMin);
-        mSeekBar.setProgress(mValue - mMin);
+        updateProgress();
     }
 
     @Override
     protected void onSetInitialValue(boolean restore, Object defaultValue) {
         super.onSetInitialValue(restore, defaultValue);
-        if (restore)
-            mValue = shouldPersist() ? getPersistedInt(mDefault) : 0;
-        else
-            mValue = (Integer) defaultValue;
+        mValue = restore && shouldPersist() ? getPersistedInt(mDefault) : (Integer) defaultValue;
     }
 
-    // OnSeekBarChangeListener methods :
     @Override
     public void onProgressChanged(SeekBar seek, int value, boolean fromTouch) {
         String t = String.valueOf(mMin + value);
-        mValueText.setText(mSuffix == null ? t : t.concat(" " + mSuffix));
+        mValueText.setText(mSuffix == null ? t : t + mSuffix);
     }
 
     @Override
@@ -147,20 +143,20 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         return mValue;
     }
 
-    public void setValue(int progress) {
-        mValue = progress;
+    public void setValue(int value) {
+        if (value < mMin) value = mMin;
+        if (value > mMax) value = mMax;
+        mValue = value;
+        updateProgress();
+    }
+
+    private void updateProgress() {
         if (mSeekBar != null)
-            mSeekBar.setProgress(progress);
+            mSeekBar.setProgress(mValue - mMin);
     }
 
-    public String getSummary() {
-        return mValue + mSuffix;
-    }
-
-    // Set the positive button listener and onClick action :
-    @Override
-    public void showDialog(Bundle state) {
-        super.showDialog(state);
+    public String createSummary() {
+        return mSuffix == null ? String.valueOf(mValue) : mValue + mSuffix;
     }
 
 

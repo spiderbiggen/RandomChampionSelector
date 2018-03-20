@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
-import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference;
 
 import java.io.IOException;
@@ -66,7 +65,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
         } else if (preference instanceof SeekBarPreference) {
             SeekBarPreference seekBarPreference = (SeekBarPreference) preference;
-            preference.setSummary(seekBarPreference.getSummary());
+            preference.setSummary(seekBarPreference.createSummary());
         } else {
             // For all other preferences, set the summary to the value's
             // simple string representation.
@@ -117,6 +116,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * @see #sBindPreferenceSummaryToValueListener
      */
     private static void bindPreferenceSummaryToValueInteger(Preference preference) {
+        bindPreferenceSummaryToValueInteger(preference, 0);
+    }
+
+    /**
+     * Binds a preference's summary to its value. More specifically, when the
+     * preference's value is changed, its summary (line of text below the
+     * preference title) is updated to reflect the value. The summary is also
+     * immediately updated upon calling this method. The exact display format is
+     * dependent on the type of preference.
+     *
+     * @see #sBindPreferenceSummaryToValueListener
+     */
+    private static void bindPreferenceSummaryToValueInteger(Preference preference, int defaultValue) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
@@ -268,7 +280,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
             bindPreferenceSummaryToValueString(prefLanguage);
             bindPreferenceSummaryToValueString(prefImageType);
-            bindPreferenceSummaryToValueInteger(preference);
+            bindPreferenceSummaryToValueInteger(preference, preference.getValue());
         }
 
         @Override
