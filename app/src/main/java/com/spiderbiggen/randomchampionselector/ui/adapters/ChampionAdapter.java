@@ -80,9 +80,9 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
 
         private ViewHolder(View itemView) {
             super(itemView);
-            nameView = itemView.findViewById(R.id.championName);
-            titleView = itemView.findViewById(R.id.championTitle);
-            backGroundView = itemView.findViewById(R.id.champion_background);
+            nameView = itemView.findViewById(R.id.champion_name);
+            titleView = itemView.findViewById(R.id.champion_title);
+            backGroundView = itemView.findViewById(R.id.champion_splash);
         }
     }
 }

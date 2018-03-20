@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activities.ChampionActivity">
+    tools:context=".ui.activities.ChampionActivity"
+    tools:targetApi="lollipop">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -24,7 +25,8 @@
             app:toolbarId="@+id/toolbar">
 
             <com.spiderbiggen.randomchampionselector.ui.views.TopCenteredImageView
-                android:id="@+id/champion_background"
+                android:id="@+id/champion_splash"
+                android:transitionName="@string/champion_splash_transition_key"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
@@ -32,9 +34,12 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
+                android:transitionName="@string/champion_name_transition_key"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                 >
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -60,6 +65,7 @@
 
                 <TextView
                     android:id="@+id/champion_title"
+                    android:transitionName="@string/champion_title_transition_key"
                     style="@style/AppTheme.Text.Large"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

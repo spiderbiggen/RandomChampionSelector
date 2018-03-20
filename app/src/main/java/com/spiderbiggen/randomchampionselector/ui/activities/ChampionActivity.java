@@ -45,6 +45,7 @@ public class ChampionActivity extends ButtonActivity {
         }
         Intent intent = getIntent();
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey);
+        supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
     }
 
@@ -93,7 +94,7 @@ public class ChampionActivity extends ButtonActivity {
         } catch (IOException e) {
             Log.e(TAG, "setChampion: ", e);
         }
-        ImageView bg = findViewById(R.id.champion_background);
+        ImageView bg = findViewById(R.id.champion_splash);
         if (bg != null && bitmap != null) {
             bg.setImageBitmap(bitmap);
         }
@@ -105,6 +106,7 @@ public class ChampionActivity extends ButtonActivity {
         title.setText(champion.getCapitalizedTitle());
         TextView blurb = findViewById(R.id.champion_blurb);
         blurb.setText(champion.getLore());
+        supportStartPostponedEnterTransition();
     }
 
     private void dispose() {

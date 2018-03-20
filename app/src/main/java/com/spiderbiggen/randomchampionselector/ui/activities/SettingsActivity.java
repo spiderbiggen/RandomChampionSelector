@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         return true;
     };
 
-    private boolean redownload = false;
+    private boolean needsRefresh = false;
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -126,6 +126,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
+     * @param preference The preference that needs to be bound
+     * @param defaultValue The defaultValue of the preference
      * @see #sBindPreferenceSummaryToValueListener
      */
     private static void bindPreferenceSummaryToValueInteger(Preference preference, int defaultValue) {
@@ -183,7 +185,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
-        if (getAndResetRedownload()) {
+        if (getAndResetNeedsRefresh()) {
             TaskStackBuilder.create(this)
                     // Add all of this activity's parents to the back stack
                     .addNextIntentWithParentStack(new Intent(this, LoaderActivity.class))
@@ -197,7 +199,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (getAndResetRedownload()) {
+            if (getAndResetNeedsRefresh()) {
                 startActivity(new Intent(this, LoaderActivity.class));
             } else if (!super.onMenuItemSelected(featureId, item)) {
                 NavUtils.navigateUpFromSameTask(this);
@@ -241,11 +243,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         DDragon dDragon = createDDragon(this);
         switch (key) {
             case "pref_language":
-                redownload = true;
+                needsRefresh = true;
                 break;
             case "pref_image_type":
             case "pref_image_quality":
-                redownload = true;
+                needsRefresh = true;
                 try {
                     dDragon.deleteChampionImages();
                 } catch (IOException e) {
@@ -255,10 +257,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         }
     }
 
-    private boolean getAndResetRedownload() {
-        final boolean redownload = this.redownload;
-        this.redownload = false;
-        return redownload;
+    private boolean getAndResetNeedsRefresh() {
+        final boolean needsRefresh = this.needsRefresh;
+        this.needsRefresh = false;
+        return needsRefresh;
     }
 
     /**

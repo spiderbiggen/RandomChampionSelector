@@ -33,6 +33,9 @@ public abstract class ButtonActivity extends AppCompatActivity {
     @Override
     public final boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;

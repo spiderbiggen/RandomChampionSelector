@@ -117,9 +117,13 @@
     <string name="ok">@android:string/ok</string>
     <string name="cancel">@android:string/cancel</string>
     <string name="pref_language_default">en_US</string>
-    <string name="progress_error">An unexpected error has occured!</string>
+    <string name="progress_error">An unexpected error has occurred!</string>
     <string name="progress_idle">Checking For Updates</string>
     <string name="progress_downloads">Downloading %d/%d</string>
     <string name="progress_verified">Verifying %d/%d</string>
+    <string name="champion_name_transition_key">champion_name_key</string>
+    <string name="champion_title_transition_key">champion_title_key</string>
+    <string name="champion_splash_content_description">Champion Splash Art</string>
+    <string name="champion_splash_transition_key">champion_splash_key</string>
 
 </resources>
