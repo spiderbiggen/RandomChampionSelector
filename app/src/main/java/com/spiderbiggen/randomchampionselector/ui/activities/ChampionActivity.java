@@ -1,11 +1,16 @@
 package com.spiderbiggen.randomchampionselector.ui.activities;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +37,7 @@ public class ChampionActivity extends ButtonActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        supportPostponeEnterTransition();
         setContentView(R.layout.activity_champion);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -45,13 +51,7 @@ public class ChampionActivity extends ButtonActivity {
         }
         Intent intent = getIntent();
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey);
-        supportPostponeEnterTransition();
         super.onCreate(savedInstanceState);
-    }
-
-    private void loadChampion() {
-        dispose();
-        championFlowable = championKey < 0 ? reRollChampion(null) : getChampionById(championKey);
     }
 
     @Override
@@ -62,24 +62,19 @@ public class ChampionActivity extends ButtonActivity {
 
     @Override
     protected void onResume() {
-        loadChampion();
+        DatabaseManager dbInstance = DatabaseManager.getInstance();
+        championFlowable = championKey < 0
+                ? dbInstance.findRandomChampion(this::setChampion, null, championKey)
+                : dbInstance.findChampion(this::setChampion, championKey);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        dispose();
+        if (championFlowable != null && !championFlowable.isDisposed()) {
+            championFlowable.dispose();
+        }
         super.onPause();
-    }
-
-    public Disposable reRollChampion(String type) {
-        dispose();
-        return DatabaseManager.getInstance().findRandomChampion(this::setChampion, type, championKey);
-    }
-
-    public Disposable getChampionById(int id) {
-        dispose();
-        return DatabaseManager.getInstance().findChampion(this::setChampion, id);
     }
 
     public void setChampion(Champion champion) {
@@ -98,25 +93,12 @@ public class ChampionActivity extends ButtonActivity {
         if (bg != null && bitmap != null) {
             bg.setImageBitmap(bitmap);
         }
-        CollapsingToolbarLayout actionBar = findViewById(R.id.toolbar_layout);
-        if (actionBar != null) {
-            actionBar.setTitle(champion.getName());
-        }
+        TextView name = findViewById(R.id.champion_name);
+        name.setText(champion.getName());
         TextView title = findViewById(R.id.champion_title);
         title.setText(champion.getCapitalizedTitle());
         TextView blurb = findViewById(R.id.champion_blurb);
         blurb.setText(champion.getLore());
         supportStartPostponedEnterTransition();
-    }
-
-    private void dispose() {
-        if (championFlowable != null && !championFlowable.isDisposed()) {
-            championFlowable.dispose();
-        }
-    }
-
-    @Override
-    public void openChampion(View view) {
-        reRollChampion(null);
     }
 }

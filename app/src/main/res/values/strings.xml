@@ -121,9 +121,14 @@
     <string name="progress_idle">Checking For Updates</string>
     <string name="progress_downloads">Downloading %d/%d</string>
     <string name="progress_verified">Verifying %d/%d</string>
-    <string name="champion_name_transition_key">champion_name_key</string>
-    <string name="champion_title_transition_key">champion_title_key</string>
+
     <string name="champion_splash_content_description">Champion Splash Art</string>
-    <string name="champion_splash_transition_key">champion_splash_key</string>
+
+    <string translatable="false" name="champion_name_transition_key">champion_name_key</string>
+    <string translatable="false" name="champion_title_transition_key">champion_title_key</string>
+    <string translatable="false" name="champion_splash_transition_key">champion_splash_key</string>
+    <string translatable="false" name="champion_card_transition_key">champion_card_key</string>
+    <string name="champion_blurb_key">champion_blurb_key</string>
+    <string name="random_fab_transition_key">random_fab_key</string>
 
 </resources>

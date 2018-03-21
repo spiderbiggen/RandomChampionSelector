@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.ListChampionsActivity">
+    tools:context=".ui.activities.ListChampionsActivity"
+    tools:targetApi="O">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,7 +21,7 @@
 
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/championList"
+        android:id="@+id/champion_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:smoothScrollbar="true"
@@ -34,9 +35,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="openChampion"
-        app:layout_anchor="@+id/championList"
+        app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp" />
+        app:srcCompat="@drawable/ic_cached_24dp"
+        android:transitionName="@string/random_fab_transition_key"/>
 
 </android.support.design.widget.CoordinatorLayout>

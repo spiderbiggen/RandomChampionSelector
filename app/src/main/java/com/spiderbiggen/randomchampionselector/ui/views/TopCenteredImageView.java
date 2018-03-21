@@ -67,7 +67,6 @@ public class TopCenteredImageView extends android.support.v7.widget.AppCompatIma
             scale = yScale;
         }
         matrix.postScale(scale, scale);
-        System.out.println(matrix);
         setImageMatrix(matrix);
     }
 }

@@ -2,10 +2,13 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/champion_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="4dp">
+    android:transitionName="@string/champion_card_transition_key"
+    app:cardCornerRadius="4dp"
+    tools:targetApi="lollipop">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,62 +17,53 @@
 
         <ImageView
             android:id="@+id/champion_splash"
-            android:transitionName="@string/champion_splash_transition_key"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/champion_splash_content_description"
             android:minHeight="96dp"
             android:scaleType="centerCrop"
+            android:transitionName="@string/champion_splash_transition_key"
             app:layout_constraintBottom_toTopOf="@+id/champion_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/spinner"
-            android:contentDescription="@string/champion_splash_content_description"
-            tools:targetApi="lollipop" />
+            app:srcCompat="@drawable/spinner" />
 
         <TextView
             android:id="@+id/champion_name"
-            android:transitionName="@string/champion_name_transition_key"
-            style="@style/TextOnDark"
+            style="@style/Text.Shadowed.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="start"
-            android:text="Medium Text"
-            android:textAlignment="viewStart"
-            android:theme="@style/AppTheme.Text.Large"
-            app:layout_constraintBottom_toBottomOf="@id/champion_splash"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            tools:targetApi="lollipop" />
+            tools:text="Medium Text" />
 
         <TextView
             android:id="@+id/champion_title"
-            android:transitionName="@string/champion_title_transition_key"
-            style="@style/AppTheme.Text"
+            style="@style/Text.Subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="start"
-            android:text="Medium Text"
-            android:textAlignment="viewStart"
+            android:transitionName="@string/champion_title_transition_key"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/champion_splash"
-            app:layout_constraintVertical_bias="0.0"
-            tools:targetApi="lollipop" />
+            tools:text="Medium Text" />
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/Text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="0.0000001sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/champion_splash"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="TextView" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

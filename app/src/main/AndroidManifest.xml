@@ -28,6 +28,7 @@
         <activity
             android:name=".ui.activities.ChampionActivity"
             android:label="@string/app_name"
+            android:noHistory="true"
             android:parentActivityName=".ui.activities.ListChampionsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

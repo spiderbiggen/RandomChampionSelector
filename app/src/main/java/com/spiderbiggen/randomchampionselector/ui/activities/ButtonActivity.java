@@ -2,6 +2,7 @@ package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +32,7 @@ public abstract class ButtonActivity extends AppCompatActivity {
     }
 
     @Override
-    public final boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 supportFinishAfterTransition();
@@ -44,19 +45,20 @@ public abstract class ButtonActivity extends AppCompatActivity {
         }
     }
 
-    public abstract void openChampion(View view);
+    public void openChampion(View view) {
+        View fab = findViewById(R.id.fab);
+        Intent intent = getChampionIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, fab, getString(R.string.random_fab_transition_key));
+        startActivity(intent, options.toBundle());
+    }
 
     protected Intent getChampionIntent() {
-        Intent intent = new Intent(this, ChampionActivity.class);
-        return getButtonIntent(intent);
+        return new Intent(this, ChampionActivity.class);
     }
 
     protected Intent getChampionListIntent() {
-        Intent intent = new Intent(this, ListChampionsActivity.class);
-        return getButtonIntent(intent);
+        return new Intent(this, ListChampionsActivity.class);
     }
 
-    private Intent getButtonIntent(Intent intent) {
-        return intent;
-    }
 }
