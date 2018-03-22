@@ -3,9 +3,7 @@ package com.spiderbiggen.randomchampionselector.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -38,8 +36,6 @@ public class ListChampionsActivity extends ButtonActivity implements View.OnClic
         setSupportActionBar(toolbar);
 
         recyclerView = findViewById(R.id.champion_list);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         super.onCreate(savedInstanceState);
     }
@@ -73,17 +69,10 @@ public class ListChampionsActivity extends ButtonActivity implements View.OnClic
         Champion champion = adapter.getChampion(layoutPosition);
 
         ImageView img = v.findViewById(R.id.champion_splash);
-        TextView name = v.findViewById(R.id.champion_name);
-        TextView title = v.findViewById(R.id.champion_title);
-        CardView card = v.findViewById(R.id.champion_card);
-        View fab = findViewById(R.id.fab);
 
         Intent intent = getChampionIntent();
         intent.putExtra(ChampionActivity.CHAMPION_KEY, champion.getKey());
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-                Pair.create(img, getString(R.string.champion_splash_transition_key)),
-                Pair.create(fab, getString(R.string.random_fab_transition_key))
-        );
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, img, getString(R.string.champion_splash_transition_key));
         startActivity(intent, options.toBundle());
     }
 }
