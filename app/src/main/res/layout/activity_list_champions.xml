@@ -25,7 +25,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:smoothScrollbar="true"
+        app:layoutManager="android.support.v7.widget.GridLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:spanCount="@integer/spanCount"
         tools:listitem="@layout/list_champion_item" />
 
 
@@ -34,11 +36,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:focusable="true"
         android:onClick="openChampion"
+        android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp"
-        android:transitionName="@string/random_fab_transition_key"/>
+        app:srcCompat="@drawable/ic_cached_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

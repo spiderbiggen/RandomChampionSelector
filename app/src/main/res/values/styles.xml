@@ -2,25 +2,17 @@
 <resources>
 
     <style name="Text" parent="AppTheme">
-        <item name="android:layout_marginBottom">@dimen/text_margin_vertical</item>
-        <item name="android:layout_marginEnd">@dimen/text_margin_horizontal</item>
-        <item name="android:layout_marginStart">@dimen/text_margin_horizontal</item>
-        <item name="android:layout_marginTop">@dimen/text_margin_vertical</item>
         <item name="android:gravity">start</item>
         <item name="android:textAlignment">viewStart</item>
     </style>
 
-    <style name="Text.Large">
-        <item name="android:textSize">16sp</item>
+    <style name="Text.Large" parent="android:TextAppearance.Holo.Large">
     </style>
 
-    <style name="Text.Subtitle">
-        <item name="android:textSize">24sp</item>
+    <style name="Text.Subtitle" parent="android:TextAppearance.Holo.Widget.ActionBar.Subtitle">
     </style>
 
-    <style name="Text.Title">
-        <!--<item name="android:textStyle">bold</item>-->
-        <item name="android:textSize">32sp</item>
+    <style name="Text.Title" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
     </style>
 
     <style name="Text.Shadowed">

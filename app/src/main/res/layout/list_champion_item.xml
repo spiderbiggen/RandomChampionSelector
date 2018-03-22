@@ -8,6 +8,9 @@
     android:layout_margin="8dp"
     android:transitionName="@string/champion_card_transition_key"
     app:cardCornerRadius="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
     tools:targetApi="lollipop">
 
     <android.support.constraint.ConstraintLayout
@@ -23,21 +26,25 @@
             android:minHeight="96dp"
             android:scaleType="centerCrop"
             android:transitionName="@string/champion_splash_transition_key"
-            app:layout_constraintBottom_toTopOf="@+id/champion_title"
+            app:layout_constraintBottom_toTopOf="@+id/champion_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/spinner" />
 
         <TextView
             android:id="@+id/champion_name"
-            style="@style/Text.Shadowed.Title"
+            style="@style/Text.Title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textView"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/champion_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/champion_splash"
             tools:text="Medium Text" />
 
         <TextView
@@ -45,25 +52,15 @@
             style="@style/Text.Subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:transitionName="@string/champion_title_transition_key"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/champion_splash"
+            app:layout_constraintTop_toBottomOf="@+id/champion_name"
             tools:text="Medium Text" />
-
-        <TextView
-            android:id="@+id/textView"
-            style="@style/Text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="0.0000001sp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/champion_splash"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            tools:text="TextView" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

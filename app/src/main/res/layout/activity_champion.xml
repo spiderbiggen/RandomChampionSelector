@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/primary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:toolbarId="@+id/toolbar">
 
             <com.spiderbiggen.randomchampionselector.ui.views.TopCenteredImageView
@@ -56,7 +56,8 @@
             android:layout_margin="8dp"
             app:cardCornerRadius="4dp">
 
-            <RelativeLayout
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -64,26 +65,47 @@
                     android:id="@+id/champion_name"
                     style="@style/Text.Title"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:transitionName="@string/champion_name_transition_key" />
+                    android:layout_height="22dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:transitionName="@string/champion_name_transition_key"
+                    app:layout_constraintBottom_toTopOf="@+id/champion_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/champion_title"
                     style="@style/Text.Subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/champion_name"
-                    android:transitionName="@string/champion_title_transition_key" />
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:transitionName="@string/champion_title_transition_key"
+                    app:layout_constraintBottom_toTopOf="@+id/champion_blurb"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/champion_name" />
 
                 <TextView
                     android:id="@+id/champion_blurb"
                     style="@style/Text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/champion_title"
-                    android:transitionName="@string/champion_blurb_key" />
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:transitionName="@string/champion_blurb_key"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/champion_title" />
 
-            </RelativeLayout>
+            </android.support.constraint.ConstraintLayout>
 
 
         </android.support.v7.widget.CardView>
@@ -100,7 +122,9 @@
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp" />
+        app:srcCompat="@drawable/ic_cached_24dp"
+        android:clickable="true"
+        android:focusable="true"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

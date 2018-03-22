@@ -34,7 +34,6 @@ public class ListChampionsActivity extends ButtonActivity implements View.OnClic
         setContentView(R.layout.activity_list_champions);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         recyclerView = findViewById(R.id.champion_list);
         recyclerView.setAdapter(adapter);
         super.onCreate(savedInstanceState);

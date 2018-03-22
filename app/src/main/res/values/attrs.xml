@@ -4,4 +4,6 @@
         <attr name="min" format="integer" />
         <attr name="max" format="integer"/>
     </declare-styleable>
+
+    <integer name="spanCount">1</integer>
 </resources>
