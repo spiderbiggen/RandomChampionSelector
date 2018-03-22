@@ -1,6 +1,7 @@
 package com.spiderbiggen.randomchampionselector.ui.views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
@@ -13,6 +14,9 @@ import android.util.AttributeSet;
  */
 
 public class TopCenteredImageView extends android.support.v7.widget.AppCompatImageView {
+
+    private int width;
+    private int height;
 
     public TopCenteredImageView(Context context) {
         super(context);
@@ -50,14 +54,20 @@ public class TopCenteredImageView extends android.support.v7.widget.AppCompatIma
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        this.width = w;
+        this.height = h;
+        calculateAndSetImageMatrix();
+    }
+
+    private void calculateAndSetImageMatrix() {
         Matrix matrix = new Matrix();
         matrix.reset();
         Drawable drawable = getDrawable();
         if (drawable == null) return;
         float width = drawable.getIntrinsicWidth();
         float height = drawable.getIntrinsicHeight();
-        float xScale = w / width;
-        float yScale = h / height;
+        float xScale = this.width / width;
+        float yScale = this.height / height;
         float scale;
         if (xScale > yScale) {
             scale = xScale;
@@ -68,5 +78,11 @@ public class TopCenteredImageView extends android.support.v7.widget.AppCompatIma
         }
         matrix.postScale(scale, scale);
         setImageMatrix(matrix);
+    }
+
+    @Override
+    public void setImageDrawable(@Nullable Drawable drawable) {
+        super.setImageDrawable(drawable);
+        calculateAndSetImageMatrix();
     }
 }
