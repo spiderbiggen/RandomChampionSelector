@@ -1,17 +1,11 @@
 package com.spiderbiggen.randomchampionselector.ui.activities;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,10 +23,12 @@ import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDra
 
 public class ChampionActivity extends ButtonActivity {
 
-    public static final String CHAMPION_KEY = "champion";
+    public static final String CHAMPION_KEY = "CHAMPION_KEY";
+    public static final String UP_ON_BACK_KEY = "UP_ON_BACK_KEY";
     private static final String TAG = ChampionActivity.class.getSimpleName();
     private static final ImageType imageType = ImageType.SPLASH;
     private int championKey = -1;
+    private boolean upOnBack;
     private Disposable championFlowable;
 
     @Override
@@ -51,6 +47,7 @@ public class ChampionActivity extends ButtonActivity {
         }
         Intent intent = getIntent();
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey);
+        upOnBack = intent.getBooleanExtra(UP_ON_BACK_KEY, true);
         super.onCreate(savedInstanceState);
     }
 
@@ -67,6 +64,28 @@ public class ChampionActivity extends ButtonActivity {
                 ? dbInstance.findRandomChampion(this::setChampion, null, championKey)
                 : dbInstance.findChampion(this::setChampion, championKey);
         super.onResume();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (upOnBack) {
+            Intent parentActivityIntent = getParentActivityIntent();
+            parentActivityIntent = parentActivityIntent == null ? new Intent(this, ListChampionsActivity.class) : parentActivityIntent;
+            supportNavigateUpTo(parentActivityIntent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        } else {
+            supportFinishAfterTransition();
+        }
     }
 
     @Override

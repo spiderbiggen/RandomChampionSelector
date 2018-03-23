@@ -48,7 +48,6 @@ public abstract class ButtonActivity extends AppCompatActivity {
     public void openChampion(View view) {
         View fab = findViewById(R.id.fab);
         Intent intent = getChampionIntent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, fab, getString(R.string.random_fab_transition_key));
         startActivity(intent, options.toBundle());
     }
