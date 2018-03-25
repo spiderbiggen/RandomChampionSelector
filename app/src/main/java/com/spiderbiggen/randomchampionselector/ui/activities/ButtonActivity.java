@@ -2,8 +2,10 @@ package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +23,8 @@ public abstract class ButtonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         super.onCreate(savedInstanceState);
     }
 
@@ -48,8 +52,7 @@ public abstract class ButtonActivity extends AppCompatActivity {
     public void openChampion(View view) {
         View fab = findViewById(R.id.fab);
         Intent intent = getChampionIntent();
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, fab, getString(R.string.random_fab_transition_key));
-        startActivity(intent, options.toBundle());
+        startActivity(intent);
     }
 
     protected Intent getChampionIntent() {
@@ -60,4 +63,9 @@ public abstract class ButtonActivity extends AppCompatActivity {
         return new Intent(this, ListChampionsActivity.class);
     }
 
+    @Override
+    public void startActivity(Intent intent) {
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(this, android.R.anim.fade_in, android.R.anim.fade_out);
+        super.startActivity(intent, options.toBundle());
+    }
 }

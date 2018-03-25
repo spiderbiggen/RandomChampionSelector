@@ -17,21 +17,19 @@ import java.util.ArrayList;
 
 import io.reactivex.disposables.Disposable;
 
-public class ListChampionsActivity extends ButtonActivity implements View.OnClickListener {
+public class ListChampionsActivity extends ButtonActivity {
 
     private final ChampionAdapter adapter;
     private RecyclerView recyclerView;
     private Disposable listFlowable;
 
     public ListChampionsActivity() {
-        adapter = new ChampionAdapter(this, new ArrayList<>(), this);
+        adapter = new ChampionAdapter(new ArrayList<>(), this::onClick);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_list_champions);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         recyclerView = findViewById(R.id.champion_list);
         recyclerView.setAdapter(adapter);
         super.onCreate(savedInstanceState);
@@ -60,11 +58,9 @@ public class ListChampionsActivity extends ButtonActivity implements View.OnClic
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        int layoutPosition = recyclerView.getChildLayoutPosition(v);
-        Champion champion = adapter.getChampion(layoutPosition);
-
+    private void onClick(View v) {
+        int position = recyclerView.getChildAdapterPosition(v);
+        Champion champion = adapter.getChampion(position);
         ImageView img = v.findViewById(R.id.champion_splash);
 
         Intent intent = getChampionIntent();
