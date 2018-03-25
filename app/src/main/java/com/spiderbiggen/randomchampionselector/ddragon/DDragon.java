@@ -51,33 +51,31 @@ import static com.spiderbiggen.randomchampionselector.util.async.ProgressCallbac
  */
 public class DDragon {
 
+    private static DDragon instance = new DDragon();
+
     private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
     private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
     private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
     private static final int MAX_CONCURRENCY = 8;
 
     private final DDragonService service;
-    private final String locale;
-    private final FileStorage storage;
-    private final Bitmap.CompressFormat format;
-    private final int quality;
+    private SharedPreferences preferences;
 
-    public DDragon(String locale, FileStorage storage, Bitmap.CompressFormat format, int quality) {
-        this.service = createService();
-        this.locale = locale;
-        this.storage = storage;
-        this.format = format;
-        this.quality = quality;
+    public static DDragon getInstance() {
+        return instance;
     }
 
-    public static DDragon createDDragon(Context context) {
-        FileStorage fileStorage = new FileStorage(context);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String locale = preferences.getString("pref_language", "en_US");
-        Bitmap.CompressFormat format = Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
-        int quality = preferences.getInt("pref_image_quality", 85);
+    private DDragon() {
+        this.service = createService();
+    }
 
-        return new DDragon(locale, fileStorage, format, quality);
+    /**
+     * Sets preferences.
+     *
+     * @param preferences the new value of preferences
+     */
+    public void setPreferences(SharedPreferences preferences) {
+        this.preferences = preferences;
     }
 
     public Disposable updateVersion(@NonNull Action onComplete, @NonNull Consumer<Throwable> onError) {
@@ -96,7 +94,7 @@ public class DDragon {
 
 
     public Disposable getChampionList(@NonNull Consumer<? super List<Champion>> subscriber, @NonNull Consumer<Throwable> onError) {
-        return service.getChampions(getVersion(), locale)
+        return service.getChampions(getVersion(), getLocal())
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable(Observable::fromIterable)
                 .filter(champion -> champion != null)
@@ -107,7 +105,7 @@ public class DDragon {
     }
 
     public Disposable verifyImages(List<Champion> champions, ProgressCallback callback, Consumer<List<ImageDescriptor>> consumer, @NonNull Consumer<Throwable> onError) throws IOException {
-        final List<ImageDescriptor> newImages = getNewImages(champions, format);
+        final List<ImageDescriptor> newImages = getNewImages(champions, getCompressionMethod());
         final AtomicInteger downloadCount = new AtomicInteger();
         final int total = newImages.size();
         return Observable.fromIterable(newImages)
@@ -137,6 +135,8 @@ public class DDragon {
     public Disposable downloadAllImages(List<ImageDescriptor> champions, @NonNull ProgressCallback callback, @NonNull Action onComplete, @NonNull Consumer<Throwable> onError) throws IOException {
         final AtomicInteger downloadCount = new AtomicInteger();
         final int total = champions.size();
+        final Bitmap.CompressFormat compressFormat = getCompressionMethod();
+        final int quality = getQuality();
         return Observable.fromIterable(champions)
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
@@ -147,7 +147,7 @@ public class DDragon {
                                 if (body != null) {
                                     try (InputStream stream = body.byteStream()) {
                                         Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                                        saveBitmap(pair.getFile(), bitmap, format, quality);
+                                        saveBitmap(pair.getFile(), bitmap, compressFormat, quality);
                                     }
                                 }
                             }
@@ -174,17 +174,19 @@ public class DDragon {
     }
 
     public boolean deleteChampionImages() throws IOException {
+        FileStorage storage = FileStorage.getInstance();
         File dir = storage.getChampionImageDir();
         return storage.deleteRecursive(dir);
     }
 
     @NonNull
     private File getChampionFile(@NonNull String champion, @NonNull ImageType type, Bitmap.CompressFormat format) throws IOException {
+        FileStorage storage = FileStorage.getInstance();
         return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion, type.name().toLowerCase(), format.name().toLowerCase()));
     }
 
     public Bitmap getChampionBitmap(@NonNull Champion champion, @NonNull ImageType type) throws IOException {
-        File file = getChampionFile(champion.getId(), type, format);
+        File file = getChampionFile(champion.getId(), type, getCompressionMethod());
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = false;
         options.inPreferredConfig = Bitmap.Config.ARGB_4444;
@@ -236,6 +238,18 @@ public class DDragon {
             }
             return list;
         };
+    }
+
+    private int getQuality() {
+        return preferences.getInt("pref_image_quality", 85);
+    }
+
+    private String getLocal() {
+        return preferences.getString("pref_language", "en_US");
+    }
+
+    private Bitmap.CompressFormat getCompressionMethod() {
+        return Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
     }
 
 }

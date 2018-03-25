@@ -1,6 +1,5 @@
 package com.spiderbiggen.randomchampionselector.ui.adapters;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,18 +17,16 @@ import com.spiderbiggen.randomchampionselector.model.ImageType;
 import java.io.IOException;
 import java.util.List;
 
-import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
+import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.getInstance;
 
 public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHolder> {
 
     private static final String TAG = ChampionAdapter.class.getSimpleName();
-    private final Context context;
 
     private final View.OnClickListener clickListener;
     private List<Champion> champions;
 
-    public ChampionAdapter(final Context context, final List<Champion> champions, final View.OnClickListener clickListener) {
-        this.context = context;
+    public ChampionAdapter(final List<Champion> champions, final View.OnClickListener clickListener) {
         this.champions = champions;
         this.clickListener = clickListener;
     }
@@ -43,18 +40,18 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
         Champion champion = champions.get(position);
 
-        DDragon dDragon = createDDragon(context);
+        DDragon dDragon = getInstance();
         try {
             Bitmap backGround = dDragon.getChampionBitmap(champion, ImageType.SPLASH);
-            holder.backGroundView.setImageBitmap(backGround);
+            viewHolder.backGroundView.setImageBitmap(backGround);
         } catch (IOException e) {
             Log.e(TAG, "onBindViewHolder: ", e);
         }
-        holder.nameView.setText(champion.getName());
-        holder.titleView.setText(champion.getCapitalizedTitle());
+        viewHolder.nameView.setText(champion.getName());
+        viewHolder.titleView.setText(champion.getCapitalizedTitle());
     }
 
     @Override

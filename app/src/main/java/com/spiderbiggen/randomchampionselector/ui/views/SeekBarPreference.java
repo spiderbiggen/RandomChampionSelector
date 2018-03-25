@@ -27,7 +27,8 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
     private static final String customns = "http://schemas.android.com/apk/res-auto";
 
     private SeekBar mSeekBar;
-    private TextView mSplashText, mValueText;
+    private TextView mSplashText;
+    private TextView mValueText;
     private Context mContext;
 
     private String mDialogMessage, mSuffix;

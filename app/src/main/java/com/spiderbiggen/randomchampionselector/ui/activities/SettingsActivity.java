@@ -28,8 +28,6 @@ import com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference;
 import java.io.IOException;
 import java.util.List;
 
-import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
-
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -240,7 +238,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "onSharedPreferenceChanged() called with: sharedPreferences = [" + sharedPreferences + "], key = [" + key + "]");
-        DDragon dDragon = createDDragon(this);
+        DDragon dDragon = DDragon.getInstance();
         switch (key) {
             case "pref_language":
                 needsRefresh = true;

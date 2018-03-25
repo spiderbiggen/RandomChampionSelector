@@ -3,13 +3,15 @@ package com.spiderbiggen.randomchampionselector.ui.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.R;
+import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
@@ -17,9 +19,6 @@ import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import java.io.IOException;
 
 import io.reactivex.disposables.Disposable;
-
-import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
-
 
 public class ChampionActivity extends ButtonActivity {
 
@@ -30,17 +29,18 @@ public class ChampionActivity extends ButtonActivity {
     private int championKey = -1;
     private boolean upOnBack;
     private Disposable championFlowable;
+    private boolean shouldFinalize = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        supportPostponeEnterTransition();
         setContentView(R.layout.activity_champion);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-        //noinspection ConstantConditions
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        super.onCreate(savedInstanceState);
+        supportPostponeEnterTransition();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(null);
+        }
 
         if (savedInstanceState != null) {
             championKey = savedInstanceState.getInt(CHAMPION_KEY);
@@ -48,7 +48,6 @@ public class ChampionActivity extends ButtonActivity {
         Intent intent = getIntent();
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey);
         upOnBack = intent.getBooleanExtra(UP_ON_BACK_KEY, true);
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -96,6 +95,20 @@ public class ChampionActivity extends ButtonActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (shouldFinalize) {
+            finish();
+        }
+    }
+
+    @Override
+    public void openChampion(View view) {
+        super.openChampion(view);
+        shouldFinalize = true;
+    }
+
     public void setChampion(Champion champion) {
         if (champion == null) {
             championKey = -1;
@@ -104,7 +117,7 @@ public class ChampionActivity extends ButtonActivity {
         championKey = champion.getKey();
         Bitmap bitmap = null;
         try {
-            bitmap = createDDragon(this).getChampionBitmap(champion, imageType);
+            bitmap = DDragon.getInstance().getChampionBitmap(champion, imageType);
         } catch (IOException e) {
             Log.e(TAG, "setChampion: ", e);
         }

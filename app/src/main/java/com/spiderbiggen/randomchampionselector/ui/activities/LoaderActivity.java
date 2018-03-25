@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -14,6 +15,7 @@ import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.ddragon.ImageDescriptor;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
+import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.io.IOException;
@@ -21,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
-
-import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.createDDragon;
 
 public class LoaderActivity extends AppCompatActivity implements ProgressCallback {
 
@@ -41,7 +41,9 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
         databaseManager = DatabaseManager.getInstance();
         databaseManager.useContext(getApplicationContext());
-        dDragon = createDDragon(this);
+        FileStorage.getInstance().setRootFromContext(this);
+        dDragon = DDragon.getInstance();
+        dDragon.setPreferences(PreferenceManager.getDefaultSharedPreferences(this));
         startLoading();
     }
 

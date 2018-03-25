@@ -12,14 +12,41 @@ import java.io.IOException;
  */
 public class FileStorage {
 
+    private static final FileStorage instance = new FileStorage();
+
+    public static FileStorage getInstance() {
+        return instance;
+    }
+
     private static final String ROOT_PATH = "root";
     private static final String IMG_ROOT_DIR = "img";
     private static final String CHAMPION_REL_DIR = "champion";
 
     private File root;
 
-    public FileStorage(Context context) {
+    private FileStorage() {
+    }
+
+    public void setRootFromContext(Context context) {
         this.root = context.getDir(ROOT_PATH, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Sets root.
+     *
+     * @param root the new value of root
+     */
+    public void setRoot(File root) {
+        this.root = root;
+    }
+
+    /**
+     * Gets root
+     *
+     * @return value of root
+     */
+    public File getRoot() {
+        return root;
     }
 
     /**
