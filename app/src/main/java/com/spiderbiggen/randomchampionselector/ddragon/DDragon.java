@@ -2,6 +2,7 @@ package com.spiderbiggen.randomchampionselector.ddragon;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
@@ -13,6 +14,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
@@ -60,6 +62,7 @@ public class DDragon {
 
     private final DDragonService service;
     private SharedPreferences preferences;
+    private Resources resources;
 
     public static DDragon getInstance() {
         return instance;
@@ -76,6 +79,15 @@ public class DDragon {
      */
     public void setPreferences(SharedPreferences preferences) {
         this.preferences = preferences;
+    }
+
+    /**
+     * Sets resources.
+     *
+     * @param resources the new value of resources
+     */
+    public void setResources(Resources resources) {
+        this.resources = resources;
     }
 
     public Disposable updateVersion(@NonNull Action onComplete, @NonNull Consumer<Throwable> onError) {
@@ -180,7 +192,7 @@ public class DDragon {
     }
 
     @NonNull
-    private File getChampionFile(@NonNull String champion, @NonNull ImageType type, Bitmap.CompressFormat format) throws IOException {
+    private File getChampionFile(@NonNull String champion, @NonNull ImageType type, @NonNull Bitmap.CompressFormat format) throws IOException {
         FileStorage storage = FileStorage.getInstance();
         return new File(storage.getChampionImageDir(), String.format("%s_%s.%s", champion, type.name().toLowerCase(), format.name().toLowerCase()));
     }
@@ -241,15 +253,15 @@ public class DDragon {
     }
 
     private int getQuality() {
-        return preferences.getInt("pref_image_quality", 85);
+        return preferences.getInt("pref_image_quality", resources.getInteger(R.integer.pref_image_quality_default));
     }
 
     private String getLocal() {
-        return preferences.getString("pref_language", "en_US");
+        return preferences.getString("pref_language", resources.getString(R.string.pref_language_default));
     }
 
     private Bitmap.CompressFormat getCompressionMethod() {
-        return Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", "WEBP"));
+        return Bitmap.CompressFormat.valueOf(preferences.getString("pref_image_type", resources.getString(R.string.pref_title_image_type_default)));
     }
 
 }

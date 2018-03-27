@@ -17,12 +17,19 @@
         tools:targetApi="o">
         <activity
             android:name=".ui.activities.LoaderActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activities.ListChampionsActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
@@ -35,20 +42,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.ListChampionsActivity"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ui.activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".ui.activities.ListChampionsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.spiderbiggen.randomchampionselector.ui.activities.ListChampionsActivity" />
-        </activity>
+            android:parentActivityName=".ui.activities.ListChampionsActivity" />
     </application>
 
 </manifest>

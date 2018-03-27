@@ -1,6 +1,7 @@
 package com.spiderbiggen.randomchampionselector.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
@@ -31,20 +34,28 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
     private DDragon dDragon;
     private List<Disposable> disposables = new ArrayList<>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_loader);
-
-        ProgressBar progressBar = findViewById(R.id.progressBar);
-        progressBar.setIndeterminate(true);
-
         databaseManager = DatabaseManager.getInstance();
         databaseManager.useContext(getApplicationContext());
         FileStorage.getInstance().setRootFromContext(this);
         dDragon = DDragon.getInstance();
         dDragon.setPreferences(PreferenceManager.getDefaultSharedPreferences(this));
-        startLoading();
+        dDragon.setResources(getResources());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long timeMillis = preferences.getLong(getString(R.string.pref_last_sync_key), -1);
+        int syncTime = preferences.getInt(getString(R.string.pref_title_sync_frequency), getResources().getInteger(R.integer.pref_sync_frequency_default));
+        Date date = new Date(timeMillis);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -syncTime);
+        if (timeMillis == -1 || date.before(calendar.getTime())) {
+            setContentView(R.layout.activity_loader);
+            startLoading();
+        } else {
+            openMainScreen();
+        }
     }
 
     @Override
@@ -75,7 +86,7 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
     private void catchError(Throwable t) {
         Log.e(TAG, "catchError: ", t);
-        onError();
+        onProgressUpdate(Progress.ERROR);
     }
 
     private void downloadMissingOrCorruptImages(List<ImageDescriptor> champions) {
@@ -84,6 +95,10 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
         } catch (IOException e) {
             catchError(e);
         }
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putLong(getString(R.string.pref_last_sync_key), new Date().getTime())
+                .apply();
     }
 
     private void openMainScreen() {

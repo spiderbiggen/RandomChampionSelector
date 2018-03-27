@@ -12,10 +12,6 @@ import com.spiderbiggen.randomchampionselector.R;
 
 public interface ProgressCallback {
 
-    default void onError() {
-        onProgressUpdate(Progress.ERROR);
-    }
-
     default void onProgressUpdate(Progress progress) {
         onProgressUpdate(progress, 0, 0);
     }

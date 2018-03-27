@@ -101,16 +101,20 @@
         <item>1 hour</item>
         <item>3 hours</item>
         <item>6 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
         <item>Never</item>
     </string-array>
-    <string-array name="pref_sync_frequency_values">
+    <integer-array name="pref_sync_frequency_values">
         <item>15</item>
         <item>30</item>
         <item>60</item>
         <item>180</item>
         <item>360</item>
+        <item>720</item>
+        <item>1440</item>
         <item>-1</item>
-    </string-array>
+    </integer-array>
     <string-array name="multi_select_list_preference_default_value" />
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
@@ -130,5 +134,7 @@
     <string translatable="false" name="champion_card_transition_key">champion_card_key</string>
     <string name="champion_blurb_key">champion_blurb_key</string>
     <string name="random_fab_transition_key">random_fab_key</string>
+    <string name="pref_title_image_type_default">WEBP</string>
+    <string name="pref_last_sync_key">DATE_KEY</string>
 
 </resources>

@@ -310,7 +310,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValueString(findPreference("sync_frequency"));
+            bindPreferenceSummaryToValueInteger(findPreference("sync_frequency"));
         }
 
         @Override
