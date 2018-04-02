@@ -2,7 +2,10 @@
 
     <declare-styleable name="SeekBarPreferenceTheme">
         <attr name="min" format="integer" />
-        <attr name="max" format="integer"/>
+        <attr name="max" format="integer" />
+        <attr name="defaultValue" />
+        <attr name="suffix" format="string" />
+        <attr name="dialogMessage" />
     </declare-styleable>
 
     <integer name="spanCount">1</integer>

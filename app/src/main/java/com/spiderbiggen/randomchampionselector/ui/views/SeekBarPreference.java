@@ -5,12 +5,10 @@ package com.spiderbiggen.randomchampionselector.ui.views;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Improvements :
- * - save the value on positive button click, not on seekbar change
- * - handle @string/... values in xml file
  */
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -19,12 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.spiderbiggen.randomchampionselector.R;
+
 
 public class SeekBarPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener {
-
-    // Private attributes :
-    private static final String androidns = "http://schemas.android.com/apk/res/android";
-    private static final String customns = "http://schemas.android.com/apk/res-auto";
 
     private SeekBar mSeekBar;
     private TextView mSplashText;
@@ -32,28 +28,24 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
     private Context mContext;
 
     private String mDialogMessage, mSuffix;
-    private int mMin, mDefault, mMax, mValue = 0;
+    private int mMin, mDefault, mMax, mValue;
 
     // Constructor :
-    public SeekBarPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public SeekBarPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         mContext = context;
 
         // Get string value for dialogMessage :
-        int mDialogMessageId = attrs.getAttributeResourceValue(androidns, "dialogMessage", 0);
-        if (mDialogMessageId == 0)
-            mDialogMessage = attrs.getAttributeValue(androidns, "dialogMessage");
-        else mDialogMessage = mContext.getString(mDialogMessageId);
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SeekBarPreference, defStyleAttr, defStyleRes);
+        mDialogMessage = array.getString(R.styleable.SeekBarPreferenceTheme_dialogMessage);
 
         // Get string value for suffix (text attribute in xml file) :
-        int mSuffixId = attrs.getAttributeResourceValue(androidns, "text", 0);
-        if (mSuffixId == 0) mSuffix = attrs.getAttributeValue(androidns, "text");
-        else mSuffix = mContext.getString(mSuffixId);
+        mSuffix = array.getString(R.styleable.SeekBarPreferenceTheme_suffix);
 
         // Get default and max seekbar values :
-        mMin = attrs.getAttributeIntValue(customns, "min", 0);
-        mMax = attrs.getAttributeIntValue(customns, "max", 100);
-        mDefault = attrs.getAttributeIntValue(androidns, "defaultValue", mMin);
+        mMin = array.getInt(R.styleable.SeekBarPreferenceTheme_min, 0);
+        mMax = array.getInt(R.styleable.SeekBarPreferenceTheme_min, 100);
+        mDefault = array.getInt(R.styleable.SeekBarPreferenceTheme_defaultValue, mMin);
         if (mMin > mMax)
             throw new IllegalArgumentException("Minimum(" + mMin + ") value is larger than maximum(" + mMax + ")");
         if (mMin > mDefault)
@@ -61,7 +53,9 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
 
         mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
         setSummary(createSummary());
+        array.recycle();
     }
+
 
     // DialogPreference methods :
     @Override
