@@ -1,11 +1,9 @@
 package com.spiderbiggen.randomchampionselector.ui.activities;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -124,7 +122,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
-     * @param preference The preference that needs to be bound
+     * @param preference   The preference that needs to be bound
      * @param defaultValue The defaultValue of the preference
      * @see #sBindPreferenceSummaryToValueListener
      */
@@ -220,7 +218,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * {@inheritDoc}
      */
     @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.pref_headers, target);
     }
@@ -265,7 +262,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
         @Override
@@ -298,7 +294,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * This fragment shows data and sync preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class DataSyncPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
