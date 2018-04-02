@@ -18,7 +18,7 @@
         android:title="@string/pref_title_image_type" />
 
     <com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference
-        android:defaultValue="85"
+        android:defaultValue="@integer/pref_image_quality_default"
         android:dialogTitle="@string/pref_title_image_quality"
         android:key="pref_image_quality"
         android:text="%"

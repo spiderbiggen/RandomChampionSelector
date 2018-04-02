@@ -10,12 +10,12 @@ import java.io.File;
  * @author Stefan Breetveld
  */
 public class ImageDescriptor {
-    private String champion = null;
-    private ImageType type = ImageType.SPLASH;
-    private File file = null;
+    private String champion;
+    private ImageType type;
+    private File file;
     private boolean valid = true;
 
-    public ImageDescriptor(String champion, ImageType type, File file) {
+    ImageDescriptor(String champion, ImageType type, File file) {
         this.champion = champion;
         this.type = type;
         this.file = file;

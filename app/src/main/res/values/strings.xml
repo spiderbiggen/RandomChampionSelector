@@ -95,6 +95,7 @@
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
+
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
         <item>30 minutes</item>
@@ -115,7 +116,6 @@
         <item>1440</item>
         <item>-1</item>
     </integer-array>
-    <string-array name="multi_select_list_preference_default_value" />
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
     <string name="ok">@android:string/ok</string>
