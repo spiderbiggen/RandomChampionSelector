@@ -1,11 +1,9 @@
 package com.spiderbiggen.randomchampionselector.ddragon;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -53,23 +51,21 @@ import static com.spiderbiggen.randomchampionselector.util.async.ProgressCallbac
  */
 public class DDragon {
 
-    private static DDragon instance = new DDragon();
-
+    private static final DDragon instance = new DDragon();
     private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
     private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
     private static final AtomicReference<String> version = new AtomicReference<>(DEFAULT_VERSION);
     private static final int MAX_CONCURRENCY = 8;
-
     private final DDragonService service;
     private SharedPreferences preferences;
     private Resources resources;
 
-    public static DDragon getInstance() {
-        return instance;
-    }
-
     private DDragon() {
         this.service = createService();
+    }
+
+    public static DDragon getInstance() {
+        return instance;
     }
 
     /**
