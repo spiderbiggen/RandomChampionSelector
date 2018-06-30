@@ -32,12 +32,6 @@ public class Champion implements Serializable {
     @Embedded
     private Image image;
 
-    /**
-     * Default constructor for object (only for test purposes).
-     */
-    public Champion() {
-    }
-
     public String getId() {
         return id;
     }
@@ -185,9 +179,6 @@ public class Champion implements Serializable {
         private byte magic;
         private byte difficulty;
 
-        public Info() {
-        }
-
         public byte getAttack() {
             return attack;
         }
@@ -229,9 +220,6 @@ public class Champion implements Serializable {
         private int y;
         private int w;
         private int h;
-
-        public Image() {
-        }
 
         public String getFull() {
             return full;

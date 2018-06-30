@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="pref_image_quality_default">85</integer>
-    <integer name="pref_sync_frequency_default">180</integer>
 </resources>

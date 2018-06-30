@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.ui.activities;
+package com.spiderbiggen.randomchampionselector.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -71,8 +71,9 @@ public class ChampionActivity extends ButtonActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

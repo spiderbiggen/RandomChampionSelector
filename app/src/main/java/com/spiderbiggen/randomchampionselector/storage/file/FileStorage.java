@@ -14,30 +14,19 @@ public class FileStorage {
 
     private static final FileStorage instance = new FileStorage();
 
-    public static FileStorage getInstance() {
-        return instance;
-    }
-
-    private static final String ROOT_PATH = "root";
     private static final String IMG_ROOT_DIR = "img";
     private static final String CHAMPION_REL_DIR = "champion";
-
     private File root;
 
     private FileStorage() {
     }
 
-    public void setRootFromContext(Context context) {
-        this.root = context.getDir(ROOT_PATH, Context.MODE_PRIVATE);
+    public static FileStorage getInstance() {
+        return instance;
     }
 
-    /**
-     * Sets root.
-     *
-     * @param root the new value of root
-     */
-    public void setRoot(File root) {
-        this.root = root;
+    public void setRootFromContext(Context context) {
+        this.root = context.getFilesDir();
     }
 
     /**
@@ -47,6 +36,15 @@ public class FileStorage {
      */
     public File getRoot() {
         return root;
+    }
+
+    /**
+     * Sets root.
+     *
+     * @param root the new value of root
+     */
+    public void setRoot(File root) {
+        this.root = root;
     }
 
     /**
@@ -63,7 +61,7 @@ public class FileStorage {
     /**
      * Create a directory.
      *
-     * @param root root directory
+     * @param root  root directory
      * @param child the effective directory
      * @return a directory that is guaranteed to exist
      * @throws IOException if the directory can't be created
@@ -75,7 +73,7 @@ public class FileStorage {
     /**
      * Create a directory.
      *
-     * @param root root directory
+     * @param root  root directory
      * @param child the effective directory
      * @return a directory that is guaranteed to exist
      * @throws IOException if the directory can't be created

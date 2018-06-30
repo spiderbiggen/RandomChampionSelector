@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.ui.views;
+package com.spiderbiggen.randomchampionselector.view;
 
 /* The following code was written by Matthew Wiggins
  * and is released under the APACHE 2.0 license
@@ -19,13 +19,10 @@ import android.widget.TextView;
 
 import com.spiderbiggen.randomchampionselector.R;
 
-
 public class SeekBarPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener {
 
     private SeekBar mSeekBar;
-    private TextView mSplashText;
     private TextView mValueText;
-    private Context mContext;
 
     private String mDialogMessage, mSuffix;
     private int mMin, mDefault, mMax, mValue;
@@ -33,8 +30,25 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
     // Constructor :
     public SeekBarPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mContext = context;
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
 
+    public SeekBarPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs, defStyleAttr, defStyleAttr);
+    }
+
+    public SeekBarPreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs, 0, 0);
+    }
+
+    public SeekBarPreference(Context context) {
+        super(context);
+        init(context, null, 0, 0);
+    }
+
+    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         // Get string value for dialogMessage :
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.SeekBarPreference, defStyleAttr, defStyleRes);
         mDialogMessage = array.getString(R.styleable.SeekBarPreferenceTheme_dialogMessage);
@@ -44,7 +58,7 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
 
         // Get default and max seekbar values :
         mMin = array.getInt(R.styleable.SeekBarPreferenceTheme_min, 0);
-        mMax = array.getInt(R.styleable.SeekBarPreferenceTheme_min, 100);
+        mMax = array.getInt(R.styleable.SeekBarPreferenceTheme_max, 100);
         mDefault = array.getInt(R.styleable.SeekBarPreferenceTheme_defaultValue, mMin);
         if (mMin > mMax)
             throw new IllegalArgumentException("Minimum(" + mMin + ") value is larger than maximum(" + mMax + ")");
@@ -56,22 +70,24 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         array.recycle();
     }
 
-
     // DialogPreference methods :
     @Override
     protected View onCreateDialogView() {
-        LinearLayout.LayoutParams params;
-        LinearLayout layout = new LinearLayout(mContext);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(6, 6, 6, 6);
+        Context context = getContext();
+        mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
 
-        mSplashText = new TextView(mContext);
-        mSplashText.setPadding(30, 10, 30, 10);
+        LinearLayout.LayoutParams params;
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(6, 6, 6, 12);
+
+        TextView mSplashText = new TextView(context);
+        mSplashText.setPadding(30, 10, 30, 20);
         if (mDialogMessage != null)
             mSplashText.setText(mDialogMessage);
         layout.addView(mSplashText);
 
-        mValueText = new TextView(mContext);
+        mValueText = new TextView(context);
         mValueText.setGravity(Gravity.CENTER_HORIZONTAL);
         mValueText.setTextSize(32);
         params = new LinearLayout.LayoutParams(
@@ -79,14 +95,12 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         layout.addView(mValueText, params);
 
-        mSeekBar = new SeekBar(mContext);
+        mSeekBar = new SeekBar(context);
         mSeekBar.setOnSeekBarChangeListener(this);
+        updateProgress();
+        mSeekBar.setMax(mMax - mMin);
         layout.addView(mSeekBar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
-
-        mSeekBar.setMax(mMax - mMin);
-        updateProgress();
         setSummary(createSummary());
         return layout;
     }
@@ -106,16 +120,19 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
 
     @Override
     public void onProgressChanged(SeekBar seek, int value, boolean fromTouch) {
-        String t = String.valueOf(mMin + value);
+        mValue = mMin + value;
+        String t = String.valueOf(mValue);
         mValueText.setText(mSuffix == null ? t : t + mSuffix);
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seek) {
+        // Empty
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seek) {
+        // Empty
     }
 
     public int getMin() {
@@ -138,10 +155,14 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         return mValue;
     }
 
-    public void setValue(int value) {
-        if (value < mMin) value = mMin;
-        if (value > mMax) value = mMax;
-        mValue = value;
+    public void setValue(final int value) {
+        if (value == mMin) {
+            mValue = value;
+        } else if (value > mMax) {
+            mValue = mMax;
+        } else {
+            mValue = mMin;
+        }
         updateProgress();
     }
 
@@ -157,10 +178,9 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
 
     @Override
     protected void onDialogClosed(boolean positiveResult) {
-        if (positiveResult && shouldPersist()) {
-            mValue = mMin + mSeekBar.getProgress();
-            persistInt(mValue);
+        if (positiveResult) {
             callChangeListener(mValue);
+            persistInt(mValue);
         }
     }
 }

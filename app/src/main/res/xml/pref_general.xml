@@ -4,10 +4,10 @@
     <ListPreference
         android:defaultValue="@string/pref_language_default"
         android:dialogTitle="@string/pref_title_language"
-        android:key="pref_language"
-        android:title="@string/pref_title_language"
+        android:entries="@array/pref_language_titles"
         android:entryValues="@array/pref_language_values"
-        android:entries="@array/pref_language_titles"/>
+        android:key="pref_language"
+        android:title="@string/pref_title_language" />
 
     <ListPreference
         android:defaultValue="WEBP"
@@ -17,13 +17,16 @@
         android:key="pref_image_type"
         android:title="@string/pref_title_image_type" />
 
-    <com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference
+    <com.spiderbiggen.randomchampionselector.view.SeekBarPreference
         android:defaultValue="@integer/pref_image_quality_default"
         android:dialogTitle="@string/pref_title_image_quality"
         android:key="pref_image_quality"
-        android:text="%"
         android:title="@string/pref_title_image_quality"
         app:max="100"
-        app:min="40" />
+        app:min="40"
+        app:suffix="woah"
+        android:positiveButtonText="@android:string/ok"
+        android:negativeButtonText="@android:string/cancel"
+        />
 
 </PreferenceScreen>

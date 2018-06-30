@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.ListChampionsActivity"
+    tools:context=".activities.ListChampionsActivity"
     tools:targetApi="O">
 
     <android.support.design.widget.AppBarLayout
@@ -42,7 +42,7 @@
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.view.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

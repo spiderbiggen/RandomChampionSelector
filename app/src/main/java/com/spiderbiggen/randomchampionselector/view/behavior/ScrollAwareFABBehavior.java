@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.ui.views.behavior;
+package com.spiderbiggen.randomchampionselector.view.behavior;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

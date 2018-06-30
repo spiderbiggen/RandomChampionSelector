@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.ui.activities;
+package com.spiderbiggen.randomchampionselector.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
-import com.spiderbiggen.randomchampionselector.ui.views.SeekBarPreference;
+import com.spiderbiggen.randomchampionselector.view.SeekBarPreference;
 
 import java.io.IOException;
 import java.util.List;
@@ -135,7 +135,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
-                        .getInt(preference.getKey(), 0));
+                        .getInt(preference.getKey(), defaultValue));
     }
 
 
@@ -249,6 +249,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                     Log.e(TAG, "onSharedPreferenceChanged: ", e);
                 }
                 break;
+            default:
+                break;
+        }
+
+        if (needsRefresh) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putLong(getString(R.string.pref_last_sync_key), -1);
+            editor.apply();
+
         }
     }
 
@@ -305,7 +314,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValueInteger(findPreference("sync_frequency"));
+            bindPreferenceSummaryToValueString(findPreference("sync_frequency"));
         }
 
         @Override

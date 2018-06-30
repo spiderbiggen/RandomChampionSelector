@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="o">
         <activity
-            android:name=".ui.activities.LoaderActivity"
+            android:name=".activities.LoaderActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:noHistory="true">
@@ -26,25 +26,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.ListChampionsActivity"
+            android:name=".activities.ListChampionsActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.ChampionActivity"
+            android:name=".activities.ChampionActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:parentActivityName=".ui.activities.ListChampionsActivity">
+            android:parentActivityName=".activities.ListChampionsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".ui.activities.ListChampionsActivity" />
+            android:parentActivityName=".activities.ListChampionsActivity" />
     </application>
 
 </manifest>

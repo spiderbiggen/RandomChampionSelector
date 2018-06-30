@@ -1,7 +1,6 @@
-package com.spiderbiggen.randomchampionselector.ui.views;
+package com.spiderbiggen.randomchampionselector.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;

@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.ui.activities;
+package com.spiderbiggen.randomchampionselector.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,7 +46,7 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
         dDragon.setResources(getResources());
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         long timeMillis = preferences.getLong(getString(R.string.pref_last_sync_key), -1);
-        int syncTime = preferences.getInt(getString(R.string.pref_title_sync_frequency), getResources().getInteger(R.integer.pref_sync_frequency_default));
+        int syncTime = Integer.parseInt(preferences.getString(getString(R.string.pref_title_sync_frequency), getResources().getString(R.string.pref_sync_frequency_default)));
         Date date = new Date(timeMillis);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -syncTime);
@@ -126,7 +126,7 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
     @Override
     public void finishExecution() {
-
+        //Empty
     }
 
 }

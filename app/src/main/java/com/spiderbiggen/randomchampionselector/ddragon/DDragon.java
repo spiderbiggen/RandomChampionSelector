@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -90,7 +91,7 @@ public class DDragon {
         return service.getVersions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterSuccess(s -> version.set(s[0]))
+                .doOnSuccess(s -> version.set(s[0]))
                 .doOnEvent((strings, throwable) -> onComplete.run())
                 .doOnError(onError)
                 .subscribe();
