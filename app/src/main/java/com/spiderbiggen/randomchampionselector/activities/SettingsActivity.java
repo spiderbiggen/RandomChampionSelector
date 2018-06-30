@@ -108,19 +108,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValueInteger(Preference preference) {
-        bindPreferenceSummaryToValueInteger(preference, 0);
-    }
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
      * @param preference   The preference that needs to be bound
      * @param defaultValue The defaultValue of the preference
      * @see #sBindPreferenceSummaryToValueListener

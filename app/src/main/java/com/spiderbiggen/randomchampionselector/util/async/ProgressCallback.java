@@ -1,7 +1,5 @@
 package com.spiderbiggen.randomchampionselector.util.async;
 
-import android.content.Context;
-
 import com.spiderbiggen.randomchampionselector.R;
 
 /**

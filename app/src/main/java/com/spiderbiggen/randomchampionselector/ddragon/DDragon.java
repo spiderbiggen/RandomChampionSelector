@@ -186,7 +186,7 @@ public class DDragon {
         return BitmapFactory.decodeFile(file.getPath(), options);
     }
 
-    void saveBitmap(@NonNull final File file, final Bitmap bitmap, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
+    protected void saveBitmap(@NonNull final File file, final Bitmap bitmap, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
         if (bitmap != null && (file.exists() || file.createNewFile())) {
             try (FileOutputStream outputStream = new FileOutputStream(file)) {
                 bitmap.compress(compressFormat, quality, outputStream);
@@ -195,7 +195,7 @@ public class DDragon {
     }
 
     @NonNull
-    Maybe<ResponseBody> getChampionCall(String champion, ImageType type, int skinId) {
+    protected Maybe<ResponseBody> getChampionCall(String champion, ImageType type, int skinId) {
         switch (type) {
             case SQUARE:
                 return service.getSquareImage(getVersion(), champion);

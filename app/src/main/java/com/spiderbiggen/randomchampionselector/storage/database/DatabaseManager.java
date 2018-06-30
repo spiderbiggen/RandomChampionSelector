@@ -26,7 +26,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class DatabaseManager implements IDataInteractor {
 
-    private static final String TAG = DatabaseManager.class.getSimpleName();
     private static DatabaseManager instance = new DatabaseManager();
     private SimpleDatabase database;
 

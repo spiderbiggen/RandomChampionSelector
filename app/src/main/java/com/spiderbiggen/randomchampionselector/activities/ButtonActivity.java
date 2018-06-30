@@ -18,8 +18,6 @@ import com.spiderbiggen.randomchampionselector.R;
  */
 public abstract class ButtonActivity extends AppCompatActivity {
 
-    private static final String TAG = ButtonActivity.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -49,7 +47,6 @@ public abstract class ButtonActivity extends AppCompatActivity {
     }
 
     public void openChampion(View view) {
-        View fab = findViewById(R.id.fab);
         Intent intent = getChampionIntent();
         startActivity(intent);
     }

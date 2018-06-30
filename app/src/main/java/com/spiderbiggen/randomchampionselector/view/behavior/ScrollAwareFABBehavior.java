@@ -15,8 +15,6 @@ import android.view.View;
 
 public class ScrollAwareFABBehavior extends CoordinatorLayout.Behavior<FloatingActionButton> {
 
-    private static final String TAG = ScrollAwareFABBehavior.class.getSimpleName();
-
     public ScrollAwareFABBehavior() {
         super();
     }
