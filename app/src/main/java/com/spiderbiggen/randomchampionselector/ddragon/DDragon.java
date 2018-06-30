@@ -20,10 +20,8 @@ import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +50,7 @@ import static com.spiderbiggen.randomchampionselector.util.async.ProgressCallbac
  */
 public class DDragon {
 
+    private static final String TAG = DDragon.class.getSimpleName();
     private static final DDragon instance = new DDragon();
     private static final String BASE_URL = "http://ddragon.leagueoflegends.com";
     private static final String DEFAULT_VERSION = "8.4.1"; // Default version if versions endpoint fails
@@ -113,7 +112,7 @@ public class DDragon {
                 .subscribe(subscriber);
     }
 
-    public Disposable verifyImages(List<Champion> champions, ProgressCallback callback, Consumer<List<ImageDescriptor>> consumer, @NonNull Consumer<Throwable> onError) throws IOException {
+    public Disposable verifyImages(List<Champion> champions, ProgressCallback callback, Consumer<List<ImageDescriptor>> consumer, @NonNull Consumer<Throwable> onError) {
         final List<ImageDescriptor> newImages = getNewImages(champions, getCompressionMethod());
         final AtomicInteger downloadCount = new AtomicInteger();
         final int total = newImages.size();
@@ -121,19 +120,11 @@ public class DDragon {
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
-                        .map(pair -> {
-                            pair.setValid(pair.getFile().exists());
-                            if (pair.isValid()) {
-                                try (InputStream stream = new FileInputStream(pair.getFile())) {
-                                    pair.setValid(BitmapFactory.decodeStream(stream) != null);
-                                }
-                            }
-                            return pair;
-                        }), MAX_CONCURRENCY)
+                        .map(ImageDescriptor::verifySavedFile), MAX_CONCURRENCY)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(p -> callback.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total))
                 .doOnComplete(callback::finishExecution)
-                .filter(p -> !p.isValid())
+                .filter(ImageDescriptor::isInValid)
                 .distinct()
                 .toList()
                 .doOnSuccess(consumer)
@@ -141,7 +132,7 @@ public class DDragon {
                 .subscribe();
     }
 
-    public Disposable downloadAllImages(List<ImageDescriptor> champions, @NonNull ProgressCallback callback, @NonNull Action onComplete, @NonNull Consumer<Throwable> onError) throws IOException {
+    public Disposable downloadAllImages(List<ImageDescriptor> champions, @NonNull ProgressCallback callback, @NonNull Action onComplete, @NonNull Consumer<Throwable> onError) {
         final AtomicInteger downloadCount = new AtomicInteger();
         final int total = champions.size();
         final Bitmap.CompressFormat compressFormat = getCompressionMethod();
@@ -150,18 +141,7 @@ public class DDragon {
                 .subscribeOn(Schedulers.io())
                 .flatMap(item -> Observable.just(item)
                         .subscribeOn(Schedulers.io())
-                        .map(pair -> {
-                            if (!pair.isValid()) {
-                                ResponseBody body = getChampionCall(pair.getChampion(), pair.getType(), 0).blockingGet();
-                                if (body != null) {
-                                    try (InputStream stream = body.byteStream()) {
-                                        Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                                        saveBitmap(pair.getFile(), bitmap, compressFormat, quality);
-                                    }
-                                }
-                            }
-                            return pair;
-                        }), MAX_CONCURRENCY)
+                        .map(imDesc -> imDesc.verifyDownload(this, compressFormat, quality)), MAX_CONCURRENCY)
 
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(p -> callback.onDownloadSuccess(downloadCount.incrementAndGet(), total))
@@ -171,21 +151,25 @@ public class DDragon {
                 .subscribe();
     }
 
-    private List<ImageDescriptor> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) throws IOException {
+    private List<ImageDescriptor> getNewImages(List<Champion> champions, Bitmap.CompressFormat format) {
         List<ImageDescriptor> list = new ArrayList<>();
         for (Champion champion : champions) {
             for (ImageType type : ImageType.values()) {
-                File file = getChampionFile(champion.getId(), type, format);
-                list.add(new ImageDescriptor(champion.getId(), type, file));
+                try {
+                    File file = getChampionFile(champion.getId(), type, format);
+                    list.add(new ImageDescriptor(champion.getId(), type, file));
+                } catch (IOException e) {
+                    Log.e(TAG, "getNewImages: ", e);
+                }
             }
         }
         return list;
     }
 
-    public boolean deleteChampionImages() throws IOException {
+    public void deleteChampionImages() throws IOException {
         FileStorage storage = FileStorage.getInstance();
         File dir = storage.getChampionImageDir();
-        return storage.deleteRecursive(dir);
+        storage.deleteRecursive(dir);
     }
 
     @NonNull
@@ -202,7 +186,7 @@ public class DDragon {
         return BitmapFactory.decodeFile(file.getPath(), options);
     }
 
-    private void saveBitmap(@NonNull final File file, final Bitmap bitmap, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
+    void saveBitmap(@NonNull final File file, final Bitmap bitmap, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
         if (bitmap != null && (file.exists() || file.createNewFile())) {
             try (FileOutputStream outputStream = new FileOutputStream(file)) {
                 bitmap.compress(compressFormat, quality, outputStream);
@@ -211,7 +195,7 @@ public class DDragon {
     }
 
     @NonNull
-    private Maybe<ResponseBody> getChampionCall(String champion, ImageType type, int skinId) {
+    Maybe<ResponseBody> getChampionCall(String champion, ImageType type, int skinId) {
         switch (type) {
             case SQUARE:
                 return service.getSquareImage(getVersion(), champion);

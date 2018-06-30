@@ -19,7 +19,6 @@ import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,9 +41,9 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
         databaseManager.useContext(getApplicationContext());
         FileStorage.getInstance().setRootFromContext(this);
         dDragon = DDragon.getInstance();
-        dDragon.setPreferences(PreferenceManager.getDefaultSharedPreferences(this));
-        dDragon.setResources(getResources());
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        dDragon.setPreferences(preferences);
+        dDragon.setResources(getResources());
         long timeMillis = preferences.getLong(getString(R.string.pref_last_sync_key), -1);
         int syncTime = Integer.parseInt(preferences.getString(getString(R.string.pref_title_sync_frequency), getResources().getString(R.string.pref_sync_frequency_default)));
         Date date = new Date(timeMillis);
@@ -77,11 +76,7 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
     private void handleChampionList(List<Champion> champions) {
         disposables.add(databaseManager.addChampions(champions));
-        try {
-            disposables.add(dDragon.verifyImages(champions, this, this::downloadMissingOrCorruptImages, this::catchError));
-        } catch (IOException e) {
-            catchError(e);
-        }
+        disposables.add(dDragon.verifyImages(champions, this, this::downloadMissingOrCorruptImages, this::catchError));
     }
 
     private void catchError(Throwable t) {
@@ -90,18 +85,14 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
     }
 
     private void downloadMissingOrCorruptImages(List<ImageDescriptor> champions) {
-        try {
-            disposables.add(dDragon.downloadAllImages(champions, this, this::openMainScreen, this::catchError));
-        } catch (IOException e) {
-            catchError(e);
-        }
+        disposables.add(dDragon.downloadAllImages(champions, this, this::openMainScreen, this::catchError));
+    }
+
+    private void openMainScreen() {
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
                 .putLong(getString(R.string.pref_last_sync_key), new Date().getTime())
                 .apply();
-    }
-
-    private void openMainScreen() {
         Intent intent = new Intent(this, ListChampionsActivity.class);
         startActivity(intent);
     }

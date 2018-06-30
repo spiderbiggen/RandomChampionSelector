@@ -11,7 +11,6 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -181,13 +180,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
-        if (getAndResetNeedsRefresh()) {
-            TaskStackBuilder.create(this)
-                    // Add all of this activity's parents to the back stack
-                    .addNextIntentWithParentStack(new Intent(this, LoaderActivity.class))
-                    // Navigate up to the closest parent
-                    .startActivities();
-        }
+        if (startActivityOnRefresh()) return;
         super.onBackPressed();
     }
 
@@ -195,15 +188,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (getAndResetNeedsRefresh()) {
-                startActivity(new Intent(this, LoaderActivity.class));
-            } else if (!super.onMenuItemSelected(featureId, item)) {
+            if (!startActivityOnRefresh() && !super.onMenuItemSelected(featureId, item)) {
                 NavUtils.navigateUpFromSameTask(this);
             }
-
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    private boolean startActivityOnRefresh() {
+        if (getAndResetNeedsRefresh()) {
+            Intent intent = new Intent(this, LoaderActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -257,7 +257,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putLong(getString(R.string.pref_last_sync_key), -1);
             editor.apply();
-
         }
     }
 

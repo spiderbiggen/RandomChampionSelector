@@ -1,8 +1,16 @@
 package com.spiderbiggen.randomchampionselector.ddragon;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import okhttp3.ResponseBody;
 
 /**
  * Created on 15-3-2018.
@@ -13,7 +21,7 @@ public class ImageDescriptor {
     private String champion;
     private ImageType type;
     private File file;
-    private boolean valid = true;
+    private boolean valid = false;
 
     ImageDescriptor(String champion, ImageType type, File file) {
         this.champion = champion;
@@ -80,8 +88,8 @@ public class ImageDescriptor {
      *
      * @return value of valid
      */
-    public boolean isValid() {
-        return valid;
+    public boolean isInValid() {
+        return !valid;
     }
 
     /**
@@ -91,5 +99,27 @@ public class ImageDescriptor {
      */
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public ImageDescriptor verifySavedFile() throws IOException {
+        if (getFile().exists()) {
+            try (InputStream stream = new FileInputStream(getFile())) {
+                setValid(BitmapFactory.decodeStream(stream) != null);
+            }
+        }
+        return this;
+    }
+
+    public ImageDescriptor verifyDownload(DDragon dDragon, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
+        if (isInValid()) {
+            ResponseBody body = dDragon.getChampionCall(getChampion(), getType(), 0).blockingGet();
+            if (body != null) {
+                try (InputStream stream = body.byteStream()) {
+                    Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                    dDragon.saveBitmap(getFile(), bitmap, compressFormat, quality);
+                }
+            }
+        }
+        return this;
     }
 }
