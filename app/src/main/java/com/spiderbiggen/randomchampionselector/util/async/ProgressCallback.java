@@ -10,12 +10,12 @@ import com.spiderbiggen.randomchampionselector.R;
 
 public interface ProgressCallback {
 
-    default void onProgressUpdate(Progress progress) {
-        onProgressUpdate(progress, 0, 0);
-    }
-
     default void onDownloadSuccess(int count, int total) {
         onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count, total);
+    }
+
+    default void onProgressUpdate(Progress progress) {
+        onProgressUpdate(progress, 0, 0);
     }
 
     /**
@@ -48,7 +48,7 @@ public interface ProgressCallback {
         }
 
         /**
-         * Gets indeterminate
+         * Gets indeterminate.
          *
          * @return value of indeterminate
          */
@@ -57,7 +57,7 @@ public interface ProgressCallback {
         }
 
         /**
-         * Gets stringResource
+         * Gets stringResource.
          *
          * @return value of stringResource
          */

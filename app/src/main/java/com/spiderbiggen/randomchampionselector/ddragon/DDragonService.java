@@ -1,8 +1,8 @@
 package com.spiderbiggen.randomchampionselector.ddragon;
 
-import com.spiderbiggen.randomchampionselector.model.Champion;
-
 import java.util.List;
+
+import com.spiderbiggen.randomchampionselector.model.Champion;
 
 import io.reactivex.Maybe;
 import okhttp3.ResponseBody;
@@ -14,7 +14,6 @@ import retrofit2.http.Path;
  *
  * @author Stefan Breetveld
  */
-
 public interface DDragonService {
 
     String API_URL = "/api";

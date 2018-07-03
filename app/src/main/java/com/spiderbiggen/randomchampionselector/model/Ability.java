@@ -9,6 +9,14 @@ public class Ability {
     private String cooldown;
     private String description;
 
+    /**
+     * Default constructor.
+     *
+     * @param name        the name of the ability
+     * @param cost        the ability cost
+     * @param cooldown    the cool down
+     * @param description the description
+     */
     public Ability(String name, String cost, String cooldown, String description) {
         this.name = name;
         this.cost = cost;
@@ -35,14 +43,22 @@ public class Ability {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Ability ability = (Ability) o;
 
         return getName().equals(ability.getName()) &&
-                !(getCost() != null ? !getCost().equals(ability.getCost()) : ability.getCost() != null) &&
-                !(getDescription() != null ? !getDescription().equals(ability.getDescription()) : ability.getDescription() != null);
+            !(getCost() != null
+                ? !getCost().equals(ability.getCost())
+                : ability.getCost() != null) &&
+            !(getDescription() != null
+                ? !getDescription().equals(ability.getDescription())
+                : ability.getDescription() != null);
 
     }
 

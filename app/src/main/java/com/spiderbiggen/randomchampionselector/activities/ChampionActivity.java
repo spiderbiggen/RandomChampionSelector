@@ -3,20 +3,22 @@ package com.spiderbiggen.randomchampionselector.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
 import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
-
-import java.io.IOException;
 
 import io.reactivex.disposables.Disposable;
 
@@ -38,8 +40,8 @@ public class ChampionActivity extends ButtonActivity {
         supportPostponeEnterTransition();
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(null);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         if (savedInstanceState != null) {
@@ -60,8 +62,8 @@ public class ChampionActivity extends ButtonActivity {
     protected void onResume() {
         DatabaseManager dbInstance = DatabaseManager.getInstance();
         championFlowable = championKey < 0
-                ? dbInstance.findRandomChampion(this::setChampion, null, championKey)
-                : dbInstance.findChampion(this::setChampion, championKey);
+            ? dbInstance.findRandomChampion(this::setChampion, null, championKey)
+            : dbInstance.findChampion(this::setChampion, championKey);
         super.onResume();
     }
 
@@ -80,7 +82,9 @@ public class ChampionActivity extends ButtonActivity {
     public void onBackPressed() {
         if (upOnBack) {
             Intent parentActivityIntent = getParentActivityIntent();
-            parentActivityIntent = parentActivityIntent == null ? new Intent(this, ListChampionsActivity.class) : parentActivityIntent;
+            parentActivityIntent = parentActivityIntent == null
+                ? new Intent(this, ListChampionsActivity.class)
+                : parentActivityIntent;
             supportNavigateUpTo(parentActivityIntent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } else {

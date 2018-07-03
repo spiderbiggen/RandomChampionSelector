@@ -13,8 +13,7 @@ import android.view.View;
 import com.spiderbiggen.randomchampionselector.R;
 
 /**
- * Fullscreen activity
- * Created by Stefan on 9-5-2015.
+ * Fullscreen activity Created by Stefan on 9-5-2015.
  */
 public abstract class ButtonActivity extends AppCompatActivity {
 
@@ -28,7 +27,7 @@ public abstract class ButtonActivity extends AppCompatActivity {
     @Override
     public final boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_scrolling, menu);
+        inflater.inflate(R.menu.menu, menu);
         return true;
     }
 
@@ -41,27 +40,26 @@ public abstract class ButtonActivity extends AppCompatActivity {
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
+            case R.id.action_force_refresh:
+                startActivity(LoaderActivity.createStartIntent(this, true));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     public void openChampion(View view) {
-        Intent intent = getChampionIntent();
-        startActivity(intent);
+        startActivity(getChampionIntent());
     }
 
     protected Intent getChampionIntent() {
         return new Intent(this, ChampionActivity.class);
     }
 
-    protected Intent getChampionListIntent() {
-        return new Intent(this, ListChampionsActivity.class);
-    }
-
     @Override
     public void startActivity(Intent intent) {
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(this, android.R.anim.fade_in, android.R.anim.fade_out);
+        ActivityOptionsCompat options = ActivityOptionsCompat
+            .makeCustomAnimation(this, android.R.anim.fade_in, android.R.anim.fade_out);
         super.startActivity(intent, options.toBundle());
     }
 }

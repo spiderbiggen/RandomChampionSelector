@@ -1,6 +1,7 @@
 package com.spiderbiggen.randomchampionselector.model;
 
 /**
+ * In game role description.
  *
  * @author Stefan Breetveld
  */

@@ -62,7 +62,9 @@ public class TopCenteredImageView extends android.support.v7.widget.AppCompatIma
         Matrix matrix = new Matrix();
         matrix.reset();
         Drawable drawable = getDrawable();
-        if (drawable == null) return;
+        if (drawable == null) {
+            return;
+        }
         float width = drawable.getIntrinsicWidth();
         float height = drawable.getIntrinsicHeight();
         float xScale = this.width / width;

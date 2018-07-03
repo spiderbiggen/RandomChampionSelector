@@ -18,74 +18,70 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.view.SeekBarPreference;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
+ * A {@link PreferenceActivity} that presents a set of application settings. On handset devices, settings are presented
+ * as a single list. On tablets, settings are split by category, with category headers shown to the left of the list of
+ * settings.
+ *
+ * <p>See <a href="http://developer.android.com/design/patterns/settings.html"> Android Design: Settings</a> for design
+ * guidelines and the <a href="http://developer.android.com/guide/topics/ui/settings.html">Settings API Guide</a> for
+ * more information on developing a Settings UI.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsActivity extends AppCompatPreferenceActivity
+    implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
     /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
+     * A preference value change listener that updates the preference's summary to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
-        String stringValue = value.toString();
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
+        (preference, value) -> {
+            String stringValue = value.toString();
 
-        if (preference instanceof ListPreference) {
-            // For list preferences, look up the correct display value in
-            // the preference's 'entries' list.
-            ListPreference listPreference = (ListPreference) preference;
-            int index = listPreference.findIndexOfValue(stringValue);
+            if (preference instanceof ListPreference) {
+                // For list preferences, look up the correct display value in
+                // the preference's 'entries' list.
+                ListPreference listPreference = (ListPreference) preference;
+                int index = listPreference.findIndexOfValue(stringValue);
 
-            // Set the summary to reflect the new value.
-            preference.setSummary(
+                // Set the summary to reflect the new value.
+                preference.setSummary(
                     index >= 0
-                            ? listPreference.getEntries()[index]
-                            : null);
+                        ? listPreference.getEntries()[index]
+                        : null);
 
-        } else if (preference instanceof SeekBarPreference) {
-            SeekBarPreference seekBarPreference = (SeekBarPreference) preference;
-            preference.setSummary(seekBarPreference.createSummary());
-        } else {
-            // For all other preferences, set the summary to the value's
-            // simple string representation.
-            preference.setSummary(stringValue);
-        }
-        return true;
-    };
+            } else if (preference instanceof SeekBarPreference) {
+                SeekBarPreference seekBarPreference = (SeekBarPreference) preference;
+                preference.setSummary(seekBarPreference.createSummary());
+            } else {
+                // For all other preferences, set the summary to the value's
+                // simple string representation.
+                preference.setSummary(stringValue);
+            }
+            return true;
+        };
 
     private boolean needsRefresh = false;
 
     /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
+     * Helper method to determine if the device has an extra-large screen. For example, 10" tablets are extra-large.
      */
     private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        return (context.getResources().getConfiguration().screenLayout &
+            Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
     /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
+     * Binds a preference's summary to its value. More specifically, when the preference's value is changed, its summary
+     * (line of text below the preference title) is updated to reflect the value. The summary is also immediately
+     * updated upon calling this method. The exact display format is dependent on the type of preference.
      *
      * @see #sBindPreferenceSummaryToValueListener
      */
@@ -96,17 +92,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+            PreferenceManager
+                .getDefaultSharedPreferences(preference.getContext())
+                .getString(preference.getKey(), ""));
     }
 
     /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
+     * Binds a preference's summary to its value. More specifically, when the preference's value is changed, its summary
+     * (line of text below the preference title) is updated to reflect the value. The summary is also immediately
+     * updated upon calling this method. The exact display format is dependent on the type of preference.
      *
      * @param preference   The preference that needs to be bound
      * @param defaultValue The defaultValue of the preference
@@ -119,9 +113,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getInt(preference.getKey(), defaultValue));
+            PreferenceManager
+                .getDefaultSharedPreferences(preference.getContext())
+                .getInt(preference.getKey(), defaultValue));
     }
 
 
@@ -135,14 +129,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     protected void onResume() {
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this)
-                .registerOnSharedPreferenceChangeListener(this);
+            .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(this);
+            .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -167,7 +161,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
-        if (startActivityOnRefresh()) return;
+        if (startActivityOnRefresh()) {
+            return;
+        }
         super.onBackPressed();
     }
 
@@ -185,9 +181,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     private boolean startActivityOnRefresh() {
         if (getAndResetNeedsRefresh()) {
-            Intent intent = new Intent(this, LoaderActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            startActivity(LoaderActivity.createStartIntent(this, true));
             return true;
         }
         return false;
@@ -210,18 +204,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     }
 
     /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
+     * This method stops fragment injection in malicious applications. Make sure to deny any unknown fragments here.
      */
     protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName);
+        return PreferenceFragment.class.getName().equals(fragmentName) || GeneralPreferenceFragment.class.getName()
+            .equals(fragmentName) || DataSyncPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "onSharedPreferenceChanged() called with: sharedPreferences = [" + sharedPreferences + "], key = [" + key + "]");
+        Log.d(TAG,
+            String.format("onSharedPreferenceChanged() called with: sharedPreferences = [%s], key = [%s]",
+                sharedPreferences, key));
         DDragon dDragon = DDragon.getInstance();
         switch (key) {
             case "pref_language":
@@ -239,12 +233,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             default:
                 break;
         }
-
-        if (needsRefresh) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putLong(getString(R.string.pref_last_sync_key), -1);
-            editor.apply();
-        }
     }
 
     private boolean getAndResetNeedsRefresh() {
@@ -254,8 +242,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     }
 
     /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * This fragment shows general preferences only. It is used when the activity is showing a two-pane settings UI.
      */
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
@@ -286,8 +273,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     }
 
     /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * This fragment shows data and sync preferences only. It is used when the activity is showing a two-pane settings
+     * UI.
      */
     public static class DataSyncPreferenceFragment extends PreferenceFragment {
         @Override

@@ -1,5 +1,6 @@
 package com.spiderbiggen.randomchampionselector.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,6 +12,10 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.ddragon.ImageDescriptor;
@@ -19,37 +24,44 @@ import com.spiderbiggen.randomchampionselector.storage.database.DatabaseManager;
 import com.spiderbiggen.randomchampionselector.storage.file.FileStorage;
 import com.spiderbiggen.randomchampionselector.util.async.ProgressCallback;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import io.reactivex.disposables.Disposable;
 
 public class LoaderActivity extends AppCompatActivity implements ProgressCallback {
 
+    public static final String FORCE_REFRESH = "FORCE_REFRESH";
+    public static final int DEFAULT_TIME_MILLIS = -1;
+
     private static final String TAG = LoaderActivity.class.getSimpleName();
+
     private DatabaseManager databaseManager;
     private DDragon dDragon;
     private List<Disposable> disposables = new ArrayList<>();
 
+    public static Intent createStartIntent(Context context, boolean forceRefresh) {
+        Intent intent = new Intent(context, LoaderActivity.class);
+        intent
+            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(LoaderActivity.FORCE_REFRESH, forceRefresh);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        databaseManager = DatabaseManager.getInstance();
-        databaseManager.useContext(getApplicationContext());
-        FileStorage.getInstance().setRootFromContext(this);
-        dDragon = DDragon.getInstance();
+        initStorage();
+        initApis();
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        dDragon.setPreferences(preferences);
-        dDragon.setResources(getResources());
-        long timeMillis = preferences.getLong(getString(R.string.pref_last_sync_key), -1);
-        int syncTime = Integer.parseInt(preferences.getString(getString(R.string.pref_title_sync_frequency), getResources().getString(R.string.pref_sync_frequency_default)));
-        Date date = new Date(timeMillis);
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, -syncTime);
-        if (timeMillis == -1 || date.before(calendar.getTime())) {
+        boolean shouldRefresh = getIntent().getBooleanExtra(FORCE_REFRESH, false);
+        if (!shouldRefresh) {
+            long timeMillis = preferences.getLong(getString(R.string.pref_last_sync_key), DEFAULT_TIME_MILLIS);
+            int syncTime = Integer.parseInt(preferences.getString(getString(R.string.pref_title_sync_frequency),
+                getString(R.string.pref_sync_frequency_default)));
+            Date nextSync = new Date(timeMillis + syncTime);
+            Date now = new Date();
+            shouldRefresh = timeMillis == DEFAULT_TIME_MILLIS || now.after(nextSync);
+        }
+        if (shouldRefresh) {
             setContentView(R.layout.activity_loader);
             startLoading();
         } else {
@@ -57,11 +69,26 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
         }
     }
 
+    private void initApis() {
+        Context applicationContext = getApplicationContext();
+        dDragon = DDragon.getInstance();
+        dDragon.useContext(applicationContext);
+    }
+
+    private void initStorage() {
+        Context applicationContext = getApplicationContext();
+        FileStorage.getInstance().useContext(applicationContext);
+        databaseManager = DatabaseManager.getInstance();
+        databaseManager.useContext(applicationContext);
+
+    }
+
     @Override
     protected void onDestroy() {
         for (Disposable disposable : disposables) {
-            if (!disposable.isDisposed())
+            if (!disposable.isDisposed()) {
                 disposable.dispose();
+            }
         }
         super.onDestroy();
     }
@@ -76,7 +103,8 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
 
     private void handleChampionList(List<Champion> champions) {
         disposables.add(databaseManager.addChampions(champions));
-        disposables.add(dDragon.verifyImages(champions, this, this::downloadMissingOrCorruptImages, this::catchError));
+        disposables.add(dDragon
+            .verifyImages(champions, this, this::downloadMissingOrCorruptImages, this::catchError));
     }
 
     private void catchError(Throwable t) {
@@ -85,14 +113,15 @@ public class LoaderActivity extends AppCompatActivity implements ProgressCallbac
     }
 
     private void downloadMissingOrCorruptImages(List<ImageDescriptor> champions) {
-        disposables.add(dDragon.downloadAllImages(champions, this, this::openMainScreen, this::catchError));
+        disposables.add(dDragon
+            .downloadAllImages(champions, this, this::openMainScreen, this::catchError));
     }
 
     private void openMainScreen() {
         PreferenceManager.getDefaultSharedPreferences(this)
-                .edit()
-                .putLong(getString(R.string.pref_last_sync_key), new Date().getTime())
-                .apply();
+            .edit()
+            .putLong(getString(R.string.pref_last_sync_key), new Date().getTime())
+            .apply();
         Intent intent = new Intent(this, ListChampionsActivity.class);
         startActivity(intent);
     }

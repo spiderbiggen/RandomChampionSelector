@@ -3,12 +3,12 @@ package com.spiderbiggen.randomchampionselector.ddragon;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.spiderbiggen.randomchampionselector.model.ImageType;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.spiderbiggen.randomchampionselector.model.ImageType;
 
 import okhttp3.ResponseBody;
 
@@ -23,14 +23,14 @@ public class ImageDescriptor {
     private File file;
     private boolean valid = false;
 
-    ImageDescriptor(String champion, ImageType type, File file) {
+    protected ImageDescriptor(String champion, ImageType type, File file) {
         this.champion = champion;
         this.type = type;
         this.file = file;
     }
 
     /**
-     * Gets champion
+     * Gets champion.
      *
      * @return value of champion
      */
@@ -48,7 +48,7 @@ public class ImageDescriptor {
     }
 
     /**
-     * Gets type
+     * Gets type.
      *
      * @return value of type
      */
@@ -66,7 +66,7 @@ public class ImageDescriptor {
     }
 
     /**
-     * Gets file
+     * Gets file.
      *
      * @return value of file
      */
@@ -84,7 +84,7 @@ public class ImageDescriptor {
     }
 
     /**
-     * Gets valid
+     * Gets valid.
      *
      * @return value of valid
      */
@@ -110,7 +110,8 @@ public class ImageDescriptor {
         return this;
     }
 
-    public ImageDescriptor verifyDownload(DDragon dDragon, Bitmap.CompressFormat compressFormat, int quality) throws IOException {
+    public ImageDescriptor verifyDownload(DDragon dDragon, Bitmap.CompressFormat compressFormat, int quality) throws
+        IOException {
         if (isInValid()) {
             ResponseBody body = dDragon.getChampionCall(getChampion(), getType(), 0).blockingGet();
             if (body != null) {

@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.spiderbiggen.randomchampionselector.R;
 import com.spiderbiggen.randomchampionselector.ddragon.DDragon;
 import com.spiderbiggen.randomchampionselector.model.Champion;
 import com.spiderbiggen.randomchampionselector.model.ImageType;
-
-import java.io.IOException;
-import java.util.List;
 
 import static com.spiderbiggen.randomchampionselector.ddragon.DDragon.getInstance;
 
@@ -27,7 +27,7 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
     private final View.OnClickListener clickListener;
     private List<Champion> champions;
 
-    public ChampionAdapter(final List<Champion> champions, final View.OnClickListener clickListener) {
+    public ChampionAdapter(List<Champion> champions, View.OnClickListener clickListener) {
         this.champions = champions;
         this.clickListener = clickListener;
     }
@@ -36,7 +36,8 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_champion_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.list_champion_item, parent, false);
         v.setOnClickListener(clickListener);
         return new ViewHolder(v);
     }
@@ -67,7 +68,9 @@ public class ChampionAdapter extends RecyclerView.Adapter<ChampionAdapter.ViewHo
     }
 
     public Champion getChampion(int position) {
-        if (position > getItemCount() || position < 0) return null;
+        if (position > getItemCount() || position < 0) {
+            return null;
+        }
         return champions.get(position);
     }
 

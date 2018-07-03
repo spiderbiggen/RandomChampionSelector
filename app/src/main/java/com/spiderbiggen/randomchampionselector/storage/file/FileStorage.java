@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Manage access to android file storage
+ * Manage access to android file storage.
  *
  * @author Stefan Breetveld
  */
@@ -25,12 +25,12 @@ public class FileStorage {
         return instance;
     }
 
-    public void setRootFromContext(Context context) {
+    public void useContext(Context context) {
         this.root = context.getFilesDir();
     }
 
     /**
-     * Gets root
+     * Gets the root directory.
      *
      * @return value of root
      */
@@ -39,7 +39,7 @@ public class FileStorage {
     }
 
     /**
-     * Sets root.
+     * Sets the root directory.
      *
      * @param root the new value of root
      */

@@ -21,7 +21,9 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/primary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:collapsedTitleTextAppearance="@style/Text.Shadowed"
+            app:expandedTitleTextAppearance="@style/Text.Shadowed.Large"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 
             <com.spiderbiggen.randomchampionselector.view.TopCenteredImageView
@@ -36,8 +38,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.AppBarOverlay" />
+                app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -79,7 +80,7 @@
 
                 <TextView
                     android:id="@+id/champion_title"
-                    style="@style/Text.Subtitle"
+                    style="@style/Text.Title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -89,7 +90,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/champion_blurb"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/champion_name" />
+                    app:layout_constraintTop_toBottomOf="@id/champion_name" />
 
                 <TextView
                     android:id="@+id/champion_blurb"
@@ -117,14 +118,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:focusable="true"
         android:onClick="openChampion"
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.view.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp"
-        android:clickable="true"
-        android:focusable="true"/>
+        app:srcCompat="@drawable/ic_cached_24dp" />
 
 
 </android.support.design.widget.CoordinatorLayout>

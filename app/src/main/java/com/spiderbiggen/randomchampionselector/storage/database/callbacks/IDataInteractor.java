@@ -1,17 +1,15 @@
 package com.spiderbiggen.randomchampionselector.storage.database.callbacks;
 
-import com.spiderbiggen.randomchampionselector.model.Champion;
-
 import java.util.List;
+
+import com.spiderbiggen.randomchampionselector.model.Champion;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
+ * Defines all interactions that load data.
  * Created by Stefan Breetveld on 18-3-2017.
- * Part of RandomChampionSelector.
- * <p>
- * Defines all interactions that load data
  */
 public interface IDataInteractor {
 
@@ -27,6 +25,6 @@ public interface IDataInteractor {
 
     Disposable findRandomChampion(final Consumer<Champion> listener, final int championKey);
 
-//    Disposable findAbilities(final Consumer<Ability> listener, final Champion champion);
+    //    Disposable findAbilities(final Consumer<Ability> listener, final Champion champion);
 
 }

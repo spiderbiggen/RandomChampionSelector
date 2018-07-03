@@ -10,13 +10,18 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Locale;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 /**
- * Class that defines the champion object;
- * <p/>
- * Created by Stefan on 10-5-2015.
+ * Class that defines the champion object.
+ *
+ * @author Stefan Breetveld
  */
 @Entity
-public class Champion implements Serializable {
+public class Champion implements Serializable, Parseable<Champion> {
 
     @PrimaryKey
     private int key;
@@ -109,71 +114,128 @@ public class Champion implements Serializable {
         this.image = image;
     }
 
+    /**
+     * Get this champion's attack.
+     *
+     * @return null if info or the result of {@link Info#getAttack()}
+     * @see Info#getAttack()
+     */
     public Byte getAttack() {
-        if (info == null) return null;
-        return info.attack;
+        if (info == null) {
+            return null;
+        }
+        return info.getAttack();
     }
 
     public Byte getDefense() {
-        if (info == null) return null;
+        if (info == null) {
+            return null;
+        }
         return info.defense;
     }
 
     public Byte getMagic() {
-        if (info == null) return null;
-        return info.magic;
+        if (info == null) {
+            return null;
+        }
+        return info.getMagic();
     }
 
     public Byte getDifficulty() {
-        if (info == null) return null;
-        return info.difficulty;
+        if (info == null) {
+            return null;
+        }
+        return info.getDifficulty();
     }
 
     public String getFull() {
-        if (image == null) return null;
-        return image.full;
+        if (image == null) {
+            return null;
+        }
+        return image.getFull();
     }
 
     public String getSprite() {
-        if (image == null) return null;
-        return image.sprite;
+        if (image == null) {
+            return null;
+        }
+        return image.getSprite();
     }
 
     public String getGroup() {
-        if (image == null) return null;
-        return image.group;
+        if (image == null) {
+            return null;
+        }
+        return image.getGroup();
     }
 
     public Integer getX() {
-        if (image == null) return null;
-        return image.x;
+        if (image == null) {
+            return null;
+        }
+        return image.getX();
     }
 
     public Integer getY() {
-        if (image == null) return null;
-        return image.y;
+        if (image == null) {
+            return null;
+        }
+        return image.getY();
     }
 
     public Integer getW() {
-        if (image == null) return null;
-        return image.w;
+        if (image == null) {
+            return null;
+        }
+        return image.getW();
     }
 
     public Integer getH() {
-        if (image == null) return null;
-        return image.h;
+        if (image == null) {
+            return null;
+        }
+        return image.getH();
     }
 
     @Override
     public String toString() {
         return "Champion{" +
-                "key=" + key +
-                ", name='" + name + '\'' +
-                ", roles='" + Arrays.toString(tags) + '\'' +
-                '}';
+            "key=" + key +
+            ", name='" + name + '\'' +
+            ", roles='" + Arrays.toString(tags) + '\'' +
+            '}';
     }
 
-    public static class Info implements Serializable {
+    @Override
+    public Champion parse(JSONObject object) throws JSONException {
+        setKey(object.getInt("key"));
+        setId(object.getString("id"));
+        setBlurb(object.optString("blurb"));
+        setLore(object.optString("lore"));
+        setTitle(object.optString("title"));
+        setName(object.optString("name"));
+        JSONArray array = object.optJSONArray("tags");
+        if (array != null) {
+            String[] tags = new String[array.length()];
+            for (int i = 0; i < array.length(); i++) {
+                tags[i] = array.getString(i);
+            }
+            setTags(tags);
+        }
+        JSONObject infoObject = object.getJSONObject("info");
+        if (infoObject != null) {
+            Info info = new Info();
+            setInfo(info.parse(infoObject));
+        }
+        JSONObject imageObject = object.getJSONObject("image");
+        if (imageObject != null) {
+            Image image = new Image();
+            setImage(image.parse(imageObject));
+        }
+        return this;
+    }
+
+    public static class Info implements Serializable, Parseable<Info> {
         private byte attack;
         private byte defense;
         private byte magic;
@@ -210,9 +272,18 @@ public class Champion implements Serializable {
         public void setDifficulty(byte difficulty) {
             this.difficulty = difficulty;
         }
+
+        @Override
+        public Info parse(JSONObject object) throws JSONException {
+            setAttack((byte) object.optInt("attack", 0));
+            setDefense((byte) object.optInt("defense", 0));
+            setMagic((byte) object.optInt("magic", 0));
+            setDifficulty((byte) object.optInt("difficulty", 0));
+            return this;
+        }
     }
 
-    public static class Image implements Serializable {
+    public static class Image implements Serializable, Parseable<Image> {
         private String full;
         private String sprite;
         private String group;
@@ -275,6 +346,18 @@ public class Champion implements Serializable {
 
         public void setH(int h) {
             this.h = h;
+        }
+
+        @Override
+        public Image parse(JSONObject object) throws JSONException {
+            setFull(object.getString("full"));
+            setSprite(object.getString("sprite"));
+            setGroup(object.getString("group"));
+            setX(object.optInt("x", 0));
+            setY(object.optInt("y", 0));
+            setW(object.optInt("w", 0));
+            setH(object.optInt("x", 0));
+            return this;
         }
     }
 }

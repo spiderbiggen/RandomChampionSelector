@@ -7,10 +7,10 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.spiderbiggen.randomchampionselector.model.Champion;
-
 import java.util.Collection;
 import java.util.List;
+
+import com.spiderbiggen.randomchampionselector.model.Champion;
 
 import io.reactivex.Flowable;
 

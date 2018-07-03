@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Random Champion Selector</string>
+
+    <string name="title_activity_list_champions">Kampione</string>
+
+    <string name="action_force_refresh">Erneuern</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="title_activity_settings">Einstellungen</string>
 </resources>
