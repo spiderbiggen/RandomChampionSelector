@@ -38,14 +38,14 @@
             android:noHistory="true"
             android:parentActivityName=".activities.ListChampionsActivity"
             android:theme="@style/AppTheme.TransparentStatusBar">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-        </intent-filter>
-    </activity>
-    <activity
-        android:name=".activities.SettingsActivity"
-        android:label="@string/title_activity_settings"
-        android:parentActivityName=".activities.ListChampionsActivity" />
-</application>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".activities.ListChampionsActivity" />
+    </application>
 
-    </manifest>
+</manifest>

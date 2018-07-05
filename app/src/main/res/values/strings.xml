@@ -97,26 +97,22 @@
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
 
-    <string name="pref_sync_frequency_default" translatable="false">180</string>
-    <string-array name="pref_sync_frequency_titles" >
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
+    <string name="pref_sync_frequency_default" translatable="false">720</string>
+    <string-array name="pref_sync_frequency_titles">
         <item>12 hours</item>
         <item>1 day</item>
+        <item>2 days</item>
+        <item>7 days</item>
+        <item>14 days</item>
         <item>Never</item>
     </string-array>
     <!--Integers only-->
     <string-array name="pref_sync_frequency_values" translatable="false">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
         <item>720</item>
         <item>1440</item>
+        <item>2880</item>
+        <item>10080</item>
+        <item>20160</item>
         <item>-1</item>
     </string-array>
 
@@ -131,10 +127,10 @@
 
     <string name="champion_splash_content_description">Champion Splash Art</string>
 
-    <string translatable="false" name="champion_name_transition_key">champion_name_key</string>
-    <string translatable="false" name="champion_title_transition_key">champion_title_key</string>
-    <string translatable="false" name="champion_splash_transition_key">champion_splash_key</string>
-    <string translatable="false" name="champion_card_transition_key">champion_card_key</string>
+    <string name="champion_name_transition_key" translatable="false">champion_name_key</string>
+    <string name="champion_title_transition_key" translatable="false">champion_title_key</string>
+    <string name="champion_splash_transition_key" translatable="false">champion_splash_key</string>
+    <string name="champion_card_transition_key" translatable="false">champion_card_key</string>
     <string name="champion_blurb_key">champion_blurb_key</string>
     <string name="random_fab_transition_key">random_fab_key</string>
     <string name="pref_title_image_type_default">WEBP</string>
