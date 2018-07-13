@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.ListChampionsActivity">
+    tools:context=".views.activities.ListChampionsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -62,7 +62,7 @@
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.view.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

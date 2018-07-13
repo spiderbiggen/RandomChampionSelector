@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="o">
         <activity
-            android:name=".activities.LoaderActivity"
+            android:name="com.spiderbiggen.randomchampionselector.views.activities.LoaderActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:noHistory="true">
@@ -26,26 +26,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ListChampionsActivity"
+            android:name="com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ChampionActivity"
+            android:name="com.spiderbiggen.randomchampionselector.views.activities.ChampionActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:parentActivityName=".activities.ListChampionsActivity"
+            android:parentActivityName="com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity"
             android:theme="@style/AppTheme.TransparentStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".activities.ListChampionsActivity" />
+            android:parentActivityName="com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity" />
     </application>
 
 </manifest>

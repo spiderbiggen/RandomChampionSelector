@@ -28,8 +28,7 @@
             android:positiveButtonText="@android:string/ok"
             android:title="@string/pref_title_image_quality"
             app:max="100"
-            app:min="40"
-            app:suffix="woah" />
+            app:min="40" />
     </android.support.v7.preference.PreferenceCategory>
     <android.support.v7.preference.PreferenceCategory
         android:icon="@drawable/ic_sync_black_24dp"

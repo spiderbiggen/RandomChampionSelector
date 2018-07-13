@@ -41,14 +41,13 @@ dependencies {
 
     implementation "com.android.support:appcompat-v7:$sup_lib_version"
     implementation "com.android.support:support-v4:$sup_lib_version"
+    implementation "com.android.support:support-vector-drawable:$sup_lib_version"
+    implementation "com.android.support:support-annotations:$sup_lib_version"
     implementation "com.android.support:recyclerview-v7:$sup_lib_version"
     implementation "com.android.support:cardview-v7:$sup_lib_version"
     implementation "com.android.support:preference-v7:$sup_lib_version"
     implementation "com.android.support:preference-v14:$sup_lib_version"
     implementation "com.android.support:design:$sup_lib_version"
-    implementation "com.android.support:support-v4:$sup_lib_version"
-    implementation "com.android.support:support-vector-drawable:$sup_lib_version"
-    implementation "com.android.support:support-annotations:$sup_lib_version"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
@@ -59,7 +58,6 @@ dependencies {
 
     implementation "android.arch.persistence.room:runtime:$room_version"
     implementation "android.arch.persistence.room:rxjava2:$room_version"
-    implementation 'com.android.support:support-v4:27.1.1'
     kapt "android.arch.persistence.room:compiler:$room_version"
 
 }
