@@ -1,10 +1,10 @@
 package com.spiderbiggen.randomchampionselector.views.behavior
 
 import android.content.Context
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.FloatingActionButton
 import android.util.AttributeSet
 import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
  * Created on 7-3-2018.
@@ -31,7 +31,7 @@ class ScrollAwareFABBehavior : CoordinatorLayout.Behavior<FloatingActionButton> 
     private class FabVisibilityChangedListener : FloatingActionButton.OnVisibilityChangedListener() {
         override fun onHidden(fab: FloatingActionButton) {
             super.onShown(fab)
-            fab.visibility = View.INVISIBLE
+//            fab.visibility = View.INVISIBLE
         }
     }
 

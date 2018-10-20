@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.os.Build
-import android.support.v4.util.LruCache
+import androidx.collection.LruCache
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.domain.Champion
 
@@ -15,10 +15,11 @@ import com.spiderbiggen.randomchampionselector.domain.Champion
 object BitmapCache {
     private val cacheSize = (Runtime.getRuntime().maxMemory() / 1024).toInt() / 8
     private val mMemoryCache = object : LruCache<String, Bitmap>(cacheSize) {
-        override fun sizeOf(key: String?, bitmap: Bitmap?): Int {
+
+        override fun sizeOf(key: String, bitmap: Bitmap): Int {
             // The cache size will be measured in kilobytes rather than
             // number of items.
-            return bitmap!!.byteCount / 1024
+            return bitmap.byteCount / 1024
         }
     }
 

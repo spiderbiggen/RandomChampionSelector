@@ -1,7 +1,7 @@
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.preference.PreferenceCategory
+    <androidx.preference.PreferenceCategory
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general">
         <ListPreference
@@ -29,8 +29,8 @@
             android:title="@string/pref_title_image_quality"
             app:max="100"
             app:min="40" />
-    </android.support.v7.preference.PreferenceCategory>
-    <android.support.v7.preference.PreferenceCategory
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/pref_header_data_sync">
         <ListPreference
@@ -47,7 +47,7 @@
         <Preference android:title="@string/pref_title_system_sync_settings">
             <intent android:action="android.settings.SYNC_SETTINGS" />
         </Preference>
-    </android.support.v7.preference.PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
 
-</android.support.v7.preference.PreferenceScreen>
+</androidx.preference.PreferenceScreen>

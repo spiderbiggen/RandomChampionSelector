@@ -2,8 +2,8 @@ package com.spiderbiggen.randomchampionselector.views.fragments
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.preference.*
-import android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences
+import androidx.preference.*
+import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import android.util.Log
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity

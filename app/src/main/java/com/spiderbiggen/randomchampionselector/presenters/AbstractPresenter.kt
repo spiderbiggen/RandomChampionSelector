@@ -5,9 +5,9 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.*
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.annotation.*
+import androidx.core.app.ActivityOptionsCompat
+import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import com.spiderbiggen.randomchampionselector.R
@@ -77,7 +77,7 @@ abstract class AbstractPresenter<T : AppCompatActivity>(weakContext: T) {
         }
     }
 
-    protected fun getDrawable(@DrawableRes key: Int): Drawable = context.getDrawable(key)
+    protected fun getDrawable(@DrawableRes key: Int): Drawable? = context.getDrawable(key)
 
     protected fun getInteger(@IntegerRes key: Int): Int = context.resources.getInteger(key)
 

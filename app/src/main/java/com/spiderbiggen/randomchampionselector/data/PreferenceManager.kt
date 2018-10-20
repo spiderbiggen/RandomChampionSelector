@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap.CompressFormat
 import android.preference.PreferenceManager
-import android.support.annotation.IntegerRes
-import android.support.annotation.StringRes
+import androidx.annotation.IntegerRes
+import androidx.annotation.StringRes
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.model.IRequiresContext
 import com.spiderbiggen.randomchampionselector.presenters.LoaderPresenter
@@ -52,7 +52,7 @@ object PreferenceManager : IRequiresContext {
 
     // Get string from preferences
     private fun getString(pref: String, default: String): String =
-            preferences.getString(pref, default)
+            preferences.getString(pref, default) ?: default
 
     private fun getString(@StringRes pref: Int, @StringRes resource: Int): String =
             getString(resources.getString(pref), resources.getString(resource))

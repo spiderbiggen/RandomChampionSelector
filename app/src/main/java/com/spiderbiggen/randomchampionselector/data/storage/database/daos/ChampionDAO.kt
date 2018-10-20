@@ -1,6 +1,6 @@
 package com.spiderbiggen.randomchampionselector.data.storage.database.daos
 
-import android.arch.persistence.room.*
+import androidx.room.*
 
 import com.spiderbiggen.randomchampionselector.domain.Champion
 

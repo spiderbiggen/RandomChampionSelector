@@ -1,6 +1,6 @@
 package com.spiderbiggen.randomchampionselector.model
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.spiderbiggen.randomchampionselector.R
 
 interface IProgressCallback {

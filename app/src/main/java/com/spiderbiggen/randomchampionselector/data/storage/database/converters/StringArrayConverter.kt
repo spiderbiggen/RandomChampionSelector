@@ -1,6 +1,6 @@
 package com.spiderbiggen.randomchampionselector.data.storage.database.converters
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 import android.text.TextUtils
 
 /**

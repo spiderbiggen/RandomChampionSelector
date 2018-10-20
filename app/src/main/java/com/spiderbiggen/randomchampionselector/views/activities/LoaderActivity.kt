@@ -2,8 +2,8 @@ package com.spiderbiggen.randomchampionselector.views.activities
 
 import android.graphics.Color
 import android.os.Bundle
-import android.support.annotation.LayoutRes
-import android.support.v7.app.AppCompatActivity
+import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.presenters.LoaderPresenter
@@ -11,10 +11,11 @@ import kotlinx.android.synthetic.main.activity_loader.*
 
 class LoaderActivity : AppCompatActivity() {
 
-    private val loaderPresenter = LoaderPresenter(this)
+    private lateinit var loaderPresenter: LoaderPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loaderPresenter = LoaderPresenter(this)
         setContentView(R.layout.activity_loader)
         loaderPresenter.onCreate()
     }

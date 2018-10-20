@@ -12,7 +12,7 @@ import android.widget.ImageView
  * @author Stefan Breetveld
  */
 
-class TopCenteredImageView : android.support.v7.widget.AppCompatImageView {
+class TopCenteredImageView : androidx.appcompat.widget.AppCompatImageView {
 
     private var viewWidth: Int = 0
     private var viewHeight: Int = 0

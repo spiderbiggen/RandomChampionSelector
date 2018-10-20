@@ -1,11 +1,12 @@
 package com.spiderbiggen.randomchampionselector.views.activities
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.widget.Toolbar
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.presenters.ListChampionsPresenter
 import com.spiderbiggen.randomchampionselector.views.adapters.ChampionAdapter

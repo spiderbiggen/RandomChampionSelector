@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.content.res.Resources.NotFoundException
 import android.os.Build
-import android.support.annotation.*
+import androidx.annotation.*
 import com.spiderbiggen.randomchampionselector.model.IRequiresContext
 
 @Suppress("UNUSED")

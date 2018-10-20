@@ -1,12 +1,12 @@
 package com.spiderbiggen.randomchampionselector.presenters
 
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.v4.app.Fragment
-import android.support.v4.app.NavUtils
-import android.support.v7.preference.PreferenceFragmentCompat
-import android.support.v7.preference.PreferenceScreen
+import androidx.annotation.IdRes
+import androidx.core.app.NavUtils
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceScreen
 import android.view.MenuItem
+import androidx.fragment.app.Fragment
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity
 import com.spiderbiggen.randomchampionselector.views.fragments.SettingsFragment

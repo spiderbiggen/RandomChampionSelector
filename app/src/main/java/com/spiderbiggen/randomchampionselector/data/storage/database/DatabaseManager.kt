@@ -1,6 +1,6 @@
 package com.spiderbiggen.randomchampionselector.data.storage.database
 
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import android.content.Context
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IRequiresContext
