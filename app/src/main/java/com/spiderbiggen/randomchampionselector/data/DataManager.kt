@@ -1,9 +1,7 @@
 package com.spiderbiggen.randomchampionselector.data
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.util.Log
-import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.data.ddragon.ImageDescriptor
 import com.spiderbiggen.randomchampionselector.data.storage.database.DatabaseManager
@@ -13,8 +11,6 @@ import com.spiderbiggen.randomchampionselector.model.IChampionInteractor
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IRiotData
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
 
 class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable {
     override val shouldRefresh: Boolean
@@ -26,7 +22,6 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
     private val preferenceManager = PreferenceManager
     private val resourceManager = ResourceManager
     private val riotApi = DDragon
-    private val bitmapCache = BitmapCache
     private val disposables = mutableListOf<Disposable>()
 
     init {
@@ -52,40 +47,17 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
         CheckUpdate(progress, finished, database, riotApi).run()
     }
 
-    override fun findChampion(listener: IChampionInteractor.IChampionCallBack, championKey: Int) {
-        findChampion(Consumer { listener.setChampion(it) }, championKey)
-    }
-
-    override fun findChampion(consumer: Consumer<Champion>, championKey: Int) {
+    override fun findChampion(championKey: Int, consumer: (Champion) -> Unit) {
         database.findChampion(consumer, championKey)
     }
 
-    override fun findRandomChampion(listener: IChampionInteractor.IChampionCallBack, championKey: Int?, role: String?) {
-        findRandomChampion(Consumer { listener.setChampion(it) }, championKey, role)
-    }
-
-    override fun findRandomChampion(consumer: Consumer<Champion>, championKey: Int?, role: String?) {
+    override fun findRandomChampion(consumer: (Champion) -> Unit, championKey: Int?, role: String?) {
         database.findRandomChampion(consumer, championKey, role)
     }
 
-    override fun findChampionList(listener: IChampionInteractor.IChampionListCallback, role: String?) {
-        findChampionList(Consumer { listener.setChampionList(it) }, role)
-    }
 
-    override fun findChampionList(consumer: Consumer<List<Champion>>, role: String?) {
+    override fun findChampionList(consumer: (Collection<Champion>) -> Unit, role: String?) {
         database.findChampionList(consumer, role)
-    }
-
-    override fun findImageForChampion(listener: BitmapCache.BitmapCallback, champion: Champion, vWidth: Int?, vHeight: Int?) {
-        findImageForChampion(Consumer { listener.loadImageSuccess(it) }, champion, vWidth)
-    }
-
-    override fun findImageForChampion(listener: Consumer<Bitmap>, champion: Champion, vWidth: Int?, vHeight: Int?) {
-        if (vWidth == null || vHeight == null) {
-            bitmapCache.loadBitmap(champion, listener)
-        } else {
-            bitmapCache.loadBitmap(champion, listener, vWidth, vHeight)
-        }
     }
 
     override fun isDisposed(): Boolean = disposables.all { it.isDisposed }
@@ -102,12 +74,12 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
 
         override fun run() {
             progress.onProgressUpdate(IProgressCallback.Progress.CHECKING_VERSION)
-            disposables += riotApi.updateVersion(Action { this.downloadChampions() }, Consumer { catchError(it) })
+            disposables += riotApi.updateVersion(this::downloadChampions, this::catchError)
         }
 
         private fun downloadChampions() {
             progress.onProgressUpdate(IProgressCallback.Progress.PARSING_DATA)
-            disposables += riotApi.getChampionList(Consumer { this.handleChampionList(it) }, Consumer { this.catchError(it) })
+            disposables += riotApi.getChampionList( this::handleChampionList, this::catchError)
         }
 
         private fun handleChampionList(champions: Collection<Champion>) {
@@ -135,15 +107,15 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
         override fun dispose() = disposables.forEach { it.dispose() }
 
         override fun run() {
-            disposables += database.findChampionList(Consumer { this.verifyImages(it) })
+            disposables += database.findChampionList(this::verifyImages)
         }
 
         fun verifyImages(champions: Collection<Champion>) {
-            disposables += riotApi.verifyImages(champions, progress, Consumer { this.downloadMissingOrCorruptImages(it) }, Consumer { this.catchError(it) })
+            disposables += riotApi.verifyImages(champions, progress, this::downloadMissingOrCorruptImages, this::catchError)
         }
 
         private fun downloadMissingOrCorruptImages(champions: Collection<ImageDescriptor>) {
-            disposables += riotApi.downloadAllImages(champions, progress, Action { finished.onFinished() }, Consumer { this.catchError(it) })
+            disposables += riotApi.downloadAllImages(champions, progress, finished::onFinished, this::catchError)
         }
 
         private fun catchError(t: Throwable) {

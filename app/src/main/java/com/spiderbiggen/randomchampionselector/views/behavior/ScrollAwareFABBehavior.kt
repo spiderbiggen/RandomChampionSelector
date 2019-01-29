@@ -23,15 +23,14 @@ class ScrollAwareFABBehavior : CoordinatorLayout.Behavior<FloatingActionButton> 
     override fun onNestedScroll(coordinatorLayout: CoordinatorLayout, child: FloatingActionButton, target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int, type: Int) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
         when {
-            dyConsumed > 0 && child.visibility == View.VISIBLE -> child.hide(FabVisibilityChangedListener())
-            dyConsumed < 0 && child.visibility != View.VISIBLE -> child.show()
+            dyConsumed > 0 && child.isOrWillBeShown -> child.hide(FabVisibilityChangedListener())
+            dyConsumed < 0 && child.isOrWillBeHidden -> child.show()
         }
     }
 
     private class FabVisibilityChangedListener : FloatingActionButton.OnVisibilityChangedListener() {
         override fun onHidden(fab: FloatingActionButton) {
-            super.onShown(fab)
-//            fab.visibility = View.INVISIBLE
+            fab.show()
         }
     }
 

@@ -3,20 +3,18 @@ package com.spiderbiggen.randomchampionselector.presenters
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import com.spiderbiggen.randomchampionselector.data.storage.database.DatabaseManager
+import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.model.IChampionInteractor
 import com.spiderbiggen.randomchampionselector.views.activities.ChampionActivity
 import com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 
 /**
  * Created on 6-7-2018.
  * @author Stefan Breetveld
  */
-class ChampionPresenter(context: ChampionActivity) : AbstractPresenter<ChampionActivity>(context), IChampionInteractor.IChampionCallBack {
+class ChampionPresenter(context: ChampionActivity) : AbstractPresenter<ChampionActivity>(context) {
 
     private var championKey = -1
     private var upOnBack: Boolean = false
@@ -36,8 +34,8 @@ class ChampionPresenter(context: ChampionActivity) : AbstractPresenter<ChampionA
 
     override fun onResume() {
         when {
-            championKey < 0 -> dataManager.findRandomChampion(this, championKey)
-            else -> dataManager.findChampion(this, championKey)
+            championKey < 0 -> dataManager.findRandomChampion(this::setChampion, championKey)
+            else -> dataManager.findChampion(championKey, this::setChampion)
         }
     }
 
@@ -56,10 +54,10 @@ class ChampionPresenter(context: ChampionActivity) : AbstractPresenter<ChampionA
                 else -> super.onOptionsItemSelected(item)
             }
 
-    override fun setChampion(champion: Champion) {
+    private fun setChampion(champion: Champion) {
         championKey = champion.key
         context.setChampion(champion)
-        DDragon.getChampionBitmapFromCache(champion, context)
+        BitmapCache.loadBitmap(champion, context::loadImageSuccess, context::loadImageFailure)
     }
 
     fun onBackPressed() {

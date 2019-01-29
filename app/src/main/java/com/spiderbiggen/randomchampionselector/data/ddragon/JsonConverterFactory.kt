@@ -49,7 +49,6 @@ class JsonConverterFactory : Converter.Factory() {
         override fun convert(responseBody: ResponseBody): List<Champion> {
             try {
                 val string = responseBody.string()
-                Log.d(TAG, "convert: $string")
                 val jsonObject = JSONObject(string).getJSONObject("data")
                 val list = mutableListOf<Champion>()
                 val stringIterator = jsonObject.keys()

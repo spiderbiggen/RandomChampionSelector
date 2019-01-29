@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
-import androidx.preference.PreferenceScreen
 import android.view.Menu
 import android.view.MenuItem
+import androidx.preference.PreferenceScreen
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.presenters.SettingsPresenter
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.activity_settings.*
  * @author Stefan Breetveld
  */
 class SettingsActivity : AppCompatActivity(), OnPreferenceStartScreenCallback {
-
     private val presenter = SettingsPresenter(this, R.id.fragment_container)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +23,7 @@ class SettingsActivity : AppCompatActivity(), OnPreferenceStartScreenCallback {
         setContentView(R.layout.activity_settings)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        presenter.onCreate(savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -32,7 +32,7 @@ class SettingsActivity : AppCompatActivity(), OnPreferenceStartScreenCallback {
         return true
     }
 
-    override fun onPreferenceStartScreen(caller: PreferenceFragmentCompat?, pref: PreferenceScreen?): Boolean =
+    override fun onPreferenceStartScreen(caller: PreferenceFragmentCompat, pref: PreferenceScreen): Boolean =
             presenter.onPreferenceStartScreen(caller, pref)
 
     override fun onBackPressed() {
