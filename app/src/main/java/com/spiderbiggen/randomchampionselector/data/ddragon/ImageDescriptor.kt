@@ -25,7 +25,7 @@ data class ImageDescriptor(var champion: String, var file: File) {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
             BitmapFactory.decodeFile(file.path, options)
-            valid = options.outHeight > 0 && options.outHeight > 0
+            valid = options.outHeight > 0 && options.outWidth > 0
         }
         return this
     }
@@ -42,7 +42,6 @@ data class ImageDescriptor(var champion: String, var file: File) {
                         Log.d("ImageDescriptor", "lmao", it)
                         Maybe.empty<Bitmap>()
                     }
-
         } else {
             Maybe.empty()
         }

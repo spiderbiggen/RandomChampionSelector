@@ -2,12 +2,12 @@ package com.spiderbiggen.randomchampionselector.views.fragments
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.preference.*
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
-import android.util.Log
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
+import com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity
 import java.io.IOException
 
 /**
@@ -99,17 +99,13 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                     getDefaultSharedPreferences(preference.context).getInt(preference.key, defaultValue))
         }
 
-        private val sBindPreferenceSummaryToValueListener: Preference.OnPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference, value ->
+        private val sBindPreferenceSummaryToValueListener: Preference.OnPreferenceChangeListener
+            get() = Preference.OnPreferenceChangeListener { preference, value ->
                     val stringValue = value.toString()
 
                     when (preference) {
                         is ListPreference -> {
-                            // For list preferences, look up the correct display value in
-                            // the preference's 'entries' list.
                             val index = preference.findIndexOfValue(stringValue)
-
-                            // Set the summary to reflect the new value.
                             preference.setSummary(if (index >= 0) preference.entries[index] else null)
                         }
 //                        is SeekBarPreference -> preference.setSummary((preference as SeekBarPreference).summary)
