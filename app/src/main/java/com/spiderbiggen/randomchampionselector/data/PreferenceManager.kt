@@ -17,10 +17,10 @@ object PreferenceManager : IRequiresContext {
     private lateinit var preferences: SharedPreferences
 
     override fun useContext(context: Context) {
-        preferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+        if (!this::preferences.isInitialized) {
+            preferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+        }
     }
-
-    override fun hasContext(): Boolean = this::preferences.isInitialized
 
     val syncTime: Long
         get() = getString(R.string.pref_title_sync_frequency, R.string.pref_sync_frequency_default).toLong()
