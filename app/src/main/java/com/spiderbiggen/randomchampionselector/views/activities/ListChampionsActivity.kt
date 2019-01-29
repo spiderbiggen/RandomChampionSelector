@@ -1,12 +1,13 @@
 package com.spiderbiggen.randomchampionselector.views.activities
 
+import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import androidx.appcompat.widget.Toolbar
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.presenters.ListChampionsPresenter
 import com.spiderbiggen.randomchampionselector.views.adapters.ChampionAdapter
@@ -33,6 +34,10 @@ class ListChampionsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean =
             presenter.onOptionsItemSelected(item) || super.onOptionsItemSelected(item)
 
+    fun setHeaderImage(bitmap: Bitmap) {
+        splash.setImageBitmap(bitmap)
+    }
+
     fun setAdapter(adapter: ChampionAdapter) {
         champion_list.adapter = adapter
     }
@@ -54,6 +59,12 @@ class ListChampionsActivity : AppCompatActivity() {
     fun onClick(v: View) {
         val position = champion_list.getChildAdapterPosition(v)
         val img = v.findViewById<ImageView>(R.id.champion_splash)
-        presenter.selectChampion(position, img)
+        val name = v.findViewById<TextView>(R.id.champion_name)
+        val title = v.findViewById<TextView>(R.id.champion_title)
+        presenter.selectChampion(position,
+                Pair(img, getString(R.string.champion_splash_transition_key)),
+                Pair(name, getString(R.string.champion_name_transition_key)),
+                Pair(title, getString(R.string.champion_title_transition_key))
+        )
     }
 }

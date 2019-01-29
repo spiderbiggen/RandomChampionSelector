@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Random Champion Selector</string>
+    <string name="app_name">Champion Randomiser</string>
 
     <string name="title_activity_list_champions">Champions</string>
 

@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.collection.LruCache
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.domain.Champion
+import io.reactivex.functions.Consumer
 
 /**
  * Created on 5-7-2018.
@@ -23,15 +24,19 @@ object BitmapCache {
         }
     }
 
-    fun loadBitmap(champion: Champion, callback: BitmapCallback, vWidth: Int = DEFAULT_SIZE, vHeight: Int = DEFAULT_SIZE) {
+    fun loadBitmap(champion: Champion, callback: Consumer<Bitmap>, vWidth: Int = DEFAULT_SIZE, vHeight: Int = DEFAULT_SIZE) {
         val (key, file) = DDragon.getImageDescriptorForChampion(champion)
         val bitmap = getBitmapFromMemCache(key)
         if (bitmap != null) {
-            callback.loadImageSuccess(bitmap)
+            callback.accept(bitmap)
         } else {
             val task = BitmapWorkerTask(callback, vWidth, vHeight)
             task.execute(key, file.path)
         }
+    }
+
+    fun loadBitmap(champion: Champion, callback: BitmapCallback, vWidth: Int = DEFAULT_SIZE, vHeight: Int = DEFAULT_SIZE) {
+        loadBitmap(champion, Consumer { callback.loadImageSuccess(it) }, vWidth, vHeight)
     }
 
 
@@ -45,7 +50,7 @@ object BitmapCache {
         return mMemoryCache.get(key)
     }
 
-    class BitmapWorkerTask(private val bitmapCallback: BitmapCallback, private val vWidth: Int, private val vHeight: Int) : AsyncTask<String, Void, Bitmap>() {
+    class BitmapWorkerTask(private val bitmapCallback: Consumer<Bitmap>, private val vWidth: Int, private val vHeight: Int) : AsyncTask<String, Void, Bitmap>() {
 
         // Decode image in background.
         override fun doInBackground(vararg params: String): Bitmap {
@@ -54,7 +59,7 @@ object BitmapCache {
             return bitmap
         }
 
-        override fun onPostExecute(result: Bitmap) = bitmapCallback.loadImageSuccess(result)
+        override fun onPostExecute(result: Bitmap) = bitmapCallback.accept(result)
     }
 
     interface BitmapCallback {

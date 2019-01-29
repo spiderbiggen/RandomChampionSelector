@@ -2,17 +2,15 @@ package com.spiderbiggen.randomchampionselector.presenters
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.app.ActivityOptionsCompat
 import android.view.View
-import android.widget.ImageView
-import com.spiderbiggen.randomchampionselector.R
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IChampionInteractor
 import com.spiderbiggen.randomchampionselector.views.activities.ChampionActivity
 import com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity
 import com.spiderbiggen.randomchampionselector.views.adapters.ChampionAdapter
-import io.reactivex.disposables.Disposable
-import java.util.*
+import io.reactivex.functions.Consumer
 
 /**
  * Created on 6-7-2018.
@@ -23,6 +21,9 @@ class ListChampionsPresenter(context: ListChampionsActivity) : AbstractPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         context.setAdapter(adapter)
+        dataManager.findRandomChampion(Consumer { champion ->
+            dataManager.findImageForChampion(Consumer { bitmap -> context.setHeaderImage(bitmap) }, champion)
+        })
     }
 
     override fun onResume() {
@@ -33,12 +34,15 @@ class ListChampionsPresenter(context: ListChampionsActivity) : AbstractPresenter
         adapter.setChampions(champions.toList())
     }
 
+    fun selectChampion(position: Int, vararg views: kotlin.Pair<View, String>) {
+        this.selectChampion(position, *(views.map { Pair(it.first, it.second) }).toTypedArray())
+    }
 
-    fun selectChampion(position: Int, img: ImageView) {
+    private fun selectChampion(position: Int, vararg views: Pair<View, String>) {
         val champion = adapter.getChampion(position)
         val intent = Intent(context, ChampionActivity::class.java)
         intent.putExtra(ChampionPresenter.CHAMPION_KEY, champion?.key)
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(context, img, getString(R.string.champion_splash_transition_key))
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(context, *views)
         intent.putExtra(ChampionPresenter.UP_ON_BACK_KEY, false)
         startActivityWithFade(intent, options.toBundle())
     }

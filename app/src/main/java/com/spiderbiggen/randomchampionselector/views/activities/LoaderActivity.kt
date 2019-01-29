@@ -2,7 +2,6 @@ package com.spiderbiggen.randomchampionselector.views.activities
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
@@ -18,6 +17,11 @@ class LoaderActivity : AppCompatActivity() {
         loaderPresenter = LoaderPresenter(this)
         setContentView(R.layout.activity_loader)
         loaderPresenter.onCreate()
+    }
+
+    override fun onResume() {
+        loaderPresenter.onResume()
+        super.onResume()
     }
 
     override fun onDestroy() {
