@@ -68,21 +68,20 @@ object BitmapCache {
         // Raw height and width of image
         val height = options.outHeight
         val width = options.outWidth
-        var inSampleSize = 1
+        var sampleSize = 1
 
         if (height > minHeight || width > minWidth) {
-
             val halfHeight = height / 2
             val halfWidth = width / 2
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
+            while (halfHeight / sampleSize >= reqHeight && halfWidth / sampleSize >= reqWidth) {
+                sampleSize *= 2
             }
         }
 
-        return inSampleSize
+        return sampleSize
     }
 
     private fun decodeSampledBitmapFromFile(file: String, reqWidth: Int, reqHeight: Int): Bitmap {

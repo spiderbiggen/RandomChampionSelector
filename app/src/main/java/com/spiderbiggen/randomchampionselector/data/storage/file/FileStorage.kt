@@ -21,10 +21,11 @@ object FileStorage : IRequiresContext {
     private lateinit var root: File
 
     override fun useContext(context: Context) {
-        root = context.applicationContext.filesDir
+        if (!this::root.isInitialized) {
+            root = context.applicationContext.filesDir
+        }
     }
 
-    override fun hasContext(): Boolean = this::root.isInitialized
 
     /**
      * Create a directory for storing any Images.

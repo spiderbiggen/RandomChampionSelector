@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
-import com.spiderbiggen.randomchampionselector.model.IRiotData
 import com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity
 import com.spiderbiggen.randomchampionselector.views.activities.LoaderActivity
 import java.util.*
@@ -14,7 +13,7 @@ import java.util.*
  * Created on 6-7-2018.
  * @author Stefan Breetveld
  */
-class LoaderPresenter(context: LoaderActivity) : AbstractPresenter<LoaderActivity>(context), IProgressCallback, IRiotData.OnFinished {
+class LoaderPresenter(context: LoaderActivity) : AbstractPresenter<LoaderActivity>(context), IProgressCallback {
 
     private var shouldRefresh: Boolean = false
 
@@ -26,12 +25,12 @@ class LoaderPresenter(context: LoaderActivity) : AbstractPresenter<LoaderActivit
             when {
                 shouldRefresh || dataManager.shouldRefresh -> {
                     PreferenceManager.lastSync = -1
-                    dataManager.update(this, this)
+                    dataManager.update(this, this::onFinished)
                 }
-                else -> dataManager.verifyImages(this, this)
+                else -> dataManager.verifyImages(this, this::onFinished)
             }
 
-    override fun onFinished() {
+    fun onFinished() {
         println("is this called")
         PreferenceManager.lastSync = Date().time
         val intent = Intent(context, ListChampionsActivity::class.java)

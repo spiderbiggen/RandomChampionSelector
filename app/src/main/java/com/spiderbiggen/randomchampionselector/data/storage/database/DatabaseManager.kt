@@ -18,10 +18,10 @@ object DatabaseManager : IDataInteractor, IRequiresContext {
     private lateinit var database: SimpleDatabase
 
     override fun useContext(context: Context) {
-        database = Room.databaseBuilder(context.applicationContext, SimpleDatabase::class.java, "random_champion_main").fallbackToDestructiveMigration().build()
+        if (!this::database.isInitialized) {
+            database = Room.databaseBuilder(context.applicationContext, SimpleDatabase::class.java, "random_champion_main").fallbackToDestructiveMigration().build()
+        }
     }
-
-    override fun hasContext(): Boolean = this::database.isInitialized
 
     override fun addChampion(champion: Champion): Disposable =
             simpleAsync(champion) { database.championDAO().insert(it) }
@@ -67,7 +67,7 @@ object DatabaseManager : IDataInteractor, IRequiresContext {
 
     override fun findRandomChampion(listener: (Champion) -> Unit, championKey: Int?, role: String?): Disposable {
         return getRandomChampionFlowable(role)
-                .subscribeOn(Schedulers.io())!!
+                .subscribeOn(Schedulers.io())
                 .repeat()
                 .takeUntil { it.key != championKey }
                 .observeOn(AndroidSchedulers.mainThread())

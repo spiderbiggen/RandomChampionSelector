@@ -14,11 +14,11 @@ object ResourceManager : IRequiresContext {
     private lateinit var theme: Resources.Theme
 
     override fun useContext(context: Context) {
-        resources = context.applicationContext.resources
-        theme = context.applicationContext.theme
+        if (!this::resources.isInitialized) {
+            resources = context.applicationContext.resources
+            theme = context.applicationContext.theme
+        }
     }
-
-    override fun hasContext(): Boolean = this::resources.isInitialized
 
     @Throws(NotFoundException::class)
     fun getString(@StringRes resource: Int): String = resources.getString(resource)
