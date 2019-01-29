@@ -4,7 +4,7 @@
     <androidx.preference.PreferenceCategory
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general">
-        <ListPreference
+        <androidx.preference.ListPreference
             android:defaultValue="@string/pref_language_default"
             android:dialogTitle="@string/pref_title_language"
             android:entries="@array/pref_language_titles"
@@ -12,7 +12,7 @@
             android:key="pref_language"
             android:title="@string/pref_title_language" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
             android:defaultValue="WEBP"
             android:dialogTitle="@string/pref_title_image_type"
             android:entries="@array/pref_image_type_titles"
@@ -20,20 +20,14 @@
             android:key="pref_image_type"
             android:title="@string/pref_title_image_type" />
 
-        <android.support.v7.preference.SeekBarPreference
+        <androidx.preference.SeekBarPreference
             android:defaultValue="@integer/pref_image_quality_default"
-            android:dialogTitle="@string/pref_title_image_quality"
             android:key="pref_image_quality"
-            android:negativeButtonText="@android:string/cancel"
-            android:positiveButtonText="@android:string/ok"
             android:title="@string/pref_title_image_quality"
+            app:adjustable="true"
             app:max="100"
             app:min="40" />
-    </androidx.preference.PreferenceCategory>
-    <androidx.preference.PreferenceCategory
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_data_sync">
-        <ListPreference
+        <androidx.preference.ListPreference
             android:defaultValue="@string/pref_sync_frequency_default"
             android:entries="@array/pref_sync_frequency_titles"
             android:entryValues="@array/pref_sync_frequency_values"
@@ -41,12 +35,6 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:title="@string/pref_title_sync_frequency" />
-
-        <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
-             design guidelines. -->
-        <Preference android:title="@string/pref_title_system_sync_settings">
-            <intent android:action="android.settings.SYNC_SETTINGS" />
-        </Preference>
     </androidx.preference.PreferenceCategory>
 
 

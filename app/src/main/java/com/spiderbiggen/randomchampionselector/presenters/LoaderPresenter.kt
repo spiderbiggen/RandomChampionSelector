@@ -32,6 +32,7 @@ class LoaderPresenter(context: LoaderActivity) : AbstractPresenter<LoaderActivit
             }
 
     override fun onFinished() {
+        println("is this called")
         PreferenceManager.lastSync = Date().time
         val intent = Intent(context, ListChampionsActivity::class.java)
         context.startActivity(intent)
