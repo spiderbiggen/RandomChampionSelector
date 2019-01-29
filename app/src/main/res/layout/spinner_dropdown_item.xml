@@ -5,4 +5,4 @@
     style="@style/Spinner"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.activities.ButtonActivity" />
+    tools:context=".views.activities.ListChampionsActivity" />

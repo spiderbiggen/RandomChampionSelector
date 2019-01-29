@@ -51,4 +51,5 @@
     <style name="Spinner.Dropdown">
         <item name="android:background">@color/primary_dark</item>
     </style>
+
 </resources>

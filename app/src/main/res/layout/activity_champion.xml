@@ -1,30 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?><!--Merge into Coorid-->
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activities.ChampionActivity"
-    tools:targetApi="lollipop">
+    tools:context=".views.activities.ChampionActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.design.widget.CollapsingToolbarLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/primary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:collapsedTitleTextAppearance="@style/Text.Shadowed"
+            app:expandedTitleTextAppearance="@style/Text.Shadowed.Large"
             app:toolbarId="@+id/toolbar">
 
-            <com.spiderbiggen.randomchampionselector.ui.views.TopCenteredImageView
+            <com.spiderbiggen.randomchampionselector.views.TopCenteredImageView
                 android:id="@+id/champion_splash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -32,31 +32,30 @@
                 android:transitionName="@string/champion_splash_transition_key"
                 app:layout_collapseMode="parallax" />
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.AppBarOverlay" />
+                android:layout_height="?android:attr/actionBarSize"
+                app:layout_collapseMode="pin" />
 
-        </android.support.design.widget.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/champion_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="4dp">
+        <!--<androidx.cardview.widget.CardView-->
+            <!--android:id="@+id/champion_card"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="8dp"-->
+            <!--app:cardCornerRadius="4dp">-->
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -89,7 +88,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/champion_blurb"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/champion_name" />
+                    app:layout_constraintTop_toBottomOf="@id/champion_name" />
 
                 <TextView
                     android:id="@+id/champion_blurb"
@@ -105,26 +104,26 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/champion_title" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </android.support.v7.widget.CardView>
+        <!--</androidx.cardview.widget.CardView>-->
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:focusable="true"
         android:onClick="openChampion"
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.ui.views.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp"
-        android:clickable="true"
-        android:focusable="true"/>
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
+        app:srcCompat="@drawable/ic_cached_24dp" />
 
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
