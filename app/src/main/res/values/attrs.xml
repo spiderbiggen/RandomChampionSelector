@@ -1,9 +1,9 @@
 <resources>
 
-    <declare-styleable name="SeekBarPreferenceTheme">
+    <declare-styleable name="SeekBarPreference">
         <attr name="min" format="integer" />
         <attr name="max" format="integer" />
-        <attr name="defaultValue" />
+        <attr name="base"  format="integer"/>
         <attr name="suffix" format="string" />
         <attr name="dialogMessage" />
     </declare-styleable>

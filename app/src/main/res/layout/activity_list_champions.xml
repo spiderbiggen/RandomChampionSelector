@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.ListChampionsActivity"
-    tools:targetApi="lollipop">
+    tools:context=".views.activities.ListChampionsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -30,10 +29,10 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
                 app:layout_collapseMode="pin" />
         </LinearLayout>
 
@@ -41,12 +40,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/champion_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:smoothScrollbar="true"
-        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:spanCount="@integer/spanCount"
         tools:listitem="@layout/list_champion_item" />
@@ -63,7 +62,7 @@
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.view.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>
