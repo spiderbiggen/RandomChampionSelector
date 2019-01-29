@@ -1,5 +1,6 @@
 package com.spiderbiggen.randomchampionselector.views.activities
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.Menu
@@ -7,22 +8,30 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.presenters.ListChampionsPresenter
+import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
+import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.views.adapters.ChampionAdapter
 import kotlinx.android.synthetic.main.activity_list_champions.*
 
-class ListChampionsActivity : AppCompatActivity() {
-
-    private val presenter = ListChampionsPresenter(this)
+class ListChampionsActivity : AbstractActivity() {
+    private val adapter = ChampionAdapter(mutableListOf(), View.OnClickListener(this::onClick))
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_champions)
         setSupportActionBar(toolbar)
         supportActionBar?.title = title
-        presenter.onCreate(savedInstanceState)
+        champion_list.adapter = adapter
+        findRandomImage()
+    }
+
+    private fun findRandomImage() {
+        dataManager.findRandomChampion({ champion ->
+            BitmapCache.loadBitmap(champion, ::setHeaderImage, { findRandomImage() })
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -31,40 +40,42 @@ class ListChampionsActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
-            presenter.onOptionsItemSelected(item) || super.onOptionsItemSelected(item)
-
-    fun setHeaderImage(bitmap: Bitmap) {
+    private fun setHeaderImage(bitmap: Bitmap) {
         splash.setImageBitmap(bitmap)
     }
 
-    fun setAdapter(adapter: ChampionAdapter) {
-        champion_list.adapter = adapter
-    }
-
     override fun onResume() {
-        presenter.onResume()
+        dataManager.findChampionList(adapter::setChampions)
         super.onResume()
     }
 
-    override fun onPause() {
-        presenter.onPause()
-        super.onPause()
-    }
-
     fun openChampion(view: View) {
-        presenter.openChampionActivity(view)
+        openChampionActivity(view)
     }
 
-    fun onClick(v: View) {
+    private fun onClick(v: View) {
         val position = champion_list.getChildAdapterPosition(v)
         val img = v.findViewById<ImageView>(R.id.champion_splash)
         val name = v.findViewById<TextView>(R.id.champion_name)
         val title = v.findViewById<TextView>(R.id.champion_title)
-        presenter.selectChampion(position,
+        selectChampion(position,
                 Pair(img, getString(R.string.champion_splash_transition_key)),
                 Pair(name, getString(R.string.champion_name_transition_key)),
                 Pair(title, getString(R.string.champion_title_transition_key))
         )
+    }
+
+    private fun selectChampion(position: Int, vararg views: Pair<View, String>) {
+        val champion = adapter.getChampion(position)
+        val intent = Intent(this, ChampionActivity::class.java)
+        intent.putExtra(ChampionActivity.CHAMPION_KEY, champion?.key)
+        val options = when (views.size) {
+            1 -> ActivityOptionsCompat.makeSceneTransitionAnimation(this, views[0])
+            2 -> ActivityOptionsCompat.makeSceneTransitionAnimation(this, views[0], views[1])
+            3 -> ActivityOptionsCompat.makeSceneTransitionAnimation(this, views[0], views[1], views[2])
+            else -> ActivityOptionsCompat.makeSceneTransitionAnimation(this, *views)
+        }
+        intent.putExtra(ChampionActivity.UP_ON_BACK_KEY, false)
+        startActivityWithFade(intent, options.toBundle())
     }
 }

@@ -19,12 +19,6 @@ interface IProgressCallback {
      */
     fun onProgressUpdate(type: Progress, progress: Int, progressMax: Int)
 
-    /**
-     * Indicates that the download operation has finished. This method is called even if the
-     * download hasn't completed successfully.
-     */
-    fun finishExecution()
-
     enum class Progress constructor(val indeterminate: Boolean, @StringRes val stringResource: Int) {
         ERROR(true, R.string.progress_error),
         IDLE(true, R.string.progress_idle),

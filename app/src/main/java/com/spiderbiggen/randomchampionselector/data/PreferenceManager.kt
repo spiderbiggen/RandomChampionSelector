@@ -8,11 +8,10 @@ import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.model.IRequiresContext
-import com.spiderbiggen.randomchampionselector.presenters.LoaderPresenter
 import java.util.*
 
 object PreferenceManager : IRequiresContext {
-
+    private const val MILLIS_IN_MINUTE = 60_000
     private val resources = ResourceManager
     private lateinit var preferences: SharedPreferences
 
@@ -35,7 +34,7 @@ object PreferenceManager : IRequiresContext {
         get() = CompressFormat.valueOf(getString("pref_image_type", R.string.pref_image_type_default, "WEBP"))
 
     val isOutdated: Boolean
-        get() = syncTime != -1L && lastSync == -1L || Date().after(Date(lastSync + syncTime * LoaderPresenter.MILLIS_IN_MINUTE))
+        get() = syncTime != -1L && lastSync == -1L || Date().after(Date(lastSync + syncTime * MILLIS_IN_MINUTE))
 
     var lastSync: Long
         get() = getLong(R.string.pref_last_sync_key, R.integer.pref_last_sync_default)

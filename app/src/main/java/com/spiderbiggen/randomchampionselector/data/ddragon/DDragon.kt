@@ -83,7 +83,6 @@ object DDragon {
                 }, MAX_CONCURRENCY)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { callback.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total) }
-                .doOnComplete { callback.finishExecution() }
                 .filter { it.invalid }
                 .distinct()
                 .toList()
@@ -111,7 +110,6 @@ object DDragon {
                             }
                 }, MAX_CONCURRENCY)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(callback::finishExecution)
                 .subscribe(Consumer { callback.onDownloadSuccess(downloadCount.incrementAndGet(), total) }, Consumer(onError), Action(onComplete))
     }
 
