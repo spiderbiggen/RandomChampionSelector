@@ -7,16 +7,15 @@ import android.os.Build
 import androidx.collection.LruCache
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.domain.Champion
-import io.reactivex.functions.Consumer
 
 /**
  * Created on 5-7-2018.
  * @author Stefan Breetveld
  */
 object BitmapCache {
+    private const val DEFAULT_SIZE = 400
     private val cacheSize = (Runtime.getRuntime().maxMemory() / 1024).toInt() / 8
     private val mMemoryCache = object : LruCache<String, Bitmap>(cacheSize) {
-
         override fun sizeOf(key: String, bitmap: Bitmap): Int {
             // The cache size will be measured in kilobytes rather than
             // number of items.
@@ -24,19 +23,19 @@ object BitmapCache {
         }
     }
 
-    fun loadBitmap(champion: Champion, callback: Consumer<Bitmap>, vWidth: Int = DEFAULT_SIZE, vHeight: Int = DEFAULT_SIZE) {
+    fun loadBitmap(champion: Champion, callback: (Bitmap) -> Unit, error: ((String) -> Unit)? = null, vWidth: Int = DEFAULT_SIZE, vHeight: Int = DEFAULT_SIZE) {
         val (key, file) = DDragon.getImageDescriptorForChampion(champion)
         val bitmap = getBitmapFromMemCache(key)
         if (bitmap != null) {
-            callback.accept(bitmap)
+            callback(bitmap)
         } else {
-            val task = BitmapWorkerTask(callback, vWidth, vHeight)
-            task.execute(key, file.path)
+            if (file.exists() && file.canRead()) {
+                val task = BitmapWorkerTask(callback, vWidth, vHeight)
+                task.execute(key, file.path)
+            } else {
+                error?.invoke("File doesn't exist or can't be accessed")
+            }
         }
-    }
-
-    fun loadBitmap(champion: Champion, callback: BitmapCallback, vWidth: Int = DEFAULT_SIZE, vHeight: Int = DEFAULT_SIZE) {
-        loadBitmap(champion, Consumer { callback.loadImageSuccess(it) }, vWidth, vHeight)
     }
 
 
@@ -50,7 +49,7 @@ object BitmapCache {
         return mMemoryCache.get(key)
     }
 
-    class BitmapWorkerTask(private val bitmapCallback: Consumer<Bitmap>, private val vWidth: Int, private val vHeight: Int) : AsyncTask<String, Void, Bitmap>() {
+    class BitmapWorkerTask(private val bitmapCallback: (Bitmap) -> Unit, private val vWidth: Int, private val vHeight: Int) : AsyncTask<String, Void, Bitmap>() {
 
         // Decode image in background.
         override fun doInBackground(vararg params: String): Bitmap {
@@ -59,14 +58,8 @@ object BitmapCache {
             return bitmap
         }
 
-        override fun onPostExecute(result: Bitmap) = bitmapCallback.accept(result)
+        override fun onPostExecute(result: Bitmap) = bitmapCallback(result)
     }
-
-    interface BitmapCallback {
-        fun loadImageSuccess(bitmap: Bitmap)
-    }
-
-    private const val DEFAULT_SIZE = 400
 
     private fun calculateInSampleSize(options: BitmapFactory.Options, minWidth: Int, minHeight: Int): Int {
         val reqHeight: Int = if (minHeight > 0) minHeight else DEFAULT_SIZE

@@ -2,6 +2,9 @@ package com.spiderbiggen.randomchampionselector.data.ddragon
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
+import io.reactivex.Maybe
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 
@@ -28,13 +31,20 @@ data class ImageDescriptor(var champion: String, var file: File) {
     }
 
     @Throws(IOException::class)
-    fun download(): Bitmap? {
-        if (invalid) {
-            val body = DDragon.getChampionImage(champion, 0).blockingGet()
-            body?.byteStream()?.use {
-                return BitmapFactory.decodeStream(it)
-            }
+    fun download(): Maybe<Bitmap> {
+        return if (invalid) {
+            DDragon.getChampionImage(champion, 0)
+                    .subscribeOn(Schedulers.io())
+                    .map { body ->
+                        body.byteStream().use { BitmapFactory.decodeStream(it) }
+                    }
+                    .doOnError {
+                        Log.d("ImageDescriptor", "lmao", it)
+                        Maybe.empty<Bitmap>()
+                    }
+
+        } else {
+            Maybe.empty()
         }
-        return null
     }
 }

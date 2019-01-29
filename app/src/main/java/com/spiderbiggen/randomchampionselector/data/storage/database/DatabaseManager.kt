@@ -1,14 +1,13 @@
 package com.spiderbiggen.randomchampionselector.data.storage.database
 
-import androidx.room.Room
 import android.content.Context
+import androidx.room.Room
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IRequiresContext
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 
 /**
@@ -16,7 +15,7 @@ import io.reactivex.schedulers.Schedulers
  * Part of RandomChampionSelector.
  */
 object DatabaseManager : IDataInteractor, IRequiresContext {
-    lateinit var database: SimpleDatabase
+    private lateinit var database: SimpleDatabase
 
     override fun useContext(context: Context) {
         database = Room.databaseBuilder(context.applicationContext, SimpleDatabase::class.java, "random_champion_main").fallbackToDestructiveMigration().build()
@@ -45,28 +44,28 @@ object DatabaseManager : IDataInteractor, IRequiresContext {
     private fun <T : Any> simpleAsync(o: T, l: (T) -> Unit): Disposable =
             Observable.just(o).subscribeOn(Schedulers.io()).subscribe { l(it) }
 
-    override fun findRoleList(listener: Consumer<List<String>>): Disposable =
+    override fun findRoleList(listener: (List<String>) -> Unit): Disposable =
             database.championDAO().allRoles
                     .subscribeOn(Schedulers.io())
-                    .flatMap { Flowable.fromIterable(it).map { it.split(",") } }
+                    .flatMap { list -> Flowable.fromIterable(list).map { it.split(",") } }
                     .distinct()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(listener)
 
-    override fun findChampionList(listener: Consumer<List<Champion>>, role: String?): Disposable =
+    override fun findChampionList(listener: (List<Champion>) -> Unit, role: String?): Disposable =
             getChampionListFlowable(role)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(listener)
 
-    override fun findChampion(listener: Consumer<Champion>, championKey: Int): Disposable {
+    override fun findChampion(listener: (Champion) -> Unit, championKey: Int): Disposable {
         return database.championDAO().getChampion(championKey)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listener)
     }
 
-    override fun findRandomChampion(listener: Consumer<Champion>, championKey: Int?, role: String?): Disposable {
+    override fun findRandomChampion(listener: (Champion) -> Unit, championKey: Int?, role: String?): Disposable {
         return getRandomChampionFlowable(role)
                 .subscribeOn(Schedulers.io())!!
                 .repeat()

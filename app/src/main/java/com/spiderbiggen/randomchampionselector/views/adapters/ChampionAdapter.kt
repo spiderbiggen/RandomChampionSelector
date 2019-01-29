@@ -1,6 +1,7 @@
 package com.spiderbiggen.randomchampionselector.views.adapters
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
-import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.domain.Champion
 
-class ChampionAdapter(champions: Collection<Champion>, private val clickListener: View.OnClickListener) : RecyclerView.Adapter<ChampionAdapter.ViewHolder>() {
+
+class ChampionAdapter(champions: Collection<Champion>, private val clickListener: View.OnClickListener) : RecyclerView.Adapter<ChampionAdapter.ViewHolder>(){
 
     private val champions = champions.toMutableList()
 
@@ -26,7 +27,7 @@ class ChampionAdapter(champions: Collection<Champion>, private val clickListener
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val champion = champions[position]
 
-        DDragon.getChampionBitmapFromCache(champion, viewHolder)
+        BitmapCache.loadBitmap(champion, viewHolder::loadImageSuccess, viewHolder::loadImageFailure)
 
         viewHolder.nameView.text = champion.name
         viewHolder.titleView.text = champion.capitalizedTitle
@@ -42,14 +43,18 @@ class ChampionAdapter(champions: Collection<Champion>, private val clickListener
 
     fun getChampion(position: Int): Champion? = champions.getOrNull(position)
 
-    class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), BitmapCache.BitmapCallback {
+    class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
 
-        internal val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
         internal val nameView: TextView = itemView.findViewById(R.id.champion_name)
         internal val titleView: TextView = itemView.findViewById(R.id.champion_title)
-
-        override fun loadImageSuccess(bitmap: Bitmap) {
+        fun loadImageSuccess(bitmap: Bitmap) {
             imageView.setImageBitmap(bitmap)
+        }
+
+        fun loadImageFailure(message: String?) {
+            imageView.setImageBitmap(null)
+            Log.e("ChampionAdapter", "error $message")
         }
 
     }

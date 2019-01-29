@@ -5,32 +5,35 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.domain.Champion
-import com.spiderbiggen.randomchampionselector.model.IChampionInteractor
 import com.spiderbiggen.randomchampionselector.views.activities.ChampionActivity
 import com.spiderbiggen.randomchampionselector.views.activities.ListChampionsActivity
 import com.spiderbiggen.randomchampionselector.views.adapters.ChampionAdapter
-import io.reactivex.functions.Consumer
 
 /**
  * Created on 6-7-2018.
  * @author Stefan Breetveld
  */
-class ListChampionsPresenter(context: ListChampionsActivity) : AbstractPresenter<ListChampionsActivity>(context), IChampionInteractor.IChampionListCallback {
+class ListChampionsPresenter(context: ListChampionsActivity) : AbstractPresenter<ListChampionsActivity>(context) {
     private val adapter = ChampionAdapter(mutableListOf(), View.OnClickListener { context.onClick(it) })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         context.setAdapter(adapter)
-        dataManager.findRandomChampion(Consumer { champion ->
-            dataManager.findImageForChampion(Consumer { bitmap -> context.setHeaderImage(bitmap) }, champion)
+        findRandomImage()
+    }
+
+    private fun findRandomImage() {
+        dataManager.findRandomChampion({ champion ->
+            BitmapCache.loadBitmap(champion, context::setHeaderImage, { findRandomImage() })
         })
     }
 
     override fun onResume() {
-        dataManager.findChampionList(this)
+        dataManager.findChampionList(this::setChampionList)
     }
 
-    override fun setChampionList(champions: Collection<Champion>) {
+    private fun setChampionList(champions: Collection<Champion>) {
         adapter.setChampions(champions.toList())
     }
 

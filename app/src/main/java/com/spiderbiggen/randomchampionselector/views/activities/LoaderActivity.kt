@@ -13,15 +13,15 @@ class LoaderActivity : AppCompatActivity() {
     private lateinit var loaderPresenter: LoaderPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         loaderPresenter = LoaderPresenter(this)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loader)
         loaderPresenter.onCreate()
     }
 
     override fun onResume() {
-        loaderPresenter.onResume()
         super.onResume()
+        loaderPresenter.onResume()
     }
 
     override fun onDestroy() {

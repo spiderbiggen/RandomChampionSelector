@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager.locale
-import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
@@ -16,7 +15,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -26,6 +27,7 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
+
 
 /**
  * Created on 13-3-2018.
@@ -48,18 +50,17 @@ object DDragon {
         get() = JsonConverterFactory()
 
 
-    fun updateVersion(onComplete: Action, onError: Consumer<Throwable>): Disposable {
+    fun updateVersion(onComplete: () -> Unit, onError: (Throwable) -> Unit): Disposable {
         return service.versions
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess { version.set(it[0]) }
-                .doOnEvent { _, _ -> onComplete.run() }
+                .doOnEvent { _, _ -> onComplete() }
                 .doOnError(onError)
                 .subscribe()
     }
 
-    fun getChampionList(subscriber: Consumer<Collection<Champion>>,
-                        onError: Consumer<Throwable>): Disposable {
+    fun getChampionList(subscriber: (Collection<Champion>) -> Unit, onError: (Throwable) -> Unit): Disposable {
         return service.getChampions(version.get(), locale)
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable<Champion> { Observable.fromIterable(it) }
@@ -69,14 +70,14 @@ object DDragon {
                 .subscribe(subscriber)
     }
 
-    fun verifyImages(champions: Collection<Champion>, callback: IProgressCallback, consumer: Consumer<Collection<ImageDescriptor>>, onError: Consumer<Throwable>): Disposable {
+    fun verifyImages(champions: Collection<Champion>, callback: IProgressCallback, consumer: (Collection<ImageDescriptor>) -> Unit, onError: (Throwable) -> Unit): Disposable {
         val newImages = getNewImages(champions)
         val downloadCount = AtomicInteger()
         val total = newImages.size
         return Observable.fromIterable(newImages)
                 .subscribeOn(Schedulers.io())
-                .flatMap({
-                    Observable.just(it)
+                .flatMap({ descriptor ->
+                    Observable.just(descriptor)
                             .subscribeOn(Schedulers.io())
                             .map<ImageDescriptor> { it.verifySavedFile() }
                 }, MAX_CONCURRENCY)
@@ -86,31 +87,32 @@ object DDragon {
                 .filter { it.invalid }
                 .distinct()
                 .toList()
-                .doOnSuccess(consumer)
-                .doOnError(onError)
-                .subscribe()
+                .subscribe(consumer, onError)
     }
 
     fun downloadAllImages(champions: Collection<ImageDescriptor>, callback: IProgressCallback,
-                          onComplete: Action, onError: Consumer<Throwable>): Disposable {
+                          onComplete: () -> Unit, onError: (Throwable) -> Unit): Disposable {
         val downloadCount = AtomicInteger()
         val total = champions.size
         val compressFormat = PreferenceManager.compressFormat
         val quality = PreferenceManager.quality
         return Observable.fromIterable(champions)
                 .subscribeOn(Schedulers.io())
-                .flatMap({
-                    Observable.just(it)
+                .flatMap({ descriptor ->
+                    Observable.just(descriptor)
                             .subscribeOn(Schedulers.io())
-                            .map { saveBitmap(it.file, it.download(), compressFormat, quality) }
+                            .map {
+                                try {
+                                    val bitmap = it.download().blockingGet()
+                                    saveBitmap(it.file, bitmap, compressFormat, quality)
+                                } catch (e: Throwable) {
+                                    // Don't care
+                                }
+                            }
                 }, MAX_CONCURRENCY)
-
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { callback.onDownloadSuccess(downloadCount.incrementAndGet(), total) }
-                .doOnComplete { callback.finishExecution() }
-                .doOnComplete(onComplete)
-                .doOnError(onError)
-                .subscribe()
+                .doOnComplete(callback::finishExecution)
+                .subscribe(Consumer { callback.onDownloadSuccess(downloadCount.incrementAndGet(), total) }, Consumer(onError), Action(onComplete))
     }
 
     private fun getNewImages(champions: Collection<Champion>): List<ImageDescriptor> {
@@ -140,10 +142,6 @@ object DDragon {
     private fun getChampionFile(champion: Champion): File =
             File(FileStorage.championImageDir, champion.id)
 
-    fun getChampionBitmapFromCache(champion: Champion, callback: BitmapCache.BitmapCallback) {
-        BitmapCache.loadBitmap(champion, callback)
-    }
-
     @Throws(IOException::class)
     private fun saveBitmap(file: File, bitmap: Bitmap?, compressFormat: Bitmap.CompressFormat, quality: Int) {
         if (bitmap != null && (file.exists() || file.createNewFile())) {
@@ -156,8 +154,16 @@ object DDragon {
 
 
     private fun createService(): DDragonService {
+        val logging = HttpLoggingInterceptor()
+        // set your desired log level
+        logging.level = HttpLoggingInterceptor.Level.BASIC
+        val httpClient = OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build()
+
         val retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .client(httpClient)
                 .addConverterFactory(championsDeserializer)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
                 .build()

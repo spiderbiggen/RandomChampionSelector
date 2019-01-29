@@ -2,17 +2,17 @@ package com.spiderbiggen.randomchampionselector.views.activities
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.presenters.ChampionPresenter
 import kotlinx.android.synthetic.main.activity_champion.*
 
-class ChampionActivity : AppCompatActivity(), BitmapCache.BitmapCallback {
+class ChampionActivity : AppCompatActivity() {
     private val presenter = ChampionPresenter(this)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,10 +45,10 @@ class ChampionActivity : AppCompatActivity(), BitmapCache.BitmapCallback {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean =
             presenter.onOptionsItemSelected(item) || super.onOptionsItemSelected(item)
 
-
     override fun onBackPressed() {
         presenter.onBackPressed()
     }
+
 
     override fun onPause() {
         presenter.onPause()
@@ -72,7 +72,12 @@ class ChampionActivity : AppCompatActivity(), BitmapCache.BitmapCallback {
         supportStartPostponedEnterTransition()
     }
 
-    override fun loadImageSuccess(bitmap: Bitmap) {
+    fun loadImageSuccess(bitmap: Bitmap) {
         champion_splash.setImageBitmap(bitmap)
+    }
+
+    fun loadImageFailure(message: String?) {
+        champion_splash.setImageBitmap(null)
+        Log.e("ChampionActivity", "error $message")
     }
 }
