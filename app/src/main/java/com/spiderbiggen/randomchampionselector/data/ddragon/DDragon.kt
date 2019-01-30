@@ -1,13 +1,13 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.spiderbiggen.randomchampionselector.BuildConfig
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager.locale
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback.Progress.VERIFY_SUCCESS
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -15,7 +15,6 @@ import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -40,7 +39,8 @@ object DDragon {
     private val MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors()
 
     private val version = AtomicReference(DEFAULT_VERSION)
-    private val service = createService()
+    private val service
+        get() = createService()
 
     /**
      * Update the current version in [DDragon] and signal completion on [onComplete].
@@ -122,7 +122,12 @@ object DDragon {
         val compressFormat = PreferenceManager.compressFormat
         val quality = PreferenceManager.quality
         return Observable.fromIterable(descriptors).subscribeOn(Schedulers.io())
-                .flatMapMultiple { saveBitmap(it.file, it.download().blockingGet(), compressFormat, quality) }
+                .flatMap {
+                    service.getSplashImage(it.champion, 0).flatMapObservable { bitmap ->
+                        saveBitmap(it.file, bitmap, compressFormat, quality)
+                        Observable.just(bitmap)
+                    }
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(Consumer { progress.onDownloadSuccess(downloadCount.incrementAndGet(), total) }, Consumer(onError), Action(onComplete))
     }
@@ -136,13 +141,6 @@ object DDragon {
         }
     }
 
-    /**
-     * Retrieve the [Bitmap] for the given [champion] and [skinId] from
-     */
-    fun getChampionImage(champion: String, skinId: Int): Maybe<ResponseBody> =
-            service.getSplashImage(champion, skinId)
-
-
     private fun createService(): DDragonService {
         val httpClient = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
@@ -152,7 +150,7 @@ object DDragon {
         }
 
         val retrofit = Retrofit.Builder().baseUrl(BASE_URL).client(httpClient.build())
-                .addConverterFactory(JsonConverterFactory())
+                .addConverterFactory(CustomConverter())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
         return retrofit.create(DDragonService::class.java)

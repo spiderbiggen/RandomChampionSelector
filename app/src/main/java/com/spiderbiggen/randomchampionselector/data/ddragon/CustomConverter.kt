@@ -1,5 +1,7 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.JsonReader
 import android.util.Log
 import com.spiderbiggen.randomchampionselector.domain.Champion
@@ -14,32 +16,34 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.*
 
-class JsonConverterFactory : Converter.Factory() {
+class CustomConverter : Converter.Factory() {
 
     override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
-        if (type == LIST_CHAMPION) {
-            return ChampionListConverter.INSTANCE
-        } else if (type == STRING_ARRAY) {
-            return StringArrayConverter.INSTANCE
+        return when (type) {
+            LIST_CHAMPION -> ChampionListConverter.INSTANCE
+            STRING_ARRAY -> StringArrayConverter.INSTANCE
+            BITMAP -> BitmapConverter.INSTANCE
+            else -> retrofit?.nextResponseBodyConverter<Any>(null, type!!, annotations!!)
         }
-        return retrofit?.nextResponseBodyConverter<Any>(null, type!!, annotations!!)
     }
 
     internal class StringArrayConverter : Converter<ResponseBody, Array<String>> {
 
         @Throws(IOException::class)
-        override fun convert(value: ResponseBody): Array<String> =
-                JsonReader(value.charStream()).use { reader ->
-                    reader.beginArray()
-                    val strings = ArrayList<String>()
-                    while (reader.hasNext()) {
-                        strings.add(reader.nextString())
-                    }
-                    return strings.toTypedArray()
-                }
+        override fun convert(value: ResponseBody): Array<String> {
+            val reader = JsonReader(value.charStream())
+            reader.beginArray()
+            val strings = ArrayList<String>()
+            while (reader.hasNext()) {
+                strings.add(reader.nextString())
+            }
+            return strings.toTypedArray()
+        }
+
 
         companion object {
-            val INSTANCE = StringArrayConverter()
+            val INSTANCE
+                get() = StringArrayConverter()
         }
     }
 
@@ -71,13 +75,26 @@ class JsonConverterFactory : Converter.Factory() {
         }
 
         companion object {
-            val INSTANCE = ChampionListConverter()
+            val INSTANCE
+                get() = ChampionListConverter()
+        }
+    }
+
+    internal class BitmapConverter : Converter<ResponseBody, Bitmap> {
+
+        override fun convert(responseBody: ResponseBody): Bitmap {
+            return responseBody.byteStream().use { BitmapFactory.decodeStream(it) }
+        }
+
+        companion object {
+            val INSTANCE
+                get() = BitmapConverter()
         }
     }
 
     companion object {
 
-        private val TAG = JsonConverterFactory::class.java.simpleName
+        private val TAG = CustomConverter::class.java.simpleName
 
         private val LIST_CHAMPION = object : ParameterizedType {
             override fun getRawType(): Type {
@@ -93,5 +110,6 @@ class JsonConverterFactory : Converter.Factory() {
             }
         }
         private val STRING_ARRAY = GenericArrayType { String::class.java }
+        private val BITMAP = Bitmap::class.java
     }
 }

@@ -1,9 +1,9 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
+import android.graphics.Bitmap
 import com.spiderbiggen.randomchampionselector.domain.Champion
 
 import io.reactivex.Maybe
-import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -21,7 +21,7 @@ interface DDragonService {
     fun getChampions(@Path("version") version: String, @Path("locale") locale: String): Maybe<List<Champion>>
 
     @GET("$CDN_URL/img/champion/splash/{champion}_{skin}.jpg")
-    fun getSplashImage(@Path("champion") championKey: String, @Path("skin") skinId: Int): Maybe<ResponseBody>
+    fun getSplashImage(@Path("champion") championKey: String, @Path("skin") skinId: Int): Maybe<Bitmap>
 
     companion object {
         const val API_URL = "/api"

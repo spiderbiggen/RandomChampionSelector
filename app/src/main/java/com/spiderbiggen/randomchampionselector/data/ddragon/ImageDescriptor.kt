@@ -27,15 +27,4 @@ data class ImageDescriptor(var champion: String, var file: File) {
         }
         return this
     }
-
-    fun download(): Maybe<Bitmap> {
-        return if (invalid) {
-            DDragon.getChampionImage(champion, 0)
-                    .subscribeOn(Schedulers.io())
-                    .map { body -> body.byteStream().use { BitmapFactory.decodeStream(it) } }
-                    .doOnError { Log.d("ImageDescriptor", "lmao", it) }
-        } else {
-            Maybe.empty<Bitmap>()
-        }
-    }
 }
