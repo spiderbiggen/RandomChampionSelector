@@ -1,26 +1,21 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
 import android.graphics.Bitmap
-import android.util.Log
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.spiderbiggen.randomchampionselector.BuildConfig
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager.locale
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback.Progress.VERIFY_SUCCESS
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
@@ -37,99 +32,70 @@ object DDragon {
     // Default version if versions endpoint fails
     private const val DEFAULT_VERSION = "9.2.1"
     private val MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors()
-
+    private val LIMITED_IO_CONTEXT = Executors.newFixedThreadPool(MAX_CONCURRENCY)
+            .asCoroutineDispatcher()
     private val version = AtomicReference(DEFAULT_VERSION)
     private val service
         get() = createService()
 
     /**
-     * Update the current version in [DDragon] and signal completion on [onComplete].
-     *
-     * @param onComplete tell the callback that we have updated the version successfully
-     * @param onError tell the callback that we failed to update the version
-     * @return [Disposable] that can be disposed to cancel the request
+     * Update the current version in [DDragon].
      */
-    fun updateVersion(onComplete: () -> Unit, onError: (Throwable) -> Unit): Disposable {
-        return getLastVersion({ version.set(it); onComplete() }, onError)
-    }
+    suspend fun updateVersion() = version.set(getLastVersion())
 
     /**
-     * Retrieve the current version of [DDragon] and send the result to [onComplete].
-     *
-     * @param onComplete tell the callback the current version
-     * @param onError tell the callback that we failed to retrieve the version
-     * @return [Disposable] that can be disposed to cancel the request
+     * Retrieve the current version of [DDragon].
      */
-    fun getLastVersion(onComplete: (String) -> Unit, onError: (Throwable) -> Unit): Disposable {
-        return service.versions.observeOn(AndroidSchedulers.mainThread()).map { it[0] }
-                .doOnError(onError).subscribe(onComplete)
-    }
+    suspend fun getLastVersion(): String = service.versions().await()[0]
 
     /**
-     * Retrieve the current list of [Champions][Champion] of [DDragon] and send the result to [onComplete].
-     *
-     * @param onComplete give the list of champions to the callback
-     * @param onError tell the callback that we failed to retrieve the champions
-     * @return [Disposable] that can be disposed to cancel the request
+     * Retrieve the current list of [Champions][Champion] of [DDragon].
      */
-    fun getChampionList(onComplete: (Collection<Champion>) -> Unit, onError: (Throwable) -> Unit): Disposable {
-        return service.getChampions(version.get(), locale)
-                .flatMapObservable<Champion> { Observable.fromIterable(it) }.toList()
-                .observeOn(AndroidSchedulers.mainThread()).doOnError(onError).subscribe(onComplete)
-    }
+    suspend fun getChampionList(): Collection<Champion> = service.getChampions(version.get(), locale).await()
 
     /**
-     * Helper method to flatMap an asynchronous call on objects of type [R] that convert them to type [T].
-     * Will only run [MAX_CONCURRENCY] threads at a time.
-     */
-    private fun <T, R> Observable<R>.flatMapMultiple(map: (R) -> T): Observable<T> =
-            flatMap({ Observable.just(it).subscribeOn(Schedulers.io()).map(map) }, MAX_CONCURRENCY)
-
-    /**
-     * Verify if the images for all the given champions are valid and send the result to [onComplete].
+     * Verify if the images for all the given champions are valid.
      *
      * @param champions the champions for which we need to verify the [Bitmap]
      * @param progress progress callback
-     * @param onComplete tell the callback the collection of descriptors that failed verification
-     * @param onError tell the callback that something went wrong during validation
-     * @return [Disposable] that can be disposed to cancel the request
      */
-    fun verifyImages(champions: Collection<Champion>, progress: IProgressCallback,
-                     onComplete: (Collection<ImageDescriptor>) -> Unit, onError: (Throwable) -> Unit): Disposable {
+    fun verifyImages(champions: Collection<Champion>, progress: IProgressCallback): Collection<ImageDescriptor> {
         val newImages = champions.map(Champion::imageDescriptor).toList()
-        val downloadCount = AtomicInteger()
+        val verifyCount = AtomicInteger()
         val total = newImages.size
-        return Observable.fromIterable(newImages).subscribeOn(Schedulers.io())
-                .flatMapMultiple { descriptor -> descriptor.verifySavedFile() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { progress.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total) }
-                .filter { it.invalid }.toList().subscribe(onComplete, onError)
+        return newImages.map { it.verifySavedFile() }
+                .onEach {
+                    onMainThread { progress.onProgressUpdate(VERIFY_SUCCESS, verifyCount.incrementAndGet(), total) }
+                }
+                .filter { it.invalid }
+                .toList()
     }
 
     /**
-     * Download images for all the given champions and signal [onComplete] when done.
+     * Download images for all the given champions.
      *
      * @param descriptors the descriptors for which we need to download the [Bitmap]
      * @param progress progress callback
-     * @param onComplete called when all images have been downloaded
-     * @param onError tell the callback that we failed to download all images
-     * @return [Disposable] that can be disposed to cancel the request
      */
-    fun downloadAllImages(descriptors: Collection<ImageDescriptor>, progress: IProgressCallback,
-                          onComplete: () -> Unit, onError: (Throwable) -> Unit): Disposable {
+    suspend fun downloadAllImages(descriptors: Collection<ImageDescriptor>, progress: IProgressCallback) {
         val downloadCount = AtomicInteger()
         val total = descriptors.size
+        onMainThread { progress.onDownloadSuccess(downloadCount.get(), total) }
         val compressFormat = PreferenceManager.compressFormat
         val quality = PreferenceManager.quality
-        return Observable.fromIterable(descriptors).subscribeOn(Schedulers.io())
-                .flatMap {
-                    service.getSplashImage(it.champion, 0).flatMapObservable { bitmap ->
-                        saveBitmap(it.file, bitmap, compressFormat, quality)
-                        Observable.just(bitmap)
-                    }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer { progress.onDownloadSuccess(downloadCount.incrementAndGet(), total) }, Consumer(onError), Action(onComplete))
+        descriptors.mapAsync {
+            val bitmap = service.getSplashImage(it.champion, 0)
+            saveBitmap(it.file, bitmap.await(), compressFormat, quality)
+            onMainThread { progress.onDownloadSuccess(downloadCount.incrementAndGet(), total) }
+        }
+    }
+
+    private fun <A, B> Iterable<A>.mapAsync(f: suspend (A) -> B): List<B> = runBlocking {
+        map { async(LIMITED_IO_CONTEXT) { f(it) } }.map { it.await() }
+    }
+
+    private fun onMainThread(f: () -> Unit) {
+        GlobalScope.launch(Dispatchers.Main) { f() }
     }
 
     private fun saveBitmap(file: File, bitmap: Bitmap?, compressFormat: Bitmap.CompressFormat, quality: Int) {
@@ -151,7 +117,7 @@ object DDragon {
 
         val retrofit = Retrofit.Builder().baseUrl(BASE_URL).client(httpClient.build())
                 .addConverterFactory(CustomConverter())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
         return retrofit.create(DDragonService::class.java)
     }

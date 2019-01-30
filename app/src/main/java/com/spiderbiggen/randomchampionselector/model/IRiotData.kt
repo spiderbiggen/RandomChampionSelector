@@ -4,8 +4,8 @@ interface IRiotData {
 
     val shouldRefresh: Boolean
 
-    fun verifyImages(progress: IProgressCallback, finished: () -> Unit)
+    suspend fun verifyImages(progress: IProgressCallback)
 
-    fun update(progress: IProgressCallback, finished: () -> Unit)
+    suspend fun update(progress: IProgressCallback)
 
 }

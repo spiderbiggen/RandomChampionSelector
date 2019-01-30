@@ -5,13 +5,16 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Bundle
+import androidx.annotation.UiThread
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import kotlinx.android.synthetic.main.activity_loader.*
+import kotlinx.coroutines.*
 import java.util.*
 
 
-class LoaderActivity : AbstractActivity(), IProgressCallback {
+@ExperimentalCoroutinesApi
+class LoaderActivity : AbstractActivity(), IProgressCallback, CoroutineScope by MainScope() {
     private var shouldRefresh: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +32,21 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         when {
             shouldRefresh || dataManager.shouldRefresh -> {
                 PreferenceManager.lastSync = -1
-                dataManager.update(this, this::onFinished)
+                launch(Dispatchers.IO) {
+                    dataManager.update(this@LoaderActivity)
+                    onFinished()
+                }
             }
-            else -> dataManager.verifyImages(this, this::onFinished)
+            else -> launch(Dispatchers.IO) {
+                dataManager.verifyImages(this@LoaderActivity)
+                onFinished()
+            }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cancel()
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -55,6 +69,7 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         updateProgressBar(type, progress, progressMax)
     }
 
+    @UiThread
     private fun updateProgressBar(type: IProgressCallback.Progress, progress: Int, progressMax: Int) {
         if (type === IProgressCallback.Progress.ERROR) {
             val progressDrawable = progressBar.indeterminateDrawable.mutate()

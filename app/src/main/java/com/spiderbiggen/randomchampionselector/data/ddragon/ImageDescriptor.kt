@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Deferred
 import java.io.File
 
 /**

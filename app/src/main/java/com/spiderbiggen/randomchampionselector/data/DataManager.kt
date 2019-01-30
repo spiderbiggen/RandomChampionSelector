@@ -1,10 +1,9 @@
 package com.spiderbiggen.randomchampionselector.data
 
 import android.content.Context
+import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.data.storage.database.DatabaseManager
 import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
-import com.spiderbiggen.randomchampionselector.data.tasks.UpdateTask
-import com.spiderbiggen.randomchampionselector.data.tasks.VerifyTask
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IChampionInteractor
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
@@ -29,16 +28,18 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
         resourceManager.useContext(context)
     }
 
-    override fun verifyImages(progress: IProgressCallback, finished: () -> Unit) {
-        val task = VerifyTask(progress, finished)
-        task.run()
-        disposables += task
+    override suspend fun verifyImages(progress: IProgressCallback) {
+        val champions = DDragon.getChampionList()
+        val things = DDragon.verifyImages(champions, progress)
+        DDragon.downloadAllImages(things, progress)
     }
 
-    override fun update(progress: IProgressCallback, finished: () -> Unit) {
-        val task = UpdateTask(progress) { this.verifyImages(progress, finished) }
-        task.run()
-        disposables += task
+    override suspend fun update(progress: IProgressCallback) {
+            progress.onProgressUpdate(IProgressCallback.Progress.CHECKING_VERSION)
+            DDragon.updateVersion()
+            val champions = DDragon.getChampionList()
+            val things = DDragon.verifyImages(champions, progress)
+            DDragon.downloadAllImages(things, progress)
     }
 
     override fun findChampion(championKey: Int, consumer: (Champion) -> Unit) {
@@ -56,5 +57,4 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
     override fun isDisposed(): Boolean = disposables.all(Disposable::isDisposed)
 
     override fun dispose() = disposables.onEach(Disposable::dispose).clear()
-
 }
