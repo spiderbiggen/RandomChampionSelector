@@ -7,6 +7,11 @@ import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+/**
+ *
+ *
+ * @author Stefan Breetveld
+ */
 interface DDragonService {
 
     @get:GET("$API_URL/versions.json")

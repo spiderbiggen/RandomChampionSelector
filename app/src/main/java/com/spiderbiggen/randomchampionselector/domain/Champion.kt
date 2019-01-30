@@ -3,12 +3,13 @@ package com.spiderbiggen.randomchampionselector.domain
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.spiderbiggen.randomchampionselector.data.ddragon.ImageDescriptor
+import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage.championBitmap
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.Serializable
 import java.util.*
-
 
 /**
  * Class that defines the champion object.
@@ -30,6 +31,9 @@ data class Champion(
 
     val capitalizedTitle: String
         get() = title.substring(0, 1).toUpperCase(Locale.ENGLISH) + title.substring(1)
+
+    val imageDescriptor: ImageDescriptor
+        get() = ImageDescriptor(id, championBitmap)
 
     override fun toString(): String {
         return "Champion(key=$key, name='$name', roles=${Arrays.toString(roles)})"
@@ -107,6 +111,5 @@ data class Champion(
                 return Image(full, sprite, group, x, y, w, h)
             }
         }
-
     }
 }

@@ -1,10 +1,9 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
 import android.graphics.Bitmap
-import android.util.Log
+import com.spiderbiggen.randomchampionselector.BuildConfig
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager.locale
-import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback.Progress.VERIFY_SUCCESS
@@ -18,152 +17,143 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 
 /**
- * Created on 13-3-2018.
+ * Defines methods to get data from League of Legends Static Data endpoints.
  *
  * @author Stefan Breetveld
  */
 object DDragon {
 
-
     private val TAG = DDragon::class.java.simpleName
     private const val BASE_URL = "http://ddragon.leagueoflegends.com"
     // Default version if versions endpoint fails
-    private const val DEFAULT_VERSION = "8.13.1"
-    private const val MAX_CONCURRENCY = 8
-    private val version = AtomicReference(DEFAULT_VERSION)
+    private const val DEFAULT_VERSION = "9.2.1"
+    private val MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors()
 
+    private val version = AtomicReference(DEFAULT_VERSION)
     private val service = createService()
 
-    private val championsDeserializer: Converter.Factory
-        get() = JsonConverterFactory()
-
-
+    /**
+     * Update the current version in [DDragon] and signal completion on [onComplete].
+     *
+     * @param onComplete tell the callback that we have updated the version successfully
+     * @param onError tell the callback that we failed to update the version
+     * @return [Disposable] that can be disposed to cancel the request
+     */
     fun updateVersion(onComplete: () -> Unit, onError: (Throwable) -> Unit): Disposable {
-        return service.versions
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess { version.set(it[0]) }
-                .doOnEvent { _, _ -> onComplete() }
-                .doOnError(onError)
-                .subscribe()
+        return getLastVersion({ version.set(it); onComplete() }, onError)
     }
 
-    fun getChampionList(subscriber: (Collection<Champion>) -> Unit, onError: (Throwable) -> Unit): Disposable {
+    /**
+     * Retrieve the current version of [DDragon] and send the result to [onComplete].
+     *
+     * @param onComplete tell the callback the current version
+     * @param onError tell the callback that we failed to retrieve the version
+     * @return [Disposable] that can be disposed to cancel the request
+     */
+    fun getLastVersion(onComplete: (String) -> Unit, onError: (Throwable) -> Unit): Disposable {
+        return service.versions.observeOn(AndroidSchedulers.mainThread()).map { it[0] }
+                .doOnError(onError).subscribe(onComplete)
+    }
+
+    /**
+     * Retrieve the current list of [Champions][Champion] of [DDragon] and send the result to [onComplete].
+     *
+     * @param onComplete give the list of champions to the callback
+     * @param onError tell the callback that we failed to retrieve the champions
+     * @return [Disposable] that can be disposed to cancel the request
+     */
+    fun getChampionList(onComplete: (Collection<Champion>) -> Unit, onError: (Throwable) -> Unit): Disposable {
         return service.getChampions(version.get(), locale)
-                .subscribeOn(Schedulers.io())
-                .flatMapObservable<Champion> { Observable.fromIterable(it) }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(onError)
-                .subscribe(subscriber)
+                .flatMapObservable<Champion> { Observable.fromIterable(it) }.toList()
+                .observeOn(AndroidSchedulers.mainThread()).doOnError(onError).subscribe(onComplete)
     }
 
-    fun verifyImages(champions: Collection<Champion>, callback: IProgressCallback, consumer: (Collection<ImageDescriptor>) -> Unit, onError: (Throwable) -> Unit): Disposable {
-        val newImages = getNewImages(champions)
+    /**
+     * Helper method to flatMap an asynchronous call on objects of type [R] that convert them to type [T].
+     * Will only run [MAX_CONCURRENCY] threads at a time.
+     */
+    private fun <T, R> Observable<R>.flatMapMultiple(map: (R) -> T): Observable<T> =
+            flatMap({ Observable.just(it).subscribeOn(Schedulers.io()).map(map) }, MAX_CONCURRENCY)
+
+    /**
+     * Verify if the images for all the given champions are valid and send the result to [onComplete].
+     *
+     * @param champions the champions for which we need to verify the [Bitmap]
+     * @param progress progress callback
+     * @param onComplete tell the callback the collection of descriptors that failed verification
+     * @param onError tell the callback that something went wrong during validation
+     * @return [Disposable] that can be disposed to cancel the request
+     */
+    fun verifyImages(champions: Collection<Champion>, progress: IProgressCallback,
+                     onComplete: (Collection<ImageDescriptor>) -> Unit, onError: (Throwable) -> Unit): Disposable {
+        val newImages = champions.map(Champion::imageDescriptor).toList()
         val downloadCount = AtomicInteger()
         val total = newImages.size
-        return Observable.fromIterable(newImages)
-                .subscribeOn(Schedulers.io())
-                .flatMap({ descriptor ->
-                    Observable.just(descriptor)
-                            .subscribeOn(Schedulers.io())
-                            .map<ImageDescriptor> { it.verifySavedFile() }
-                }, MAX_CONCURRENCY)
+        return Observable.fromIterable(newImages).subscribeOn(Schedulers.io())
+                .flatMapMultiple { descriptor -> descriptor.verifySavedFile() }
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { callback.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total) }
-                .filter { it.invalid }
-                .distinct()
-                .toList()
-                .subscribe(consumer, onError)
+                .doOnNext { progress.onProgressUpdate(VERIFY_SUCCESS, downloadCount.incrementAndGet(), total) }
+                .filter { it.invalid }.toList().subscribe(onComplete, onError)
     }
 
-    fun downloadAllImages(champions: Collection<ImageDescriptor>, callback: IProgressCallback,
+    /**
+     * Download images for all the given champions and signal [onComplete] when done.
+     *
+     * @param descriptors the descriptors for which we need to download the [Bitmap]
+     * @param progress progress callback
+     * @param onComplete called when all images have been downloaded
+     * @param onError tell the callback that we failed to download all images
+     * @return [Disposable] that can be disposed to cancel the request
+     */
+    fun downloadAllImages(descriptors: Collection<ImageDescriptor>, progress: IProgressCallback,
                           onComplete: () -> Unit, onError: (Throwable) -> Unit): Disposable {
         val downloadCount = AtomicInteger()
-        val total = champions.size
+        val total = descriptors.size
         val compressFormat = PreferenceManager.compressFormat
         val quality = PreferenceManager.quality
-        return Observable.fromIterable(champions)
-                .subscribeOn(Schedulers.io())
-                .flatMap({ descriptor ->
-                    Observable.just(descriptor)
-                            .subscribeOn(Schedulers.io())
-                            .map {
-                                try {
-                                    val bitmap = it.download().blockingGet()
-                                    saveBitmap(it.file, bitmap, compressFormat, quality)
-                                } catch (e: Throwable) {
-                                    // Don't care
-                                }
-                            }
-                }, MAX_CONCURRENCY)
+        return Observable.fromIterable(descriptors).subscribeOn(Schedulers.io())
+                .flatMapMultiple { saveBitmap(it.file, it.download().blockingGet(), compressFormat, quality) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(Consumer { callback.onDownloadSuccess(downloadCount.incrementAndGet(), total) }, Consumer(onError), Action(onComplete))
+                .subscribe(Consumer { progress.onDownloadSuccess(downloadCount.incrementAndGet(), total) }, Consumer(onError), Action(onComplete))
     }
 
-    private fun getNewImages(champions: Collection<Champion>): List<ImageDescriptor> {
-        val list = ArrayList<ImageDescriptor>()
-        champions.forEach {
-            try {
-                list.add(getImageDescriptorForChampion(it))
-            } catch (e: IOException) {
-                Log.e(TAG, "getNewImages: ", e)
-            }
-        }
-        return list
-    }
-
-    fun getImageDescriptorForChampion(champion: Champion): ImageDescriptor {
-        return ImageDescriptor(champion.id, getChampionFile(champion))
-    }
-
-    @Throws(IOException::class)
-    fun deleteChampionImages() {
-        val storage = FileStorage
-        val dir = storage.championImageDir
-        storage.deleteRecursive(dir)
-    }
-
-    @Throws(IOException::class)
-    private fun getChampionFile(champion: Champion): File =
-            File(FileStorage.championImageDir, champion.id)
-
-    @Throws(IOException::class)
     private fun saveBitmap(file: File, bitmap: Bitmap?, compressFormat: Bitmap.CompressFormat, quality: Int) {
         if (bitmap != null && (file.exists() || file.createNewFile())) {
-            FileOutputStream(file).use { bitmap.compress(compressFormat, quality, it) }
+            try {
+                FileOutputStream(file).use { bitmap.compress(compressFormat, quality, it) }
+            } catch (e: IOException) { /* Do nothing */
+            }
         }
     }
 
+    /**
+     * Retrieve the [Bitmap] for the given [champion] and [skinId] from
+     */
     fun getChampionImage(champion: String, skinId: Int): Maybe<ResponseBody> =
             service.getSplashImage(champion, skinId)
 
 
     private fun createService(): DDragonService {
-        val logging = HttpLoggingInterceptor()
-        // set your desired log level
-        logging.level = HttpLoggingInterceptor.Level.BASIC
         val httpClient = OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build()
+        if (BuildConfig.DEBUG) {
+            val logging = HttpLoggingInterceptor()
+            logging.level = HttpLoggingInterceptor.Level.BASIC
+            httpClient.addInterceptor(logging)
+        }
 
-        val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(httpClient)
-                .addConverterFactory(championsDeserializer)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
+        val retrofit = Retrofit.Builder().baseUrl(BASE_URL).client(httpClient.build())
+                .addConverterFactory(JsonConverterFactory())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
         return retrofit.create(DDragonService::class.java)
     }

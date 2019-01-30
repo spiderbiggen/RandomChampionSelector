@@ -9,6 +9,7 @@ import androidx.core.app.ActivityOptionsCompat
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.DataManager
 import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
+import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
 
 /**
  * Created on 2019-01-29.
@@ -47,7 +48,7 @@ abstract class AbstractActivity : AppCompatActivity() {
             true
         }
         R.id.action_refresh_images -> {
-            DDragon.deleteChampionImages()
+            FileStorage.deleteChampionImages()
             startActivity(createStartIntent())
             true
         }

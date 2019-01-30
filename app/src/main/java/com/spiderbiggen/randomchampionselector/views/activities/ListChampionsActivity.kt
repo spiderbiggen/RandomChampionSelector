@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_list_champions.*
 
 class ListChampionsActivity : AbstractActivity() {
     private val adapter = ChampionAdapter(mutableListOf(), View.OnClickListener(this::onClick))
+    private var champion: Champion? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +25,11 @@ class ListChampionsActivity : AbstractActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = title
         champion_list.adapter = adapter
-        findRandomImage()
     }
 
+
     private fun findRandomImage() {
-        dataManager.findRandomChampion({ champion ->
-            BitmapCache.loadBitmap(champion, ::setHeaderImage, { findRandomImage() })
-        })
+        dataManager.findRandomChampion(::setChampion)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -44,8 +42,18 @@ class ListChampionsActivity : AbstractActivity() {
         splash.setImageBitmap(bitmap)
     }
 
+    private fun setChampion(champion: Champion) {
+        this.champion = champion
+        BitmapCache.loadBitmap(champion, ::setHeaderImage, { findRandomImage() })
+    }
+
     override fun onResume() {
         dataManager.findChampionList(adapter::setChampions)
+        if (champion == null) {
+            findRandomImage()
+        } else {
+            setChampion(champion!!)
+        }
         super.onResume()
     }
 

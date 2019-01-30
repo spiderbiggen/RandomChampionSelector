@@ -1,20 +1,26 @@
 package com.spiderbiggen.randomchampionselector.views.activities
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.ConnectivityManager
 import android.os.Bundle
-import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import kotlinx.android.synthetic.main.activity_loader.*
 import java.util.*
+
 
 class LoaderActivity : AbstractActivity(), IProgressCallback {
     private var shouldRefresh: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_loader)
+        if(!isNetworkAvailable()){
+            openListActivity()
+            return
+        }
+        setContentView(com.spiderbiggen.randomchampionselector.R.layout.activity_loader)
         shouldRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
     }
 
@@ -29,10 +35,24 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         }
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo?.isConnected == true
+    }
+
     private fun onFinished() {
         PreferenceManager.lastSync = Date().time
+        openListActivity()
+    }
+
+    private fun openListActivity() {
         val intent = Intent(this, ListChampionsActivity::class.java)
         startActivity(intent)
+    }
+
+    override fun onProgressUpdate(type: IProgressCallback.Progress, progress: Int, progressMax: Int) {
+        updateProgressBar(type, progress, progressMax)
     }
 
     private fun updateProgressBar(type: IProgressCallback.Progress, progress: Int, progressMax: Int) {
@@ -47,10 +67,6 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         progressBar.max = progressMax
 
         progressText.text = getString(type.stringResource, progress, progressMax)
-    }
-
-    override fun onProgressUpdate(type: IProgressCallback.Progress, progress: Int, progressMax: Int) {
-        updateProgressBar(type, progress, progressMax)
     }
 
 }

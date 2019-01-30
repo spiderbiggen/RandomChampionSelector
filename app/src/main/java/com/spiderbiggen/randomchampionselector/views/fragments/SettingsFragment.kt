@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.preference.*
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
+import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
 import com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity
 import java.io.IOException
 
@@ -34,7 +34,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             "pref_image_type", "pref_image_quality" -> {
                 setRefresh()
                 try {
-                    DDragon.deleteChampionImages()
+                    FileStorage.deleteChampionImages()
                 } catch (e: IOException) {
                     Log.e(TAG, "onSharedPreferenceChanged: ", e)
                 }

@@ -6,7 +6,6 @@ import android.util.Log
 import io.reactivex.Maybe
 import io.reactivex.schedulers.Schedulers
 import java.io.File
-import java.io.IOException
 
 /**
  * Created on 15-3-2018.
@@ -19,7 +18,6 @@ data class ImageDescriptor(var champion: String, var file: File) {
     val invalid
         get() = !valid
 
-    @Throws(IOException::class)
     fun verifySavedFile(): ImageDescriptor {
         if (file.exists()) {
             val options = BitmapFactory.Options()
@@ -30,20 +28,14 @@ data class ImageDescriptor(var champion: String, var file: File) {
         return this
     }
 
-    @Throws(IOException::class)
     fun download(): Maybe<Bitmap> {
         return if (invalid) {
             DDragon.getChampionImage(champion, 0)
                     .subscribeOn(Schedulers.io())
-                    .map { body ->
-                        body.byteStream().use { BitmapFactory.decodeStream(it) }
-                    }
-                    .doOnError {
-                        Log.d("ImageDescriptor", "lmao", it)
-                        Maybe.empty<Bitmap>()
-                    }
+                    .map { body -> body.byteStream().use { BitmapFactory.decodeStream(it) } }
+                    .doOnError { Log.d("ImageDescriptor", "lmao", it) }
         } else {
-            Maybe.empty()
+            Maybe.empty<Bitmap>()
         }
     }
 }
