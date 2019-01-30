@@ -8,15 +8,21 @@ import kotlinx.coroutines.*
  */
 
 /**
+ * Run the given mapping function in parallel.
  *
+ * @param context a [CoroutineDispatcher] that defines how the mapper is parallelized
+ * @param function a mapper function that maps [A] to [B] needs to be a coroutine
+ * @return [A] mapped to [B]
  */
-suspend fun <A, B> Iterable<A>.mapAsync(context: CoroutineDispatcher = Dispatchers.Default, f: suspend (A) -> B): List<B> = runBlocking {
-        map { async(context) { f(it) } }.map { it.await() }
+suspend fun <A, B> Iterable<A>.mapAsync(context: CoroutineDispatcher = Dispatchers.Default, function: suspend (A) -> B): Iterable<B> = runBlocking {
+    map { async(context) { function(it) } }.map { it.await() }
 }
 
 /**
- * 
+ * Make sure the given function is run on the main thread, great for updating UI Elements.
+ *
+ * @param function function that should be run on the main thread
  */
-suspend fun onMainThread(f: () -> Unit) {
-    withContext(Dispatchers.Main) { f() }
+suspend fun onMainThread(function: () -> Unit) {
+    withContext(Dispatchers.Main) { function() }
 }
