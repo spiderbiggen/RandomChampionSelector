@@ -8,9 +8,8 @@ import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IChampionInteractor
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IRiotData
-import io.reactivex.disposables.Disposable
 
-class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable {
+class DataManager(context: Context) : IRiotData, IChampionInteractor {
     override val shouldRefresh: Boolean
         get() = preferenceManager.isOutdated
 
@@ -19,7 +18,6 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
     private val preferenceManager = PreferenceManager
     private val resourceManager = ResourceManager
 
-    private val disposables = mutableListOf<Disposable>()
 
     init {
         database.useContext(context)
@@ -42,19 +40,16 @@ class DataManager(context: Context) : IRiotData, IChampionInteractor, Disposable
             DDragon.downloadAllImages(things, progress)
     }
 
-    override fun findChampion(championKey: Int, consumer: (Champion) -> Unit) {
-        disposables += database.findChampion(consumer, championKey)
+    override suspend fun findChampion(championKey: Int): Champion {
+        return database.findChampion(championKey)
     }
 
-    override fun findRandomChampion(consumer: (Champion) -> Unit, championKey: Int?, role: String?) {
-        disposables += database.findRandomChampion(consumer, championKey, role)
+    override suspend fun findRandomChampion(championKey: Int?, role: String?): Champion {
+        return database.findRandomChampion(championKey, role)
     }
 
-    override fun findChampionList(consumer: (Collection<Champion>) -> Unit, role: String?) {
-        disposables += database.findChampionList(consumer, role)
+    override suspend fun findChampionList(role: String?): Collection<Champion> {
+        return database.findChampionList(role)
     }
 
-    override fun isDisposed(): Boolean = disposables.all(Disposable::isDisposed)
-
-    override fun dispose() = disposables.onEach(Disposable::dispose).clear()
 }

@@ -8,14 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.DataManager
-import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
+import kotlinx.coroutines.*
 
 /**
  * Created on 2019-01-29.
  * @author Stefan Breetveld
  */
-abstract class AbstractActivity : AppCompatActivity() {
+@ExperimentalCoroutinesApi
+abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     protected lateinit var dataManager: DataManager
 
@@ -25,13 +26,8 @@ abstract class AbstractActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        dataManager.dispose()
+        cancel()
         super.onDestroy()
-    }
-
-    override fun onPause() {
-        dataManager.dispose()
-        super.onPause()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {

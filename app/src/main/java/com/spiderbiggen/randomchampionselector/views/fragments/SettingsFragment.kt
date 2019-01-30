@@ -8,11 +8,13 @@ import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
 import com.spiderbiggen.randomchampionselector.views.activities.SettingsActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
 
 /**
  * Shows the settings menu.
  */
+@ExperimentalCoroutinesApi
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {

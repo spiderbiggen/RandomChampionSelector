@@ -11,10 +11,16 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
+import com.spiderbiggen.randomchampionselector.data.onMainThread
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.views.adapters.ChampionAdapter
 import kotlinx.android.synthetic.main.activity_list_champions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import java.io.IOException
 
+@ExperimentalCoroutinesApi
 class ListChampionsActivity : AbstractActivity() {
     private val adapter = ChampionAdapter(mutableListOf(), View.OnClickListener(this::onClick))
     private var champion: Champion? = null
@@ -27,9 +33,16 @@ class ListChampionsActivity : AbstractActivity() {
         champion_list.adapter = adapter
     }
 
-
     private fun findRandomImage() {
-        dataManager.findRandomChampion(::setChampion)
+        launch(Dispatchers.Default) {
+            val champion = champion ?: dataManager.findRandomChampion()
+            try {
+                val bitmap: Bitmap = BitmapCache.loadBitmap(champion)
+                onMainThread { splash.setImageBitmap(bitmap) }
+            } catch (e: IOException) {
+                findRandomImage()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -38,22 +51,12 @@ class ListChampionsActivity : AbstractActivity() {
         return true
     }
 
-    private fun setHeaderImage(bitmap: Bitmap) {
-        splash.setImageBitmap(bitmap)
-    }
-
-    private fun setChampion(champion: Champion) {
-        this.champion = champion
-        BitmapCache.loadBitmap(champion, ::setHeaderImage, { findRandomImage() })
-    }
-
     override fun onResume() {
-        dataManager.findChampionList(adapter::setChampions)
-        if (champion == null) {
-            findRandomImage()
-        } else {
-            setChampion(champion!!)
+        launch {
+            val list = dataManager.findChampionList()
+            onMainThread { adapter.setChampions(list) }
         }
+        findRandomImage()
         super.onResume()
     }
 

@@ -4,10 +4,10 @@ import com.spiderbiggen.randomchampionselector.domain.Champion
 
 interface IChampionInteractor {
 
-    fun findChampion(championKey: Int, consumer: (Champion) -> Unit)
+    suspend fun findChampion(championKey: Int): Champion
 
-    fun findRandomChampion(consumer: (Champion) -> Unit, championKey: Int? = null, role: String? = null)
+    suspend fun findRandomChampion(championKey: Int? = null, role: String? = null): Champion
 
-    fun findChampionList(consumer: (Collection<Champion>) -> Unit, role: String? = null)
+    suspend fun findChampionList(role: String? = null): Collection<Champion>
 
 }

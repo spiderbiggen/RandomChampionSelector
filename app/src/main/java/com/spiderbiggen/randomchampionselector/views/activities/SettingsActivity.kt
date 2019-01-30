@@ -11,11 +11,13 @@ import androidx.preference.PreferenceScreen
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.views.fragments.SettingsFragment
 import kotlinx.android.synthetic.main.activity_settings.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
  * Created on 4-7-2018.
  * @author Stefan Breetveld
  */
+@ExperimentalCoroutinesApi
 class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
 
     private var needsRefresh = false

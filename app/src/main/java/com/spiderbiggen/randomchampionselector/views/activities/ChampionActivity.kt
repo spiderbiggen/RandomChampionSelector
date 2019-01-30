@@ -1,7 +1,6 @@
 package com.spiderbiggen.randomchampionselector.views.activities
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -9,9 +8,15 @@ import android.view.MenuItem
 import android.view.View
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
+import com.spiderbiggen.randomchampionselector.data.onMainThread
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import kotlinx.android.synthetic.main.activity_champion.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import java.io.IOException
 
+@ExperimentalCoroutinesApi
 class ChampionActivity : AbstractActivity() {
 
     private var championKey = -1
@@ -37,9 +42,12 @@ class ChampionActivity : AbstractActivity() {
     }
 
     override fun onResume() {
-        when {
-            championKey < 0 -> dataManager.findRandomChampion(this::setChampion, championKey)
-            else -> dataManager.findChampion(championKey, this::setChampion)
+        launch(Dispatchers.Default) {
+            val champion = when {
+                championKey < 0 -> dataManager.findRandomChampion(championKey)
+                else -> dataManager.findChampion(championKey)
+            }
+            onMainThread { setChampion(champion) }
         }
         super.onResume()
     }
@@ -84,16 +92,19 @@ class ChampionActivity : AbstractActivity() {
     }
 
     private fun setChampion(champion: Champion) {
+        launch {
+            try {
+                val bitmap = BitmapCache.loadBitmap(champion)
+                onMainThread { champion_splash.setImageBitmap(bitmap) }
+            } catch (e: IOException) {
+                onMainThread { loadImageFailure(e.message) }
+            }
+        }
         championKey = champion.key
-        BitmapCache.loadBitmap(champion, ::loadImageSuccess, ::loadImageFailure)
         champion_name.text = champion.name
         champion_title.text = champion.capitalizedTitle
         champion_blurb.text = champion.lore
         supportStartPostponedEnterTransition()
-    }
-
-    private fun loadImageSuccess(bitmap: Bitmap) {
-        champion_splash.setImageBitmap(bitmap)
     }
 
     private fun loadImageFailure(message: String?) {

@@ -2,8 +2,6 @@ package com.spiderbiggen.randomchampionselector.data.storage.database
 
 import com.spiderbiggen.randomchampionselector.domain.Champion
 
-import io.reactivex.disposables.Disposable
-
 /**
  * Defines all interactions that load data.
  *
@@ -11,24 +9,24 @@ import io.reactivex.disposables.Disposable
  */
 interface IDataInteractor {
 
-    fun addChampion(champion: Champion): Disposable
+    suspend fun addChampion(champion: Champion)
 
-    fun addChampions(champions: Collection<Champion>): Disposable
+    suspend fun addChampions(champions: Collection<Champion>)
 
-    fun removeChampion(champion: Champion): Disposable
+    suspend fun removeChampion(champion: Champion)
 
-    fun removeChampions(champions: Collection<Champion>): Disposable
+    suspend fun removeChampions(champions: Collection<Champion>)
 
-    fun updateChampion(champion: Champion): Disposable
+    suspend fun updateChampion(champion: Champion)
 
-    fun updateChampions(champions: Collection<Champion>): Disposable
+    suspend fun updateChampions(champions: Collection<Champion>)
 
-    fun findRoleList(listener: (List<String>) -> Unit): Disposable
+    suspend fun findRoleList(): List<String>
 
-    fun findChampion(listener: (Champion) -> Unit, championKey: Int): Disposable
+    suspend fun findChampion(championKey: Int): Champion
 
-    fun findChampionList(listener: (List<Champion>) -> Unit, role: String? = null): Disposable
+    suspend fun findChampionList(role: String? = null): List<Champion>
 
-    fun findRandomChampion(listener: (Champion) -> Unit, championKey: Int? = null, role: String? = null): Disposable
+    suspend fun findRandomChampion(championKey: Int? = null, role: String? = null): Champion
 
 }

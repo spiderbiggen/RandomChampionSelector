@@ -4,11 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IRequiresContext
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Created by Stefan Breetveld on 18-3-2017.
@@ -23,70 +20,56 @@ object DatabaseManager : IDataInteractor, IRequiresContext {
         }
     }
 
-    override fun addChampion(champion: Champion): Disposable =
+    override suspend fun addChampion(champion: Champion) =
             simpleAsync(champion) { database.championDAO().insert(it) }
 
-    override fun addChampions(champions: Collection<Champion>): Disposable =
+    override suspend fun addChampions(champions: Collection<Champion>) =
             simpleAsync(champions) { database.championDAO().insertAll(it) }
 
-    override fun removeChampion(champion: Champion): Disposable =
+    override suspend fun removeChampion(champion: Champion) =
             simpleAsync(champion) { database.championDAO().delete(it) }
 
-    override fun removeChampions(champions: Collection<Champion>): Disposable =
+    override suspend fun removeChampions(champions: Collection<Champion>) =
             simpleAsync(champions) { database.championDAO().deleteAll(it) }
 
-    override fun updateChampion(champion: Champion): Disposable =
+    override suspend fun updateChampion(champion: Champion) =
             simpleAsync(champion) { database.championDAO().update(it) }
 
-    override fun updateChampions(champions: Collection<Champion>): Disposable =
+    override suspend fun updateChampions(champions: Collection<Champion>) =
             simpleAsync(champions) { database.championDAO().updateAll(it) }
 
-    private fun <T : Any> simpleAsync(o: T, l: (T) -> Unit): Disposable =
-            Observable.just(o).subscribeOn(Schedulers.io()).subscribe { l(it) }
+    private suspend fun <T, R> simpleAsync(o: T, l: suspend (T) -> R): R =
+            withContext(Dispatchers.Default) { l(o) }
 
-    override fun findRoleList(listener: (List<String>) -> Unit): Disposable =
-            database.championDAO().allRoles
-                    .subscribeOn(Schedulers.io())
-                    .flatMap { list -> Flowable.fromIterable(list).map { it.split(",") } }
-                    .distinct()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(listener)
+    override suspend fun findRoleList(): List<String> {
+        val roleLists = database.championDAO().getAllRoles()
+        return roleLists.flatMap { it.split(",") }.distinct()
+    }
 
-    override fun findChampionList(listener: (List<Champion>) -> Unit, role: String?): Disposable =
-            getChampionListFlowable(role)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(listener)
+    override suspend fun findChampionList(role: String?): List<Champion> {
+        return getChampionList(role)
+    }
 
-    override fun findChampion(listener: (Champion) -> Unit, championKey: Int): Disposable {
+    override suspend fun findChampion(championKey: Int): Champion {
         return database.championDAO().getChampion(championKey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listener)
     }
 
-    override fun findRandomChampion(listener: (Champion) -> Unit, championKey: Int?, role: String?): Disposable {
-        return getRandomChampionFlowable(role)
-                .subscribeOn(Schedulers.io())
-                .repeat()
-                .takeUntil { it.key != championKey }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listener)
+    override suspend fun findRandomChampion(championKey: Int?, role: String?): Champion {
+        var champion: Champion
+        do {
+            champion = getRandomChampion(role)
+        } while (champion.key == championKey)
+        return champion
     }
 
-    private fun getChampionListFlowable(role: String?): Flowable<List<Champion>> {
-        return when {
-            isWildcardRole(role) -> database.championDAO().all
-            else -> database.championDAO().getAll(role)
-        }
+    private suspend fun getChampionList(role: String?): List<Champion> = simpleAsync(role) {
+        database.championDAO().getAll(role.roleTransform())
     }
 
-    private fun getRandomChampionFlowable(role: String?): Flowable<Champion> {
-        return when {
-            isWildcardRole(role) -> database.championDAO().random
-            else -> database.championDAO().getRandom(role)
-        }
+    private suspend fun getRandomChampion(role: String?): Champion = simpleAsync(role) {
+        database.championDAO().getRandom(role.roleTransform())
     }
 
-    private fun isWildcardRole(role: String?): Boolean = role.isNullOrEmpty() || role.equals("all", ignoreCase = true)
+    private fun String?.roleTransform(): String = if (isNullOrEmpty() || equals("all", ignoreCase = true)) "" else this!!
+
 }

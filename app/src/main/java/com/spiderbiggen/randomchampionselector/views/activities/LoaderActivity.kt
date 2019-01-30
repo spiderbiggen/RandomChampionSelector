@@ -14,7 +14,7 @@ import java.util.*
 
 
 @ExperimentalCoroutinesApi
-class LoaderActivity : AbstractActivity(), IProgressCallback, CoroutineScope by MainScope() {
+class LoaderActivity : AbstractActivity(), IProgressCallback {
     private var shouldRefresh: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,11 +42,6 @@ class LoaderActivity : AbstractActivity(), IProgressCallback, CoroutineScope by 
                 onFinished()
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cancel()
     }
 
     private fun isNetworkAvailable(): Boolean {

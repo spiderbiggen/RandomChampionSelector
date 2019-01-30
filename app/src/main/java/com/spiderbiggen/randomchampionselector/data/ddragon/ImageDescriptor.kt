@@ -1,11 +1,6 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
-import io.reactivex.Maybe
-import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Deferred
 import java.io.File
 
 /**
@@ -15,9 +10,8 @@ import java.io.File
  */
 data class ImageDescriptor(var champion: String, var file: File) {
 
-    private var valid = false
-    val invalid
-        get() = !valid
+    var valid = false
+        private set
 
     fun verifySavedFile(): ImageDescriptor {
         if (file.exists()) {

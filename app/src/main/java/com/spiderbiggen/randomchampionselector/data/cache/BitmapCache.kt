@@ -2,10 +2,12 @@ package com.spiderbiggen.randomchampionselector.data.cache
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.os.Build
 import androidx.collection.LruCache
 import com.spiderbiggen.randomchampionselector.domain.Champion
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 /**
  * Caches Bitmaps in memory. Also loads the Bitmap from storage if it isn't cached.
@@ -25,47 +27,22 @@ object BitmapCache {
 
     /**
      * Load the [Bitmap] identified by the given [champion] from memory if possible, otherwise load from disk storage.
-     * Return the resulting [Bitmap] on the [callback]. If an error occurs an error message can be sent on the [error] callback.
      * Optionally [minWidth] and [minHeight] can be supplied to indicate the expected display size of the [Bitmap].
      *
      * @param champion the [Champion] for which we want a [Bitmap]
-     * @param callback where the resulting [Bitmap] should be sent
-     * @param error possible error message callback
      * @param minWidth possible minimum size
      * @param minHeight possible minimum size
+     * @return Bitmap
      */
-    fun loadBitmap(champion: Champion, callback: (Bitmap) -> Unit, error: ((String) -> Unit)? = null, minWidth: Int = DEFAULT_SIZE, minHeight: Int = DEFAULT_SIZE) {
+    suspend fun loadBitmap(champion: Champion, minWidth: Int = DEFAULT_SIZE, minHeight: Int = DEFAULT_SIZE): Bitmap {
         val (key, file) = champion.imageDescriptor
-        val bitmap = mMemoryCache.get(key)
-        if (bitmap != null) {
-            callback(bitmap)
-            return
-        }
-        if (file.exists() && file.canRead()) {
-            val task = BitmapWorkerTask(callback, minWidth, minHeight)
-            task.execute(key, file.path)
+        return mMemoryCache.get(key) ?: if (!file.exists() || !file.canRead()) {
+            throw IOException("File doesn't exist or can't be accessed")
         } else {
-            error?.invoke("File doesn't exist or can't be accessed")
+            val bitmap = decodeSampledBitmapFromFile(file.path, minWidth, minHeight)
+            mMemoryCache.put(key, bitmap)
+            bitmap
         }
-    }
-
-    /**
-     * Constructs a new [AsyncTask] that loads a [Bitmap] and sends the result to [bitmapCallback].
-     *
-     * @param bitmapCallback where the resulting [Bitmap] will be sent
-     * @param minWidth minimum width of the [Bitmap]
-     * @param minHeight minimum height of the [Bitmap]
-     */
-    private class BitmapWorkerTask(private val bitmapCallback: (Bitmap) -> Unit, private val minWidth: Int, private val minHeight: Int) : AsyncTask<String, Void, Bitmap>() {
-
-        // Decode image in background.
-        override fun doInBackground(vararg params: String): Bitmap {
-            val bitmap = decodeSampledBitmapFromFile(params[1], minWidth, minHeight)
-            mMemoryCache.put(params[0], bitmap)
-            return bitmap
-        }
-
-        override fun onPostExecute(result: Bitmap) = bitmapCallback(result)
     }
 
     /**
@@ -107,7 +84,7 @@ object BitmapCache {
      * @param minWidth minimum width for the [Bitmap]
      * @param minHeight minimum height for the [Bitmap]
      */
-    private fun decodeSampledBitmapFromFile(file: String, minWidth: Int, minHeight: Int): Bitmap {
+    private suspend fun decodeSampledBitmapFromFile(file: String, minWidth: Int, minHeight: Int): Bitmap = withContext(Dispatchers.IO) {
         // First decode with inJustDecodeBounds=true to check dimensions
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -115,9 +92,8 @@ object BitmapCache {
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, minWidth, minHeight)
         options.inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Bitmap.Config.HARDWARE else Bitmap.Config.RGB_565
-//        options.inPreferredConfig = Bitmap.Config.RGB_565
         options.inJustDecodeBounds = false
-        return BitmapFactory.decodeFile(file, options)
+        BitmapFactory.decodeFile(file, options)
     }
 }
 

@@ -5,17 +5,17 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.spiderbiggen.randomchampionselector.BuildConfig
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager.locale
+import com.spiderbiggen.randomchampionselector.data.mapAsync
+import com.spiderbiggen.randomchampionselector.data.onMainThread
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback.Progress.VERIFY_SUCCESS
-import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
@@ -31,9 +31,6 @@ object DDragon {
     private const val BASE_URL = "http://ddragon.leagueoflegends.com"
     // Default version if versions endpoint fails
     private const val DEFAULT_VERSION = "9.2.1"
-    private val MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors()
-    private val LIMITED_IO_CONTEXT = Executors.newFixedThreadPool(MAX_CONCURRENCY)
-            .asCoroutineDispatcher()
     private val version = AtomicReference(DEFAULT_VERSION)
     private val service
         get() = createService()
@@ -59,7 +56,7 @@ object DDragon {
      * @param champions the champions for which we need to verify the [Bitmap]
      * @param progress progress callback
      */
-    fun verifyImages(champions: Collection<Champion>, progress: IProgressCallback): Collection<ImageDescriptor> {
+    suspend fun verifyImages(champions: Collection<Champion>, progress: IProgressCallback): Collection<ImageDescriptor> {
         val newImages = champions.map(Champion::imageDescriptor).toList()
         val verifyCount = AtomicInteger()
         val total = newImages.size
@@ -67,7 +64,7 @@ object DDragon {
                 .onEach {
                     onMainThread { progress.onProgressUpdate(VERIFY_SUCCESS, verifyCount.incrementAndGet(), total) }
                 }
-                .filter { it.invalid }
+                .filter { !it.valid }
                 .toList()
     }
 
@@ -88,14 +85,6 @@ object DDragon {
             saveBitmap(it.file, bitmap.await(), compressFormat, quality)
             onMainThread { progress.onDownloadSuccess(downloadCount.incrementAndGet(), total) }
         }
-    }
-
-    private fun <A, B> Iterable<A>.mapAsync(f: suspend (A) -> B): List<B> = runBlocking {
-        map { async(LIMITED_IO_CONTEXT) { f(it) } }.map { it.await() }
-    }
-
-    private fun onMainThread(f: () -> Unit) {
-        GlobalScope.launch(Dispatchers.Main) { f() }
     }
 
     private fun saveBitmap(file: File, bitmap: Bitmap?, compressFormat: Bitmap.CompressFormat, quality: Int) {
