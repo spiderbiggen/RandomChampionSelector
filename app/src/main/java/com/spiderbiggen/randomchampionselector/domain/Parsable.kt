@@ -11,5 +11,5 @@ import org.json.JSONObject
 interface Parsable<T> {
 
     @Throws(JSONException::class)
-    fun parse(jsonObject: JSONObject?): T?
+    fun parse(jsonObject: JSONObject): T
 }

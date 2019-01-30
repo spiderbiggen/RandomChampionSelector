@@ -27,7 +27,7 @@ class CustomConverter : Converter.Factory() {
         }
     }
 
-    internal class StringArrayConverter : Converter<ResponseBody, Array<String>> {
+    private class StringArrayConverter : Converter<ResponseBody, Array<String>> {
 
         @Throws(IOException::class)
         override fun convert(value: ResponseBody): Array<String> {
@@ -47,7 +47,7 @@ class CustomConverter : Converter.Factory() {
         }
     }
 
-    internal class ChampionListConverter : Converter<ResponseBody, List<Champion>> {
+    private class ChampionListConverter : Converter<ResponseBody, List<Champion>> {
 
         @Throws(IOException::class)
         override fun convert(responseBody: ResponseBody): List<Champion> {
@@ -60,9 +60,7 @@ class CustomConverter : Converter.Factory() {
                     val key = stringIterator.next()
                     try {
                         val champion = Champion.parse(jsonObject.getJSONObject(key))
-                        if (champion != null) {
-                            list.add(champion)
-                        }
+                        list.add(champion)
                     } catch (e: JSONException) {
                         Log.e(TAG, "convert: failed to convert $key", e)
                     }
@@ -71,7 +69,6 @@ class CustomConverter : Converter.Factory() {
             } catch (e: JSONException) {
                 throw IOException("Failed to parse Champions JSON", e)
             }
-
         }
 
         companion object {
@@ -80,7 +77,7 @@ class CustomConverter : Converter.Factory() {
         }
     }
 
-    internal class BitmapConverter : Converter<ResponseBody, Bitmap> {
+    private class BitmapConverter : Converter<ResponseBody, Bitmap> {
 
         override fun convert(responseBody: ResponseBody): Bitmap {
             return responseBody.byteStream().use { BitmapFactory.decodeStream(it) }

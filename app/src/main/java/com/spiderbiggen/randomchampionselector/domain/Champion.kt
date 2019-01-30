@@ -56,8 +56,7 @@ data class Champion(
 
     companion object : Parsable<Champion> {
         @Throws(JSONException::class)
-        override fun parse(jsonObject: JSONObject?): Champion? {
-            if (jsonObject == null) return null
+        override fun parse(jsonObject: JSONObject): Champion {
             val key = jsonObject.getInt("key")
             val id = jsonObject.getString("id")
             val blurb = jsonObject.optString("blurb")
@@ -82,8 +81,7 @@ data class Champion(
         companion object : Parsable<Info> {
 
             @Throws(JSONException::class)
-            override fun parse(jsonObject: JSONObject?): Info? {
-                if (jsonObject == null) return null
+            override fun parse(jsonObject: JSONObject): Info {
                 val attack = jsonObject.optInt("attack", 0).toByte()
                 val defense = jsonObject.optInt("defense", 0).toByte()
                 val magic = jsonObject.optInt("magic", 0).toByte()
@@ -99,8 +97,7 @@ data class Champion(
         companion object : Parsable<Image> {
 
             @Throws(JSONException::class)
-            override fun parse(jsonObject: JSONObject?): Image? {
-                if (jsonObject == null) return null
+            override fun parse(jsonObject: JSONObject): Image {
                 val full = jsonObject.getString("full")
                 val sprite = jsonObject.getString("sprite")
                 val group = jsonObject.getString("group")
