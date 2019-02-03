@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".views.activities.ChampionActivity">
+    tools:context=".activities.ChampionActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -24,7 +24,7 @@
             app:expandedTitleTextAppearance="@style/Text.Shadowed.Large"
             app:toolbarId="@+id/toolbar">
 
-            <com.spiderbiggen.randomchampionselector.views.TopCenteredImageView
+            <com.spiderbiggen.randomchampionselector.TopCenteredImageView
                 android:id="@+id/champion_splash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -122,7 +122,7 @@
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 

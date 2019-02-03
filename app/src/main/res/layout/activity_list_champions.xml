@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".views.activities.ListChampionsActivity">
+    tools:context=".activities.ListChampionsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -25,7 +25,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 
-            <com.spiderbiggen.randomchampionselector.views.TopCenteredImageView
+            <com.spiderbiggen.randomchampionselector.TopCenteredImageView
                 android:id="@+id/splash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -66,7 +66,7 @@
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
-        app:layout_behavior="com.spiderbiggen.randomchampionselector.views.behavior.ScrollAwareFABBehavior"
+        app:layout_behavior="com.spiderbiggen.randomchampionselector.behavior.ScrollAwareFABBehavior"
         app:srcCompat="@drawable/ic_cached_24dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
