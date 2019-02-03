@@ -5,10 +5,8 @@ import com.spiderbiggen.randomchampionselector.R
 
 interface IProgressCallback {
 
-    fun onDownloadSuccess(count: Int, total: Int) =
-            onProgressUpdate(Progress.DOWNLOAD_SUCCESS, count, total)
-
-    fun onProgressUpdate(progress: Progress) = onProgressUpdate(progress, 0, 0)
+    fun update(progress: Int = 0, progressMax: Int = 0) =
+        update(Progress.DOWNLOAD_SUCCESS, progress, progressMax)
 
     /**
      * Indicate to callback handler any progress update.
@@ -17,7 +15,7 @@ interface IProgressCallback {
      * @param progress     the current progress.
      * @param progressMax  the maximum progress.
      */
-    fun onProgressUpdate(type: Progress, progress: Int, progressMax: Int)
+    fun update(type: Progress = Progress.DOWNLOAD_SUCCESS, progress: Int = 0, progressMax: Int = 0)
 
     enum class Progress constructor(val indeterminate: Boolean, @StringRes val stringResource: Int) {
         ERROR(true, R.string.progress_error),

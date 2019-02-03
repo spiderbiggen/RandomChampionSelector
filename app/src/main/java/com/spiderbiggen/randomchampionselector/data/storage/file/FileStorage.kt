@@ -2,7 +2,7 @@ package com.spiderbiggen.randomchampionselector.data.storage.file
 
 import android.content.Context
 import com.spiderbiggen.randomchampionselector.domain.Champion
-import com.spiderbiggen.randomchampionselector.model.IRequiresContext
+import com.spiderbiggen.randomchampionselector.model.Contextual
 
 import java.io.File
 import java.io.IOException
@@ -12,7 +12,7 @@ import java.io.IOException
  *
  * @author Stefan Breetveld
  */
-object FileStorage : IRequiresContext {
+object FileStorage : Contextual {
     private const val IMG_ROOT_DIR = "img"
 
     private const val CHAMPION_REL_DIR = "champion"

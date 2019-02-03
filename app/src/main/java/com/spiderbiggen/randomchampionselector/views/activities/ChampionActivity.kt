@@ -44,8 +44,8 @@ class ChampionActivity : AbstractActivity() {
     override fun onResume() {
         launch(Dispatchers.Default) {
             val champion = when {
-                championKey < 0 -> dataManager.findRandomChampion(championKey)
-                else -> dataManager.findChampion(championKey)
+                championKey < 0 -> database.findRandomChampion()
+                else -> database.findChampion(championKey)
             }
             onMainThread { setChampion(champion) }
         }
@@ -67,25 +67,24 @@ class ChampionActivity : AbstractActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean =
-            when (item?.itemId) {
-                android.R.id.home -> {
-                    onBackPressed()
-                    true
-                }
-                else -> super.onOptionsItemSelected(item)
+        when (item?.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
             }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     override fun onBackPressed() {
         if (upOnBack) {
             val upIntent = parentActivityIntent
-                    ?: Intent(this, ListChampionsActivity::class.java)
+                ?: Intent(this, ListChampionsActivity::class.java)
             supportNavigateUpTo(upIntent)
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         } else {
             supportFinishAfterTransition()
         }
     }
-
 
     fun openChampion(view: View) {
         openChampionActivity(view)
@@ -97,7 +96,7 @@ class ChampionActivity : AbstractActivity() {
                 val bitmap = BitmapCache.loadBitmap(champion)
                 onMainThread { champion_splash.setImageBitmap(bitmap) }
             } catch (e: IOException) {
-                onMainThread { loadImageFailure(e.message) }
+                onMainThread { loadImageFailure(e) }
             }
         }
         championKey = champion.key
@@ -107,9 +106,9 @@ class ChampionActivity : AbstractActivity() {
         supportStartPostponedEnterTransition()
     }
 
-    private fun loadImageFailure(message: String?) {
+    private fun loadImageFailure(e: Throwable) {
         champion_splash.setImageBitmap(null)
-        Log.e("ChampionActivity", "error $message")
+        Log.e("ChampionActivity", "error ${e.message}", e)
     }
 
     companion object {

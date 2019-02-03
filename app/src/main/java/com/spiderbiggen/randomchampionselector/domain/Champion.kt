@@ -3,8 +3,6 @@ package com.spiderbiggen.randomchampionselector.domain
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.spiderbiggen.randomchampionselector.data.ddragon.ImageDescriptor
-import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage.championBitmap
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -22,18 +20,14 @@ data class Champion(
         val id: String,
         val name: String,
         val title: String,
-        val lore: String? = null,
-        val blurb: String? = null,
-        val roles: Array<String>? = null,
-        @Embedded val info: Info? = null,
-        @Embedded val image: Image? = null
+        val lore: String,
+        val blurb: String,
+        val roles: Array<String>,
+        @Embedded val info: Info
 ) : Serializable {
 
     val capitalizedTitle: String
         get() = title.substring(0, 1).toUpperCase(Locale.ENGLISH) + title.substring(1)
-
-    val imageDescriptor: ImageDescriptor
-        get() = ImageDescriptor(id, championBitmap)
 
     override fun toString(): String {
         return "Champion(key=$key, name='$name', roles=${Arrays.toString(roles)})"
@@ -44,7 +38,6 @@ data class Champion(
         if (other !is Champion) return false
 
         return key == other.key && id == other.id && name == other.name
-
     }
 
     override fun hashCode(): Int {
@@ -55,7 +48,6 @@ data class Champion(
     }
 
     companion object : Parsable<Champion> {
-        @Throws(JSONException::class)
         override fun parse(jsonObject: JSONObject): Champion {
             val key = jsonObject.getInt("key")
             val id = jsonObject.getString("id")
@@ -65,21 +57,17 @@ data class Champion(
             val name = jsonObject.optString("name")
             val roles = jsonArrayToStringArray(jsonObject.optJSONArray("tags"))
             val info = Info.parse(jsonObject.getJSONObject("info"))
-            val image = Image.parse(jsonObject.getJSONObject("image"))
-            return Champion(key, id, name, title, lore, blurb, roles, info, image)
+            return Champion(key, id, name, title, lore, blurb, roles, info)
         }
 
-        private fun jsonArrayToStringArray(jsonArray: JSONArray?): Array<String>? {
-            if (jsonArray == null) return null
-            val tags = (0 until jsonArray.length()).map { jsonArray.getString(it) }
-            return if (tags.isEmpty()) null else tags.toTypedArray()
+        private fun jsonArrayToStringArray(jsonArray: JSONArray): Array<String> {
+            val tags = (0 until jsonArray.length()).map(jsonArray::getString)
+            return tags.toTypedArray()
         }
     }
 
     data class Info(val attack: Byte, val defense: Byte, val magic: Byte, val difficulty: Byte) : Serializable {
-
         companion object : Parsable<Info> {
-
             @Throws(JSONException::class)
             override fun parse(jsonObject: JSONObject): Info {
                 val attack = jsonObject.optInt("attack", 0).toByte()
@@ -90,23 +78,5 @@ data class Champion(
             }
         }
 
-    }
-
-    data class Image(val full: String, val sprite: String, val group: String, val x: Int = 0, val y: Int = 0, val w: Int = 0, var h: Int = 0) : Serializable {
-
-        companion object : Parsable<Image> {
-
-            @Throws(JSONException::class)
-            override fun parse(jsonObject: JSONObject): Image {
-                val full = jsonObject.getString("full")
-                val sprite = jsonObject.getString("sprite")
-                val group = jsonObject.getString("group")
-                val x = jsonObject.optInt("x", 0)
-                val y = jsonObject.optInt("y", 0)
-                val w = jsonObject.optInt("w", 0)
-                val h = jsonObject.optInt("x", 0)
-                return Image(full, sprite, group, x, y, w, h)
-            }
-        }
     }
 }

@@ -1,12 +1,15 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
 import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat
+import android.graphics.BitmapFactory
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.spiderbiggen.randomchampionselector.BuildConfig
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager.locale
 import com.spiderbiggen.randomchampionselector.data.mapAsync
 import com.spiderbiggen.randomchampionselector.data.onMainThread
+import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage.championBitmap
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback.Progress.VERIFY_SUCCESS
@@ -17,11 +20,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicReference
 
 
 /**
- * Defines methods to get data from League of Legends Static Data endpoints.
+ * Defines methods to get database from League of Legends Static Data endpoints.
  *
  * @author Stefan Breetveld
  */
@@ -30,15 +32,7 @@ object DDragon {
     private val TAG = DDragon::class.java.simpleName
     private const val BASE_URL = "http://ddragon.leagueoflegends.com"
     // Default version if versions endpoint fails
-    private const val DEFAULT_VERSION = "9.2.1"
-    private val version = AtomicReference(DEFAULT_VERSION)
-    private val service
-        get() = createService()
-
-    /**
-     * Update the current version in [DDragon].
-     */
-    suspend fun updateVersion() = version.set(getLastVersion())
+    private val service by lazy(this::createService)
 
     /**
      * Retrieve the current version of [DDragon].
@@ -48,7 +42,8 @@ object DDragon {
     /**
      * Retrieve the current list of [Champions][Champion] of [DDragon].
      */
-    suspend fun getChampionList(): Collection<Champion> = service.getChampions(version.get(), locale).await()
+    suspend fun getChampionList(version: String): Collection<Champion> =
+        service.getChampions(version, locale).await()
 
     /**
      * Verify if the images for all the given champions are valid.
@@ -56,16 +51,28 @@ object DDragon {
      * @param champions the champions for which we need to verify the [Bitmap]
      * @param progress progress callback
      */
-    suspend fun verifyImages(champions: Collection<Champion>, progress: IProgressCallback): Collection<ImageDescriptor> {
-        val newImages = champions.map(Champion::imageDescriptor).toList()
+    suspend fun verifyImages(
+        champions: Collection<Champion>,
+        progress: IProgressCallback
+    ): Collection<Champion> {
         val verifyCount = AtomicInteger()
-        val total = newImages.size
-        return newImages.map { it.verifySavedFile() }
-                .onEach {
-                    onMainThread { progress.onProgressUpdate(VERIFY_SUCCESS, verifyCount.incrementAndGet(), total) }
-                }
-                .filter { !it.valid }
-                .toList()
+        val total = champions.size
+        return champions.onEach {
+            onMainThread { progress.update(VERIFY_SUCCESS, verifyCount.incrementAndGet(), total) }
+        }.filterNot(::verifySavedChampionBitmap).toList()
+    }
+
+    /**
+     *
+     */
+    private fun verifySavedChampionBitmap(champion: Champion): Boolean {
+        val file = champion.championBitmap
+        return if (file.exists()) {
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            BitmapFactory.decodeFile(file.path, options)
+            options.outHeight > 0 && options.outWidth > 0
+        } else false
     }
 
     /**
@@ -74,28 +81,45 @@ object DDragon {
      * @param descriptors the descriptors for which we need to download the [Bitmap]
      * @param progress progress callback
      */
-    suspend fun downloadAllImages(descriptors: Collection<ImageDescriptor>, progress: IProgressCallback) {
+    suspend fun downloadAllImages(
+        descriptors: Collection<Champion>,
+        progress: IProgressCallback
+    ) {
         val downloadCount = AtomicInteger()
         val total = descriptors.size
-        onMainThread { progress.onDownloadSuccess(downloadCount.get(), total) }
         val compressFormat = PreferenceManager.compressFormat
         val quality = PreferenceManager.quality
         descriptors.mapAsync {
-            val bitmap = service.getSplashImage(it.champion, 0)
-            saveBitmap(it.file, bitmap.await(), compressFormat, quality)
-            onMainThread { progress.onDownloadSuccess(downloadCount.incrementAndGet(), total) }
+            val bitmap = service.getSplashImage(it.id, 0)
+            saveBitmap(it.championBitmap, bitmap.await(), compressFormat, quality)
+            onMainThread { progress.update(downloadCount.incrementAndGet(), total) }
         }
     }
 
-    private fun saveBitmap(file: File, bitmap: Bitmap?, compressFormat: Bitmap.CompressFormat, quality: Int) {
-        if (bitmap != null && (file.exists() || file.createNewFile())) {
+    /**
+     * Saves the given [image] to [file] as [type] with a quality of [quality].
+     *
+     * @param file Reference to the desired location of the [Bitmap]
+     * @param image the [Bitmap] that needs to be saved.
+     * @param type the [CompressFormat] of the saved image.
+     * @param quality the quality in [0-100]%
+     *
+     * @see [Bitmap.compress]
+     */
+    private fun saveBitmap(file: File, image: Bitmap, type: CompressFormat, quality: Int) {
+        if (file.exists() || file.createNewFile()) {
             try {
-                FileOutputStream(file).use { bitmap.compress(compressFormat, quality, it) }
+                FileOutputStream(file).use { image.compress(type, quality, it) }
             } catch (e: IOException) { /* Do nothing */
             }
         }
     }
 
+    /**
+     * Initialize retrofit for Coroutines with [CustomConverter] and if [BuildConfig.DEBUG] also add logging.
+     *
+     * @return initialized [DDragonService]
+     */
     private fun createService(): DDragonService {
         val httpClient = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
@@ -105,9 +129,9 @@ object DDragon {
         }
 
         val retrofit = Retrofit.Builder().baseUrl(BASE_URL).client(httpClient.build())
-                .addConverterFactory(CustomConverter())
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .build()
+            .addConverterFactory(CustomConverter())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .build()
         return retrofit.create(DDragonService::class.java)
     }
 

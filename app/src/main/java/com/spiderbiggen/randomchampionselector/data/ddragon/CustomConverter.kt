@@ -16,6 +16,12 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.*
 
+/**
+ * Custom converter class that has converters for Json -> List<Champion>, Json -> Array<String>, and ResponseBody -> Bitmaps.
+ * Makes it easier to use get these types from retrofit requests.
+ *
+ * @author Stefan Breetveld
+ */
 class CustomConverter : Converter.Factory() {
 
     override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
@@ -53,7 +59,7 @@ class CustomConverter : Converter.Factory() {
         override fun convert(responseBody: ResponseBody): List<Champion> {
             try {
                 val string = responseBody.string()
-                val jsonObject = JSONObject(string).getJSONObject("data")
+                val jsonObject = JSONObject(string).getJSONObject("database")
                 val list = mutableListOf<Champion>()
                 val stringIterator = jsonObject.keys()
                 while (stringIterator.hasNext()) {

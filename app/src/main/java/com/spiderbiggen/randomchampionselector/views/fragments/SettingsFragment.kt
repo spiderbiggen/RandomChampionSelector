@@ -20,14 +20,14 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         setPreferencesFromResource(R.xml.preference, s)
 
-        val prefLanguage = findPreference("pref_language") as ListPreference
-        val prefImageType = findPreference("pref_image_type") as ListPreference
-        val preference = findPreference("pref_image_quality") as SeekBarPreference
+        val prefLanguage = findPreference(getString(R.string.pref_language_key)) as ListPreference
+        val prefImageType = findPreference(getString(R.string.pref_image_type_key)) as ListPreference
+        val barPreference = findPreference(getString(R.string.pref_image_quality_key)) as SeekBarPreference
 
         bindPreferenceSummaryToValueString(prefLanguage)
         bindPreferenceSummaryToValueString(prefImageType)
-        bindPreferenceSummaryToValueInteger(preference, preference.value)
-        bindPreferenceSummaryToValueString(findPreference("sync_frequency"))
+        bindPreferenceSummaryToValueInteger(barPreference, barPreference.value)
+        bindPreferenceSummaryToValueString(findPreference(getString(R.string.pref_sync_frequency_key)))
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {

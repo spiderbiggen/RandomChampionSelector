@@ -2,8 +2,10 @@ package com.spiderbiggen.randomchampionselector.data.cache
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.Options
 import android.os.Build
 import androidx.collection.LruCache
+import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage.championBitmap
 import com.spiderbiggen.randomchampionselector.domain.Champion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,8 +36,13 @@ object BitmapCache {
      * @param minHeight possible minimum size
      * @return Bitmap
      */
-    suspend fun loadBitmap(champion: Champion, minWidth: Int = DEFAULT_SIZE, minHeight: Int = DEFAULT_SIZE): Bitmap {
-        val (key, file) = champion.imageDescriptor
+    suspend fun loadBitmap(
+        champion: Champion,
+        minWidth: Int = DEFAULT_SIZE,
+        minHeight: Int = DEFAULT_SIZE
+    ): Bitmap {
+        val key = champion.id
+        val file = champion.championBitmap
         return mMemoryCache.get(key) ?: if (!file.exists() || !file.canRead()) {
             throw IOException("File doesn't exist or can't be accessed")
         } else {
@@ -53,7 +60,7 @@ object BitmapCache {
      * @param minWidth minimum width for the [Bitmap]
      * @param minHeight minimum height for the [Bitmap]
      */
-    private fun calculateInSampleSize(options: BitmapFactory.Options, minWidth: Int, minHeight: Int): Int {
+    private fun calculateInSampleSize(options: Options, minWidth: Int, minHeight: Int): Int {
         val reqHeight: Int = if (minHeight > 0) minHeight else DEFAULT_SIZE
         val reqWidth = if (minWidth > 0) minWidth else DEFAULT_SIZE
 
@@ -84,14 +91,19 @@ object BitmapCache {
      * @param minWidth minimum width for the [Bitmap]
      * @param minHeight minimum height for the [Bitmap]
      */
-    private suspend fun decodeSampledBitmapFromFile(file: String, minWidth: Int, minHeight: Int): Bitmap = withContext(Dispatchers.IO) {
+    private suspend fun decodeSampledBitmapFromFile(
+        file: String,
+        minWidth: Int,
+        minHeight: Int
+    ): Bitmap = withContext(Dispatchers.IO) {
         // First decode with inJustDecodeBounds=true to check dimensions
-        val options = BitmapFactory.Options()
+        val options = Options()
         options.inJustDecodeBounds = true
         BitmapFactory.decodeFile(file, options)
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, minWidth, minHeight)
-        options.inPreferredConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Bitmap.Config.HARDWARE else Bitmap.Config.RGB_565
+        options.inPreferredConfig =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Bitmap.Config.HARDWARE else Bitmap.Config.RGB_565
         options.inJustDecodeBounds = false
         BitmapFactory.decodeFile(file, options)
     }

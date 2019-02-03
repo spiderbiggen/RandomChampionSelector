@@ -3,13 +3,18 @@ package com.spiderbiggen.randomchampionselector.views.activities
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.PorterDuff.Mode
 import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.annotation.UiThread
 import com.spiderbiggen.randomchampionselector.data.PreferenceManager
+import com.spiderbiggen.randomchampionselector.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.model.IProgressCallback
+import com.spiderbiggen.randomchampionselector.model.IProgressCallback.Progress
 import kotlinx.android.synthetic.main.activity_loader.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -19,7 +24,7 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(!isNetworkAvailable()){
+        if (!isNetworkAvailable()) {
             openListActivity()
             return
         }
@@ -30,22 +35,21 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
     override fun onResume() {
         super.onResume()
         when {
-            shouldRefresh || dataManager.shouldRefresh -> {
+            shouldRefresh || PreferenceManager.isOutdated -> {
                 PreferenceManager.lastSync = -1
-                launch(Dispatchers.IO) {
-                    dataManager.update(this@LoaderActivity)
-                    onFinished()
-                }
+                updateData(this)
+                onFinished()
             }
-            else -> launch(Dispatchers.IO) {
-                dataManager.verifyImages(this@LoaderActivity)
+            else -> {
+                verifyImages(this@LoaderActivity)
                 onFinished()
             }
         }
     }
 
     private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo?.isConnected == true
     }
@@ -60,15 +64,11 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         startActivity(intent)
     }
 
-    override fun onProgressUpdate(type: IProgressCallback.Progress, progress: Int, progressMax: Int) {
-        updateProgressBar(type, progress, progressMax)
-    }
-
     @UiThread
-    private fun updateProgressBar(type: IProgressCallback.Progress, progress: Int, progressMax: Int) {
-        if (type === IProgressCallback.Progress.ERROR) {
+    override fun update(type: Progress, progress: Int, progressMax: Int) {
+        if (type === Progress.ERROR) {
             val progressDrawable = progressBar.indeterminateDrawable.mutate()
-            progressDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN)
+            progressDrawable.setColorFilter(Color.RED, Mode.SRC_IN)
             progressBar.progressDrawable = progressDrawable
         }
 
@@ -76,7 +76,33 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         progressBar.progress = progress
         progressBar.max = progressMax
 
-        progressText.text = getString(type.stringResource, progress, progressMax)
+        val percent = if (progressMax == 0) 0f else (progress.toFloat() / progressMax) * 100
+        progressText.text = getString(type.stringResource, percent)
+    }
+
+    private fun verifyImages(progress: IProgressCallback) {
+        launch(Dispatchers.IO) {
+            val champions = database.findChampionList()
+            if (champions.isNullOrEmpty()) {
+                updateData(progress)
+            } else {
+                val things = DDragon.verifyImages(champions, progress)
+                DDragon.downloadAllImages(things, progress)
+            }
+        }
+    }
+
+    private fun updateData(progress: IProgressCallback) {
+        launch(Dispatchers.IO) {
+            progress.update(IProgressCallback.Progress.CHECKING_VERSION)
+            val version = DDragon.getLastVersion()
+            val champions = DDragon.getChampionList(version)
+            database.addChampions(champions)
+            val things = DDragon.verifyImages(champions, progress)
+            if (!things.isEmpty()) {
+                DDragon.downloadAllImages(things, progress)
+            }
+        }
     }
 
 }

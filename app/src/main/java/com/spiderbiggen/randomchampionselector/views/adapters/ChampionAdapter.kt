@@ -11,19 +11,25 @@ import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.data.onMainThread
 import com.spiderbiggen.randomchampionselector.domain.Champion
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.IOException
 
-
-class ChampionAdapter(champions: Collection<Champion>, private val clickListener: View.OnClickListener) : RecyclerView.Adapter<ChampionAdapter.ViewHolder>(){
+/**
+ * Defines all behaviour for this [RecyclerView.Adapter].
+ *
+ * @author Stefan Breetveld
+ */
+class ChampionAdapter(
+    private val clickListener: View.OnClickListener,
+    champions: Collection<Champion> = listOf()
+) : RecyclerView.Adapter<ChampionAdapter.ViewHolder>() {
 
     private val champions = champions.toMutableList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // create a new view
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.list_champion_item, parent, false)
+        val v =
+            LayoutInflater.from(parent.context).inflate(R.layout.list_champion_item, parent, false)
         v.setOnClickListener(clickListener)
         return ViewHolder(v)
     }
@@ -32,19 +38,40 @@ class ChampionAdapter(champions: Collection<Champion>, private val clickListener
         viewHolder.champion = champions[position]
     }
 
+    @ExperimentalCoroutinesApi
+    override fun onViewRecycled(holder: ViewHolder) {
+        holder.cancel()
+        super.onViewRecycled(holder)
+    }
+
     override fun getItemCount(): Int = champions.size
 
+    /**
+     * Update the list of champions.
+     * @param champions a list of [Champion] objects
+     */
     fun setChampions(champions: Collection<Champion>) {
         this.champions.clear()
         this.champions.addAll(champions)
         notifyDataSetChanged()
     }
 
+    /**
+     * Retrieve the champion stored at that position in the list.
+     *
+     * @return the requested champion or null if the given index doesn't exist
+     */
     fun getChampion(position: Int): Champion? = champions.getOrNull(position)
 
-    class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), CoroutineScope by CoroutineScope(Dispatchers.Default) {
-        private val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
+    /**
+     * [ViewHolder] for [ChampionAdapter] handles all changes to the ui when a different champion is set.
+     *
+     * @author Stefan Breetveld
+     */
+    class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView),
+        CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
+        private val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
         private val nameView: TextView = itemView.findViewById(R.id.champion_name)
         private val titleView: TextView = itemView.findViewById(R.id.champion_title)
 

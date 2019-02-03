@@ -1,5 +1,7 @@
 package com.spiderbiggen.randomchampionselector.views.activities
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -7,8 +9,9 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.data.DataManager
+import com.spiderbiggen.randomchampionselector.data.storage.database.IDataInteractor
 import com.spiderbiggen.randomchampionselector.data.storage.file.FileStorage
+import com.spiderbiggen.randomchampionselector.views.DataApplication
 import kotlinx.coroutines.*
 
 /**
@@ -17,13 +20,6 @@ import kotlinx.coroutines.*
  */
 @ExperimentalCoroutinesApi
 abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
-
-    protected lateinit var dataManager: DataManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        dataManager = DataManager(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onDestroy() {
         cancel()
@@ -71,5 +67,8 @@ abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by Corouti
 
     companion object {
         const val FORCE_REFRESH = "FORCE_REFRESH"
+
+        val Context.database: IDataInteractor
+            get() = generateSequence(applicationContext) { (it as? ContextWrapper)?.baseContext }.filterIsInstance<DataApplication>().first().database
     }
 }

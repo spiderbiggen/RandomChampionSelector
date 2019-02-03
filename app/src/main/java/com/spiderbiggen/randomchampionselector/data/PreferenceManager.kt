@@ -7,10 +7,15 @@ import android.preference.PreferenceManager
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.model.IRequiresContext
+import com.spiderbiggen.randomchampionselector.model.Contextual
 import java.util.*
 
-object PreferenceManager : IRequiresContext {
+/**
+ * Helper methods for access and manipulation of preferences.
+ *
+ * @author Stefan Breetveld
+ */
+object PreferenceManager : Contextual {
     private const val MILLIS_IN_MINUTE = 60_000
     private val resources = ResourceManager
     private lateinit var preferences: SharedPreferences
@@ -21,71 +26,55 @@ object PreferenceManager : IRequiresContext {
         }
     }
 
-    val syncTime: Long
-        get() = getString(R.string.pref_title_sync_frequency, R.string.pref_sync_frequency_default).toLong()
+    /**
+     * Minimum amount of time between each synchronization in minutes.
+     */
+    private val syncDelay: Long
+        get() = getString(R.string.pref_sync_frequency_key, R.string.pref_sync_frequency_default, "720").toLong()
 
+    /**
+     * The desired image quality 0-100 %
+     */
     val quality: Int
-        get() = getInt("pref_image_quality", R.integer.pref_image_quality_default, 85)
+        get() = getInt(R.string.pref_image_quality_key, R.integer.pref_image_quality_default)
 
+    /**
+     * A string representation of the preferred locale
+     */
     val locale: String
-        get() = getString("pref_language", R.string.pref_language_default, "en_US")
+        get() = getString(R.string.pref_language_key, R.string.pref_language_default, "en_US")
 
+    /**
+     * The desired [CompressFormat]
+     */
     val compressFormat: CompressFormat
-        get() = CompressFormat.valueOf(getString("pref_image_type", R.string.pref_image_type_default, "WEBP"))
+        get() = CompressFormat.valueOf(getString(R.string.pref_image_type_key, R.string.pref_image_type_default, "WEBP"))
 
+    /**
+     * If the app is outdated as specified by the set [syncDelay] and [lastSync].
+     */
     val isOutdated: Boolean
-        get() = syncTime != -1L && lastSync == -1L || Date().after(Date(lastSync + syncTime * MILLIS_IN_MINUTE))
+        get() = syncDelay != -1L && lastSync == -1L || Date().after(Date(lastSync + syncDelay * MILLIS_IN_MINUTE))
 
+    /**
+     * The last performed update of all resources in millis since epoch
+     */
     var lastSync: Long
         get() = getLong(R.string.pref_last_sync_key, R.integer.pref_last_sync_default)
         set(value) = setLongPreference(R.string.pref_last_sync_key, value)
 
-    private fun setIntPreference(@StringRes pref: Int, value: Int) = setIntPreference(resources.getString(pref), value)
+    private fun setIntPreference(@StringRes pref: Int, value: Int) = preferences.edit().putInt(resources.getString(pref), value).apply()
 
-    private fun setIntPreference(pref: String, value: Int) = preferences.edit().putInt(pref, value).apply()
-
-    private fun setLongPreference(@StringRes pref: Int, value: Long) = setLongPreference(resources.getString(pref), value)
-
-    private fun setLongPreference(pref: String, value: Long) = preferences.edit().putLong(pref, value).apply()
-
-
-    // Get string from preferences
-    private fun getString(pref: String, default: String): String =
-            preferences.getString(pref, default) ?: default
-
-    private fun getString(@StringRes pref: Int, @StringRes resource: Int): String =
-            getString(resources.getString(pref), resources.getString(resource))
-
-    private fun getString(pref: String, @StringRes resource: Int, default: String): String =
-            getString(pref, resources.getString(resource, default))
+    private fun setLongPreference(@StringRes pref: Int, value: Long) = preferences.edit().putLong(resources.getString(pref), value).apply()
 
     private fun getString(@StringRes pref: Int, @StringRes resource: Int, default: String): String =
-            getString(resources.getString(pref), resource, default)
-
-    // Get int from preferences
-    private fun getInt(pref: String, default: Int): Int =
-            preferences.getInt(pref, default)
+            preferences.getString(resources.getString(pref), resources.getString(resource))
+                    ?: default
 
     private fun getInt(@StringRes pref: Int, @IntegerRes resource: Int): Int =
-            getInt(resources.getString(pref), resources.getInt(resource))
-
-    private fun getInt(pref: String, @IntegerRes resource: Int, default: Int): Int =
-            getInt(pref, resources.getInt(resource, default))
-
-    private fun getInt(@StringRes pref: Int, @IntegerRes resource: Int, default: Int): Int =
-            getInt(resources.getString(pref), resource, default)
-
-    // Get long from preferences
-    private fun getLong(pref: String, default: Long): Long =
-            preferences.getLong(pref, default)
+            preferences.getInt(resources.getString(pref), resources.getInt(resource))
 
     private fun getLong(@StringRes pref: Int, @IntegerRes resource: Int): Long =
-            getLong(resources.getString(pref), resources.getLong(resource))
-
-    private fun getLong(pref: String, @IntegerRes resource: Int, default: Long): Long =
-            getLong(pref, resources.getLong(resource, default))
-
-    private fun getLong(@StringRes pref: Int, @IntegerRes resource: Int, default: Long): Long =
-            getLong(resources.getString(pref), resource, default)
+            preferences.getLong(resources.getString(pref), resources.getInt(resource).toLong())
 
 }

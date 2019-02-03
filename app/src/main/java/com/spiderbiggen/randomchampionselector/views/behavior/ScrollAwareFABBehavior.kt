@@ -7,11 +7,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
- * Created on 7-3-2018.
+ * Tells a [FloatingActionButton] how to behave when a scrolling action is being performed in it's containing [CoordinatorLayout]
  *
  * @author Stefan Breetveld
  */
-
 class ScrollAwareFABBehavior : CoordinatorLayout.Behavior<FloatingActionButton> {
 
     constructor() : super()

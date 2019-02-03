@@ -5,31 +5,26 @@ import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 
 /**
- * Created on 6-3-2018.
+ * An [AppCompatImageView] that keeps images horizontally centered and the top at the top of the view
  *
  * @author Stefan Breetveld
  */
-
-class TopCenteredImageView : androidx.appcompat.widget.AppCompatImageView {
+class TopCenteredImageView : AppCompatImageView {
 
     private var viewWidth: Int = 0
     private var viewHeight: Int = 0
 
-    constructor(context: Context) : super(context) {
-        init()
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
+            super(context, attrs, defStyleAttr)
 
-    private fun init() {
+    init {
         super.setScaleType(ImageView.ScaleType.MATRIX)
     }
 
@@ -52,6 +47,10 @@ class TopCenteredImageView : androidx.appcompat.widget.AppCompatImageView {
         calculateAndSetImageMatrix()
     }
 
+    /**
+     * Calculate the [Matrix] for the image so that the top is stuck at the top of the view
+     * and the image is horizontally centered. Keep the image as large as possible.
+     */
     private fun calculateAndSetImageMatrix() {
         val matrix = Matrix()
         matrix.reset()
