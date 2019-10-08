@@ -38,11 +38,6 @@ class ChampionAdapter(
         viewHolder.champion = champions[position]
     }
 
-    override fun onViewRecycled(holder: ViewHolder) {
-        holder.cancel()
-        super.onViewRecycled(holder)
-    }
-
     override fun getItemCount(): Int = champions.size
 
     /**
@@ -68,7 +63,7 @@ class ChampionAdapter(
      * @author Stefan Breetveld
      */
     class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView),
-        CoroutineScope by CoroutineScope(Dispatchers.Default) {
+            CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
         private val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
         private val nameView: TextView = itemView.findViewById(R.id.champion_name)
@@ -86,8 +81,10 @@ class ChampionAdapter(
             }
 
         private fun updateImage(champion: Champion) {
-            a = launch {
+            a = launch(Dispatchers.IO) {
+                Log.d("ChampionAdapter", "aaaaaaaaaaaaaaaaaaaa")
                 val bitmap = try {
+                    Log.d("ChampionAdapter", "Image: ${champion.name}")
                     BitmapCache.loadBitmap(champion)
                 } catch (e: IOException) {
                     Log.e("ChampionAdapter", "error ${e.message}")
