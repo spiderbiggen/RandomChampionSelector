@@ -8,9 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.spiderbiggen.randomchampionselector.R
+import com.spiderbiggen.randomchampionselector.models.Champion
 import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.util.data.onMainThread
-import com.spiderbiggen.randomchampionselector.models.Champion
 import kotlinx.coroutines.*
 import java.io.IOException
 
@@ -87,18 +87,14 @@ class ChampionAdapter(
 
         private fun updateImage(champion: Champion) {
             a = launch {
-                try {
-                    val bitmap = BitmapCache.loadBitmap(champion)
-                    onMainThread { imageView.setImageBitmap(bitmap) }
+                val bitmap = try {
+                    BitmapCache.loadBitmap(champion)
                 } catch (e: IOException) {
-                    onMainThread { loadImageFailure(e.message) }
+                    Log.e("ChampionAdapter", "error ${e.message}")
+                    null
                 }
+                onMainThread { imageView.setImageBitmap(bitmap) }
             }
-        }
-
-        private fun loadImageFailure(message: String?) {
-            imageView.setImageBitmap(null)
-            Log.e("ChampionAdapter", "error $message")
         }
     }
 }

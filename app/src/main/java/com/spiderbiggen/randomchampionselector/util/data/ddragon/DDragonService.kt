@@ -2,7 +2,6 @@ package com.spiderbiggen.randomchampionselector.util.data.ddragon
 
 import android.graphics.Bitmap
 import com.spiderbiggen.randomchampionselector.models.Champion
-import kotlinx.coroutines.Deferred
 
 import retrofit2.http.GET
 import retrofit2.http.Path

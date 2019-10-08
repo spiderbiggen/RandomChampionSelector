@@ -45,12 +45,10 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         when {
             shouldRefresh || PreferenceManager.isOutdated -> {
                 PreferenceManager.lastSync = -1
-                Log.d("LoaderActivity", "aaaaaaaa")
                 updateData(this)
             }
             else -> {
                 verifyImages(this@LoaderActivity)
-                onFinished()
             }
         }
     }
@@ -91,7 +89,6 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
     private fun verifyImages(progress: IProgressCallback) {
         launch(Dispatchers.IO) {
             val champions = database.findChampionList()
-            Log.d("LoaderActivity", champions.toString())
             if (champions.isNullOrEmpty()) {
                 updateData(progress)
             } else {
@@ -99,6 +96,7 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
                 Log.d("LoaderActivity", things.toString())
                 DDragon.downloadAllImages(things, progress)
             }
+            onMainThread { onFinished() }
         }
     }
 
@@ -107,16 +105,12 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
             progress.update(Progress.CHECKING_VERSION)
             val version = DDragon.getLastVersion()
             val champions = DDragon.getChampionList(version)
-            Log.d("LoaderActivity", champions.toString())
             database.addChampions(champions)
             val things = DDragon.verifyImages(champions, progress)
-            Log.d("LoaderActivity", things.toString())
             if (!things.isEmpty()) {
                 DDragon.downloadAllImages(things, progress)
             }
-            onMainThread {
-                onFinished()
-            }
+            onMainThread { onFinished() }
         }
     }
 

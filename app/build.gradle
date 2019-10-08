@@ -5,7 +5,14 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
-
+    signingConfigs {
+        release {
+            keyAlias 'rng_champion_release'
+            keyPassword '8iW3qH+^z[K6zK71e{?th2xKlP_ZB*'
+            storeFile file('D:\\Files\\Dev\\Android\\keystore.jks')
+            storePassword '*@Hkr$45HgBbbj\\a*H5P'
+        }
+    }
     defaultConfig {
         applicationId "com.spiderbiggen.randomchampionselector"
         minSdkVersion 21
@@ -16,7 +23,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+//            minifyEnabled true
+//            shrinkResources true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-addconfigurationdebugging
+-dontobfuscate
+
+-keep public class kotlin.reflect.* {
+}
