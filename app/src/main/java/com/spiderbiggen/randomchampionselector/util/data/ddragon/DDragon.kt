@@ -3,7 +3,6 @@ package com.spiderbiggen.randomchampionselector.util.data.ddragon
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.spiderbiggen.randomchampionselector.BuildConfig
 import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager.locale
@@ -37,13 +36,13 @@ object DDragon {
     /**
      * Retrieve the current version of [DDragon].
      */
-    suspend fun getLastVersion(): String = service.versions().await()[0]
+    suspend fun getLastVersion(): String = service.versions()[0]
 
     /**
      * Retrieve the current list of [Champions][Champion] of [DDragon].
      */
     suspend fun getChampionList(version: String): Collection<Champion> =
-        service.getChampions(version, locale).await()
+        service.getChampions(version, locale)
 
     /**
      * Verify if the images for all the given champions are valid.
@@ -91,7 +90,7 @@ object DDragon {
         val quality = PreferenceManager.quality
         descriptors.mapAsync {
             val bitmap = service.getSplashImage(it.id, 0)
-            saveBitmap(it.championBitmap, bitmap.await(), compressFormat, quality)
+            saveBitmap(it.championBitmap, bitmap, compressFormat, quality)
             onMainThread { progress.update(downloadCount.incrementAndGet(), total) }
         }
     }
@@ -130,7 +129,6 @@ object DDragon {
 
         val retrofit = Retrofit.Builder().baseUrl(BASE_URL).client(httpClient.build())
             .addConverterFactory(CustomConverter())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
         return retrofit.create(DDragonService::class.java)
     }

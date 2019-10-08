@@ -6,12 +6,14 @@ import android.graphics.Color
 import android.graphics.PorterDuff.Mode
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.UiThread
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager
-import com.spiderbiggen.randomchampionselector.util.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback.Progress
+import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager
+import com.spiderbiggen.randomchampionselector.util.data.ddragon.DDragon
+import com.spiderbiggen.randomchampionselector.util.data.onMainThread
 import kotlinx.android.synthetic.main.activity_loader.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,11 +41,12 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
 
     override fun onResume() {
         super.onResume()
+
         when {
             shouldRefresh || PreferenceManager.isOutdated -> {
                 PreferenceManager.lastSync = -1
+                Log.d("LoaderActivity", "aaaaaaaa")
                 updateData(this)
-                onFinished()
             }
             else -> {
                 verifyImages(this@LoaderActivity)
@@ -88,10 +91,12 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
     private fun verifyImages(progress: IProgressCallback) {
         launch(Dispatchers.IO) {
             val champions = database.findChampionList()
+            Log.d("LoaderActivity", champions.toString())
             if (champions.isNullOrEmpty()) {
                 updateData(progress)
             } else {
                 val things = DDragon.verifyImages(champions, progress)
+                Log.d("LoaderActivity", things.toString())
                 DDragon.downloadAllImages(things, progress)
             }
         }
@@ -99,13 +104,18 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
 
     private fun updateData(progress: IProgressCallback) {
         launch(Dispatchers.IO) {
-            progress.update(IProgressCallback.Progress.CHECKING_VERSION)
+            progress.update(Progress.CHECKING_VERSION)
             val version = DDragon.getLastVersion()
             val champions = DDragon.getChampionList(version)
+            Log.d("LoaderActivity", champions.toString())
             database.addChampions(champions)
             val things = DDragon.verifyImages(champions, progress)
+            Log.d("LoaderActivity", things.toString())
             if (!things.isEmpty()) {
                 DDragon.downloadAllImages(things, progress)
+            }
+            onMainThread {
+                onFinished()
             }
         }
     }

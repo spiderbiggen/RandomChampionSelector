@@ -9,6 +9,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import com.spiderbiggen.randomchampionselector.interfaces.Contextual
+import com.spiderbiggen.randomchampionselector.util.data.ResourceManager.resources
 
 /**
  * Allows other classes to access [resources] without requiring a context.

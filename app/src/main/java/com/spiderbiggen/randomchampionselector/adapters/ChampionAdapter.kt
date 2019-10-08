@@ -38,7 +38,6 @@ class ChampionAdapter(
         viewHolder.champion = champions[position]
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewRecycled(holder: ViewHolder) {
         holder.cancel()
         super.onViewRecycled(holder)
@@ -74,10 +73,12 @@ class ChampionAdapter(
         private val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
         private val nameView: TextView = itemView.findViewById(R.id.champion_name)
         private val titleView: TextView = itemView.findViewById(R.id.champion_title)
+        private var a: Job? = null
 
         internal var champion: Champion? = null
             set(value) {
                 if (value == null) throw NullPointerException()
+                a?.cancel()
                 updateImage(value)
                 nameView.text = value.name
                 titleView.text = value.capitalizedTitle
@@ -85,7 +86,7 @@ class ChampionAdapter(
             }
 
         private fun updateImage(champion: Champion) {
-            launch {
+            a = launch {
                 try {
                     val bitmap = BitmapCache.loadBitmap(champion)
                     onMainThread { imageView.setImageBitmap(bitmap) }

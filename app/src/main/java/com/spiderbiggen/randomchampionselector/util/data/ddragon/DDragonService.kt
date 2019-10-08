@@ -20,7 +20,7 @@ interface DDragonService {
      * @return Deferred String array of versions
      */
     @GET("$API_URL/versions.json")
-    fun versions(): Deferred<Array<String>>
+    suspend fun versions(): Array<String>
 
     /**
      * Coroutine compliant request that retrieves the champion roster for the given version and locale.
@@ -29,8 +29,8 @@ interface DDragonService {
      * @param version locale supplied by DDragon
      * @return deferred list of champions
      */
-    @GET("$CDN_URL/{version}/database/{locale}/championFull.json")
-    fun getChampions(@Path("version") version: String, @Path("locale") locale: String): Deferred<List<Champion>>
+    @GET("$CDN_URL/{version}/data/{locale}/championFull.json")
+    suspend fun getChampions(@Path("version") version: String, @Path("locale") locale: String): List<Champion>
 
     /**
      * Coroutine compliant request that retrieves the splash art for the given champion and skin.
@@ -39,7 +39,7 @@ interface DDragonService {
      * @param skinId id of the skin. Valid ids depend on the champion.
      */
     @GET("$CDN_URL/img/champion/splash/{champion}_{skin}.jpg")
-    fun getSplashImage(@Path("champion") championKey: String, @Path("skin") skinId: Int): Deferred<Bitmap>
+    suspend fun getSplashImage(@Path("champion") championKey: String, @Path("skin") skinId: Int): Bitmap
 
     companion object {
         private const val API_URL = "/api"

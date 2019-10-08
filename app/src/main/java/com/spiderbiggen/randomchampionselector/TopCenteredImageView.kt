@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 
 /**
@@ -25,11 +24,11 @@ class TopCenteredImageView : AppCompatImageView {
             super(context, attrs, defStyleAttr)
 
     init {
-        super.setScaleType(ImageView.ScaleType.MATRIX)
+        super.setScaleType(ScaleType.MATRIX)
     }
 
-    override fun getScaleType(): ImageView.ScaleType {
-        return ImageView.ScaleType.MATRIX
+    override fun getScaleType(): ScaleType {
+        return ScaleType.MATRIX
     }
 
     /**
@@ -37,7 +36,7 @@ class TopCenteredImageView : AppCompatImageView {
      *
      * @param scaleType ignored.
      */
-    override fun setScaleType(scaleType: ImageView.ScaleType) {
+    override fun setScaleType(scaleType: ScaleType) {
         // Do nothing
     }
 

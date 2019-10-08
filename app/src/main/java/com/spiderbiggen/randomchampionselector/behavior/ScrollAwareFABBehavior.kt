@@ -25,7 +25,7 @@ class ScrollAwareFABBehavior : CoordinatorLayout.Behavior<FloatingActionButton> 
                                 target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int,
                                 dyUnconsumed: Int, type: Int, consumed: IntArray) {
         super.onNestedScroll(coordinatorLayout, fab, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed)
-        println("dy=$dyConsumed, hidden=${fab.isOrWillBeHidden}, shown=${fab.isOrWillBeShown}")
+//        println("dy=$dyConsumed, hidden=${fab.isOrWillBeHidden}, shown=${fab.isOrWillBeShown}")
         when {
             dyConsumed > 0 && fab.isOrWillBeShown -> fab.hide(FabVisibilityChangedListener())
             dyConsumed < 0 && fab.isOrWillBeHidden -> fab.show()

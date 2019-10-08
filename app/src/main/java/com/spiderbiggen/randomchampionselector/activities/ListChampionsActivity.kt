@@ -10,12 +10,15 @@ import android.view.Menu
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
-import com.spiderbiggen.randomchampionselector.models.Champion
-import com.spiderbiggen.randomchampionselector.interfaces.Contextual
 import com.spiderbiggen.randomchampionselector.adapters.ChampionAdapter
+import com.spiderbiggen.randomchampionselector.interfaces.Contextual
+import com.spiderbiggen.randomchampionselector.models.Champion
+import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
 import kotlinx.android.synthetic.main.activity_list_champions.*
 import kotlinx.coroutines.*
 import java.io.IOException
@@ -23,8 +26,7 @@ import java.lang.ref.WeakReference
 
 @ExperimentalCoroutinesApi
 class ListChampionsActivity : AbstractActivity() {
-    private val adapter =
-        ChampionAdapter(View.OnClickListener(this::onClick))
+    private val adapter = ChampionAdapter(View.OnClickListener(this::onClick))
     private lateinit var viewModel: ChampionListViewModel
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +35,7 @@ class ListChampionsActivity : AbstractActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = title
         champion_list.adapter = adapter
-        viewModel = ViewModelProviders.of(this).get()
+        viewModel = ViewModelProviders.of(this).get(ChampionListViewModel::class.java)
         viewModel.useContext(this)
     }
 
@@ -71,8 +73,8 @@ class ListChampionsActivity : AbstractActivity() {
         startActivityWithFade(intent, options.toBundle())
     }
 
-    private class ChampionListViewModel : ViewModel(), Contextual,
-        CoroutineScope by CoroutineScope(Dispatchers.Default) {
+    class ChampionListViewModel : ViewModel(), Contextual,
+            CoroutineScope by CoroutineScope(Dispatchers.Default) {
         private lateinit var champions: MutableLiveData<List<Champion>>
 
         private lateinit var bitmap: MutableLiveData<Bitmap>

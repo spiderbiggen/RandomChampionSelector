@@ -24,7 +24,8 @@ import java.util.*
  */
 class CustomConverter : Converter.Factory() {
 
-    override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
+    override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?,
+                                       retrofit: Retrofit?): Converter<ResponseBody, *>? {
         return when (type) {
             LIST_CHAMPION -> ChampionListConverter.INSTANCE
             STRING_ARRAY -> StringArrayConverter.INSTANCE
@@ -36,14 +37,16 @@ class CustomConverter : Converter.Factory() {
     private class StringArrayConverter : Converter<ResponseBody, Array<String>> {
 
         @Throws(IOException::class)
-        override fun convert(value: ResponseBody): Array<String> {
-            val reader = JsonReader(value.charStream())
-            reader.beginArray()
-            val strings = ArrayList<String>()
-            while (reader.hasNext()) {
-                strings.add(reader.nextString())
+        override fun convert(responseBody: ResponseBody): Array<String> {
+            responseBody.use {
+                val reader = JsonReader(it.charStream())
+                reader.beginArray()
+                val strings = ArrayList<String>()
+                while (reader.hasNext()) {
+                    strings.add(reader.nextString())
+                }
+                return strings.toTypedArray()
             }
-            return strings.toTypedArray()
         }
 
 
@@ -58,20 +61,22 @@ class CustomConverter : Converter.Factory() {
         @Throws(IOException::class)
         override fun convert(responseBody: ResponseBody): List<Champion> {
             try {
-                val string = responseBody.string()
-                val jsonObject = JSONObject(string).getJSONObject("database")
-                val list = mutableListOf<Champion>()
-                val stringIterator = jsonObject.keys()
-                while (stringIterator.hasNext()) {
-                    val key = stringIterator.next()
-                    try {
-                        val champion = Champion.parse(jsonObject.getJSONObject(key))
-                        list.add(champion)
-                    } catch (e: JSONException) {
-                        Log.e(TAG, "convert: failed to convert $key", e)
+                responseBody.use {
+                    val string = it.string()
+                    val jsonObject = JSONObject(string).getJSONObject("data")
+                    val list = mutableListOf<Champion>()
+                    val stringIterator = jsonObject.keys()
+                    while (stringIterator.hasNext()) {
+                        val key = stringIterator.next()
+                        try {
+                            val champion = Champion.parse(jsonObject.getJSONObject(key))
+                            list.add(champion)
+                        } catch (e: JSONException) {
+                            Log.e(TAG, "convert: failed to convert $key", e)
+                        }
                     }
+                    return list
                 }
-                return list
             } catch (e: JSONException) {
                 throw IOException("Failed to parse Champions JSON", e)
             }
