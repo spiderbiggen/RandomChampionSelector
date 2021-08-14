@@ -26,7 +26,7 @@ abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by Corouti
         super.onDestroy()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             supportFinishAfterTransition()
             true

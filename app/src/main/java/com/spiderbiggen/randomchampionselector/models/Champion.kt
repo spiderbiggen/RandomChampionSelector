@@ -27,7 +27,7 @@ data class Champion(
 ) : Serializable {
 
     val capitalizedTitle: String
-        get() = title.substring(0, 1).toUpperCase(Locale.ENGLISH) + title.substring(1)
+        get() = title.substring(0, 1).uppercase(Locale.ENGLISH) + title.substring(1)
 
     override fun toString(): String {
         return "Champion(key=$key, name='$name', roles=${Arrays.toString(roles)})"
@@ -55,7 +55,7 @@ data class Champion(
             val lore = jsonObject.optString("lore")
             val title = jsonObject.optString("title")
             val name = jsonObject.optString("name")
-            val roles = jsonArrayToStringArray(jsonObject.optJSONArray("tags"))
+            val roles = jsonArrayToStringArray(jsonObject.optJSONArray("tags") ?: JSONArray())
             val info = Info.parse(jsonObject.getJSONObject("info"))
             return Champion(key, id, name, title, lore, blurb, roles, info)
         }

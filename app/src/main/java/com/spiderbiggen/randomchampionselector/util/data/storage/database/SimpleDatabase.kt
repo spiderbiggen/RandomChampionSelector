@@ -31,6 +31,6 @@ abstract class SimpleDatabase : RoomDatabase(), IDataInteractor {
         championDAO().getRandom(role.roleTransform())
 
     private fun String?.roleTransform(): String =
-        if (isNullOrEmpty() || equals("all", ignoreCase = true)) "" else this!!
+        if (isNullOrEmpty() || equals("all", ignoreCase = true)) "" else this
 
 }

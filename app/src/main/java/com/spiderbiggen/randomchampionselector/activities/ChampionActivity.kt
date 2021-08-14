@@ -7,10 +7,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.spiderbiggen.randomchampionselector.R
+import com.spiderbiggen.randomchampionselector.databinding.ActivityChampionBinding
 import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.util.data.onMainThread
 import com.spiderbiggen.randomchampionselector.models.Champion
-import kotlinx.android.synthetic.main.activity_champion.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -18,6 +18,8 @@ import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class ChampionActivity : AbstractActivity() {
+
+    private lateinit var binding: ActivityChampionBinding
 
     private var championKey = -1
     private var upOnBack: Boolean = false
@@ -28,8 +30,9 @@ class ChampionActivity : AbstractActivity() {
         championKey = savedInstanceState?.getInt(CHAMPION_KEY) ?: championKey
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey)
         upOnBack = intent.getBooleanExtra(UP_ON_BACK_KEY, true)
-        setContentView(R.layout.activity_champion)
-        setSupportActionBar(toolbar)
+        binding = ActivityChampionBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportPostponeEnterTransition()
         val actionBar = supportActionBar
         actionBar?.title = null
@@ -66,8 +69,8 @@ class ChampionActivity : AbstractActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean =
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
                 true
@@ -94,20 +97,20 @@ class ChampionActivity : AbstractActivity() {
         launch {
             try {
                 val bitmap = BitmapCache.loadBitmap(champion)
-                onMainThread { champion_splash.setImageBitmap(bitmap) }
+                onMainThread { binding.championSplash.setImageBitmap(bitmap) }
             } catch (e: IOException) {
                 onMainThread { loadImageFailure(e) }
             }
         }
         championKey = champion.key
-        champion_name.text = champion.name
-        champion_title.text = champion.capitalizedTitle
-        champion_blurb.text = champion.lore
+        binding.championName.text = champion.name
+        binding.championTitle.text = champion.capitalizedTitle
+        binding.championBlurb.text = champion.lore
         supportStartPostponedEnterTransition()
     }
 
     private fun loadImageFailure(e: Throwable) {
-        champion_splash.setImageBitmap(null)
+        binding.championSplash.setImageBitmap(null)
         Log.e("ChampionActivity", "error ${e.message}", e)
     }
 

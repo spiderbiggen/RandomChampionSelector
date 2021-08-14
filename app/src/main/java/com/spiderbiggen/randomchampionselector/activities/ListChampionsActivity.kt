@@ -11,30 +11,32 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.adapters.ChampionAdapter
+import com.spiderbiggen.randomchampionselector.databinding.ActivityListChampionsBinding
 import com.spiderbiggen.randomchampionselector.interfaces.Contextual
 import com.spiderbiggen.randomchampionselector.models.Champion
 import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
-import kotlinx.android.synthetic.main.activity_list_champions.*
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.lang.ref.WeakReference
 
 @ExperimentalCoroutinesApi
 class ListChampionsActivity : AbstractActivity() {
+    private lateinit var binding: ActivityListChampionsBinding
+
     private val adapter = ChampionAdapter(View.OnClickListener(this::onClick))
     private lateinit var viewModel: ChampionListViewModel
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list_champions)
-        setSupportActionBar(toolbar)
+        binding = ActivityListChampionsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.title = title
-        champion_list.adapter = adapter
+        binding.championList.adapter = adapter
         viewModel = ViewModelProviders.of(this).get(ChampionListViewModel::class.java)
         viewModel.useContext(this)
     }
@@ -46,8 +48,8 @@ class ListChampionsActivity : AbstractActivity() {
     }
 
     override fun onResume() {
-        viewModel.getChampions().observe(this, Observer { adapter.setChampions(it) })
-        viewModel.getHeaderImage().observe(this, Observer { splash.setImageBitmap(it) })
+        viewModel.getChampions().observe(this, { adapter.setChampions(it) })
+        viewModel.getHeaderImage().observe(this, { binding.splash.setImageBitmap(it) })
         super.onResume()
     }
 
@@ -56,7 +58,7 @@ class ListChampionsActivity : AbstractActivity() {
     }
 
     private fun onClick(v: View) {
-        val position = champion_list.getChildAdapterPosition(v)
+        val position = binding.championList.getChildAdapterPosition(v)
         val img = v.findViewById<ImageView>(R.id.champion_splash)
         val name = v.findViewById<TextView>(R.id.champion_name)
         val title = v.findViewById<TextView>(R.id.champion_title)

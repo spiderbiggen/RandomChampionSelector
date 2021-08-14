@@ -9,12 +9,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.UiThread
 import com.spiderbiggen.randomchampionselector.R
+import com.spiderbiggen.randomchampionselector.databinding.ActivityLoaderBinding
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback.Progress
 import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.util.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.util.data.onMainThread
-import kotlinx.android.synthetic.main.activity_loader.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -27,6 +27,7 @@ import java.util.*
  */
 @ExperimentalCoroutinesApi
 class LoaderActivity : AbstractActivity(), IProgressCallback {
+    private lateinit var binding: ActivityLoaderBinding
     private var shouldRefresh: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +36,8 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
             openListActivity()
             return
         }
-        setContentView(R.layout.activity_loader)
+        binding = ActivityLoaderBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         shouldRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
     }
 
@@ -72,6 +74,7 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
 
     @UiThread
     override fun update(type: Progress, progress: Int, progressMax: Int) {
+        val progressBar = binding.progressBar
         if (type === Progress.ERROR) {
             val progressDrawable = progressBar.indeterminateDrawable.mutate()
             progressDrawable.setColorFilter(Color.RED, Mode.SRC_IN)
@@ -83,7 +86,7 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         progressBar.max = progressMax
 
         val percent = if (progressMax == 0) 0f else (progress.toFloat() / progressMax) * 100
-        progressText.text = getString(type.stringResource, percent)
+        binding.progressText.text = getString(type.stringResource, percent)
     }
 
     private fun verifyImages(progress: IProgressCallback) {

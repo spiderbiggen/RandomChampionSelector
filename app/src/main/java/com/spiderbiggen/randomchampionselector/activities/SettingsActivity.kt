@@ -9,8 +9,8 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 import androidx.preference.PreferenceScreen
 import com.spiderbiggen.randomchampionselector.R
+import com.spiderbiggen.randomchampionselector.databinding.ActivitySettingsBinding
 import com.spiderbiggen.randomchampionselector.fragments.SettingsFragment
-import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
@@ -19,6 +19,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
  */
 @ExperimentalCoroutinesApi
 class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
+
+    private lateinit var binding: ActivitySettingsBinding
 
     private var needsRefresh = false
         get() {
@@ -38,8 +40,9 @@ class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        setSupportActionBar(toolbar)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         if (savedInstanceState == null) {
             // Create the fragment only when the activity is created for the first time.
@@ -76,7 +79,7 @@ class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
             super.onBackPressed()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             if (!startActivityOnRefresh() && !super.onOptionsItemSelected(item)) {
                 NavUtils.navigateUpFromSameTask(this)

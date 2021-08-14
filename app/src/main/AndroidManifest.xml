@@ -20,6 +20,7 @@
         <activity
             android:name="com.spiderbiggen.randomchampionselector.activities.LoaderActivity"
             android:configChanges="orientation|screenSize"
+            android:exported="true"
             android:label="@string/app_name"
             android:noHistory="true">
             <intent-filter>
@@ -30,21 +31,14 @@
         <activity
             android:name="com.spiderbiggen.randomchampionselector.activities.ListChampionsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.TransparentStatusBar">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.TransparentStatusBar" />
         <activity
             android:name="com.spiderbiggen.randomchampionselector.activities.ChampionActivity"
+            android:exported="false"
             android:label="@string/app_name"
             android:noHistory="true"
             android:parentActivityName="com.spiderbiggen.randomchampionselector.activities.ListChampionsActivity"
-            android:theme="@style/AppTheme.TransparentStatusBar">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.TransparentStatusBar" />
         <activity
             android:name="com.spiderbiggen.randomchampionselector.activities.SettingsActivity"
             android:label="@string/title_activity_settings"
