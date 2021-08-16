@@ -3,7 +3,7 @@ package com.spiderbiggen.randomchampionselector.util.data
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap.CompressFormat
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import androidx.core.content.edit

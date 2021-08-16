@@ -82,7 +82,6 @@ class ChampionAdapter(
 
         private fun updateImage(champion: Champion) {
             a = launch(Dispatchers.IO) {
-                Log.d("ChampionAdapter", "aaaaaaaaaaaaaaaaaaaa")
                 val bitmap = try {
                     Log.d("ChampionAdapter", "Image: ${champion.name}")
                     BitmapCache.loadBitmap(champion)

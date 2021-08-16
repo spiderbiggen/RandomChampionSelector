@@ -31,6 +31,7 @@ class ChampionActivity : AbstractActivity() {
         championKey = intent.getIntExtra(CHAMPION_KEY, championKey)
         upOnBack = intent.getBooleanExtra(UP_ON_BACK_KEY, true)
         binding = ActivityChampionBinding.inflate(layoutInflater)
+        binding.activity = this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportPostponeEnterTransition()

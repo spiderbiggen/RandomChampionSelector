@@ -2,10 +2,12 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorOnPrimary">@color/icons</item>
+        <item name="colorOnPrimarySurface">@color/icons</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/icons</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
@@ -16,11 +18,7 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="android:textAppearance">@style/Text.Shadowed</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:textAppearance">@style/Text.Shadowed</item>
-    </style>
+    <style name="AppTheme.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
 </resources>

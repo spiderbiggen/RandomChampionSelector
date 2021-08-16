@@ -130,6 +130,7 @@
     <string name="parsing_data">Parsing data</string>
 
     <string name="champion_splash_content_description">Champion Splash Art</string>
+    <string name="random_fab_content_description">Select a random champion</string>
 
     <string name="champion_name_transition_key" translatable="false">champion_name_key</string>
     <string name="champion_title_transition_key" translatable="false">champion_title_key</string>

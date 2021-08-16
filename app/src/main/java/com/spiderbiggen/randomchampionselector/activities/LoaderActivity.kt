@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff.Mode
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.UiThread
@@ -43,23 +45,25 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
 
     override fun onResume() {
         super.onResume()
-
+        if (!isNetworkAvailable()) {
+            openListActivity()
+            return
+        }
         when {
             shouldRefresh || PreferenceManager.isOutdated -> {
                 PreferenceManager.lastSync = -1
                 updateData(this)
             }
-            else -> {
-                verifyImages(this@LoaderActivity)
-            }
+            else -> verifyImages(this@LoaderActivity)
         }
     }
 
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-        val activeNetworkInfo = connectivityManager?.activeNetworkInfo
-        return activeNetworkInfo?.isConnected == true
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val nw = connectivityManager.activeNetwork ?: return false
+        val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+        return actNw.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun onFinished() {

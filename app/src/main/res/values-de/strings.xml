@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en_US">
+<resources>
     <string name="app_name">Champion Randomiser</string>
 
     <string name="title_activity_list_champions">Kampione</string>
@@ -20,6 +20,8 @@
     <string name="progress_downloads">Herunterladen %d/%d</string>
     <string name="progress_verified">Verfizieren %d/%d</string>
     <string name="action_refresh_images">" Bilder neu laden"</string>
-    <string name="checking_version">" Nach neuer Version suchen"</string>
+    <string name="checking_version">Nach neuer Version suchen</string>
     <string name="parsing_data">" Analysieren von Daten"</string>
+    <string name="champion_splash_content_description">Champion Splash Art</string>
+    <string name="random_fab_content_description">Wähle einen zufälligen Champion</string>
 </resources>

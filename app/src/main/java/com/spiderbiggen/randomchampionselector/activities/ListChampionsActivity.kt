@@ -12,7 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.adapters.ChampionAdapter
 import com.spiderbiggen.randomchampionselector.databinding.ActivityListChampionsBinding
@@ -37,7 +37,8 @@ class ListChampionsActivity : AbstractActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = title
         binding.championList.adapter = adapter
-        viewModel = ViewModelProviders.of(this).get(ChampionListViewModel::class.java)
+        binding.activity = this
+        viewModel = ViewModelProvider(this).get(ChampionListViewModel::class.java)
         viewModel.useContext(this)
     }
 
