@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.room.Room
 import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager
 import com.spiderbiggen.randomchampionselector.util.data.ResourceManager
-import com.spiderbiggen.randomchampionselector.util.data.storage.database.IDataInteractor
 import com.spiderbiggen.randomchampionselector.util.data.storage.database.SimpleDatabase
 import com.spiderbiggen.randomchampionselector.util.data.storage.file.FileStorage
+import com.spiderbiggen.randomchampionselector.util.data.storage.repositories.ChampionRepository
 
 /**
  * Custom implementation of [Application] to make sure the different managers and the database are initialized
@@ -14,10 +14,9 @@ import com.spiderbiggen.randomchampionselector.util.data.storage.file.FileStorag
  * @author Stefan Breetveld
  */
 class DataApplication : Application() {
-    val database: IDataInteractor by lazy {
-        Room.databaseBuilder(applicationContext, SimpleDatabase::class.java, "random_champion_main")
-            .fallbackToDestructiveMigration().build()
-    }
+
+    val database by lazy { SimpleDatabase.getDatabase(this) }
+    val championRepository by lazy {ChampionRepository(database.championDAO())}
 
     override fun onCreate() {
         super.onCreate()
