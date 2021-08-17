@@ -9,7 +9,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.spiderbiggen.randomchampionselector.R
-import com.spiderbiggen.randomchampionselector.util.data.storage.database.IDataInteractor
 import com.spiderbiggen.randomchampionselector.util.data.storage.file.FileStorage
 import com.spiderbiggen.randomchampionselector.DataApplication
 import kotlinx.coroutines.*
@@ -18,7 +17,6 @@ import kotlinx.coroutines.*
  * Created on 2019-01-29.
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
 abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     override fun onDestroy() {
@@ -26,6 +24,7 @@ abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by Corouti
         super.onDestroy()
     }
 
+    @ExperimentalCoroutinesApi
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             supportFinishAfterTransition()
@@ -58,6 +57,7 @@ abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by Corouti
         startActivity(intent, bundle)
     }
 
+    @ExperimentalCoroutinesApi
     fun createStartIntent(forceRefresh: Boolean = true): Intent {
         val intent = Intent(this, LoaderActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -67,8 +67,5 @@ abstract class AbstractActivity : AppCompatActivity(), CoroutineScope by Corouti
 
     companion object {
         const val FORCE_REFRESH = "FORCE_REFRESH"
-
-        val Context.database: IDataInteractor
-            get() = generateSequence(applicationContext) { (it as? ContextWrapper)?.baseContext }.filterIsInstance<DataApplication>().first().database
     }
 }

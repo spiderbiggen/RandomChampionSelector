@@ -6,19 +6,17 @@ import android.graphics.Color
 import android.graphics.PorterDuff.Mode
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.UiThread
-import com.spiderbiggen.randomchampionselector.R
+import com.spiderbiggen.randomchampionselector.DataApplication
 import com.spiderbiggen.randomchampionselector.databinding.ActivityLoaderBinding
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback.Progress
 import com.spiderbiggen.randomchampionselector.util.data.PreferenceManager
-import com.spiderbiggen.randomchampionselector.util.data.ddragon.DDragon
-import com.spiderbiggen.randomchampionselector.util.data.onMainThread
+import com.spiderbiggen.randomchampionselector.viewmodels.LoaderViewModel
+import com.spiderbiggen.randomchampionselector.viewmodels.LoaderViewModelFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -27,10 +25,13 @@ import java.util.*
  *
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
 class LoaderActivity : AbstractActivity(), IProgressCallback {
     private lateinit var binding: ActivityLoaderBinding
     private var shouldRefresh: Boolean = false
+
+    private val viewModel: LoaderViewModel by viewModels {
+        LoaderViewModelFactory((application as DataApplication).championRepository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,11 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         binding = ActivityLoaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
         shouldRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
+        viewModel.finished.observe(this, {
+            if (it) {
+                onFinished()
+            }
+        })
     }
 
     override fun onResume() {
@@ -52,9 +58,9 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         when {
             shouldRefresh || PreferenceManager.isOutdated -> {
                 PreferenceManager.lastSync = -1
-                updateData(this)
+                viewModel.updateData(this)
             }
-            else -> verifyImages(this@LoaderActivity)
+            else -> viewModel.verifyImages(this@LoaderActivity)
         }
     }
 
@@ -76,49 +82,23 @@ class LoaderActivity : AbstractActivity(), IProgressCallback {
         startActivity(intent)
     }
 
-    @UiThread
     override fun update(type: Progress, progress: Int, progressMax: Int) {
-        val progressBar = binding.progressBar
-        if (type === Progress.ERROR) {
-            val progressDrawable = progressBar.indeterminateDrawable.mutate()
-            progressDrawable.setColorFilter(Color.RED, Mode.SRC_IN)
-            progressBar.progressDrawable = progressDrawable
-        }
-
-        progressBar.isIndeterminate = type.indeterminate
-        progressBar.progress = progress
-        progressBar.max = progressMax
-
-        val percent = if (progressMax == 0) 0f else (progress.toFloat() / progressMax) * 100
-        binding.progressText.text = getString(type.stringResource, percent)
-    }
-
-    private fun verifyImages(progress: IProgressCallback) {
-        launch(Dispatchers.IO) {
-            val champions = database.findChampionList()
-            if (champions.isNullOrEmpty()) {
-                updateData(progress)
-            } else {
-                val things = DDragon.verifyImages(champions, progress)
-                Log.d("LoaderActivity", things.toString())
-                DDragon.downloadAllImages(things, progress)
+        launch(Dispatchers.Main) {
+            val progressBar = binding.progressBar
+            if (type === Progress.ERROR) {
+                val progressDrawable = progressBar.indeterminateDrawable.mutate()
+                progressDrawable.setColorFilter(Color.RED, Mode.SRC_IN)
+                progressBar.progressDrawable = progressDrawable
             }
-            onMainThread { onFinished() }
+
+            progressBar.isIndeterminate = type.indeterminate
+            progressBar.progress = progress
+            progressBar.max = progressMax
+
+            val percent = if (progressMax == 0) 0f else (progress.toFloat() / progressMax) * 100
+            binding.progressText.text = getString(type.stringResource, percent)
         }
     }
 
-    private fun updateData(progress: IProgressCallback) {
-        launch(Dispatchers.IO) {
-            progress.update(Progress.CHECKING_VERSION)
-            val version = DDragon.getLastVersion()
-            val champions = DDragon.getChampionList(version)
-            database.addChampions(champions)
-            val things = DDragon.verifyImages(champions, progress)
-            if (!things.isEmpty()) {
-                DDragon.downloadAllImages(things, progress)
-            }
-            onMainThread { onFinished() }
-        }
-    }
 
 }

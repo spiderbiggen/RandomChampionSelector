@@ -1,25 +1,27 @@
 package com.spiderbiggen.randomchampionselector.activities
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
+import com.spiderbiggen.randomchampionselector.DataApplication
 import com.spiderbiggen.randomchampionselector.R
 import com.spiderbiggen.randomchampionselector.databinding.ActivityChampionBinding
-import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
-import com.spiderbiggen.randomchampionselector.util.data.onMainThread
 import com.spiderbiggen.randomchampionselector.models.Champion
-import kotlinx.coroutines.Dispatchers
+import com.spiderbiggen.randomchampionselector.viewmodels.ChampionViewModel
+import com.spiderbiggen.randomchampionselector.viewmodels.ChampionViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import java.io.IOException
 
-@ExperimentalCoroutinesApi
 class ChampionActivity : AbstractActivity() {
 
     private lateinit var binding: ActivityChampionBinding
+
+    private val viewModel: ChampionViewModel by viewModels {
+        ChampionViewModelFactory((application as DataApplication).championRepository)
+    }
 
     private var championKey = -1
     private var upOnBack: Boolean = false
@@ -38,6 +40,9 @@ class ChampionActivity : AbstractActivity() {
         val actionBar = supportActionBar
         actionBar?.title = null
         actionBar?.setDisplayHomeAsUpEnabled(true)
+
+        viewModel.champion.observe(this, { setChampion(it) })
+        viewModel.bitmap.observe(this, { setBitmap(it) })
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -46,13 +51,7 @@ class ChampionActivity : AbstractActivity() {
     }
 
     override fun onResume() {
-        launch(Dispatchers.Default) {
-            val champion = when {
-                championKey < 0 -> database.findRandomChampion()
-                else -> database.findChampion(championKey)
-            }
-            onMainThread { setChampion(champion) }
-        }
+        viewModel.setChampion(championKey)
         super.onResume()
     }
 
@@ -70,6 +69,7 @@ class ChampionActivity : AbstractActivity() {
         return true
     }
 
+    @ExperimentalCoroutinesApi
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             android.R.id.home -> {
@@ -94,15 +94,8 @@ class ChampionActivity : AbstractActivity() {
         openChampionActivity(view)
     }
 
-    private fun setChampion(champion: Champion) {
-        launch {
-            try {
-                val bitmap = BitmapCache.loadBitmap(champion)
-                onMainThread { binding.championSplash.setImageBitmap(bitmap) }
-            } catch (e: IOException) {
-                onMainThread { loadImageFailure(e) }
-            }
-        }
+    private fun setChampion(champion: Champion?) {
+        if (champion == null) return
         championKey = champion.key
         binding.championName.text = champion.name
         binding.championTitle.text = champion.capitalizedTitle
@@ -110,12 +103,11 @@ class ChampionActivity : AbstractActivity() {
         supportStartPostponedEnterTransition()
     }
 
-    private fun loadImageFailure(e: Throwable) {
-        binding.championSplash.setImageBitmap(null)
-        Log.e("ChampionActivity", "error ${e.message}", e)
+    private fun setBitmap(bitmap: Bitmap?) {
+        binding.championSplash.setImageBitmap(bitmap)
     }
 
-    companion object {
+        companion object {
         const val CHAMPION_KEY = "CHAMPION_KEY"
         const val UP_ON_BACK_KEY = "UP_ON_BACK_KEY"
     }

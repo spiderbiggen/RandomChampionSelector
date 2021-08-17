@@ -17,7 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
  * Created on 4-7-2018.
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
+
 class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
 
     private lateinit var binding: ActivitySettingsBinding
@@ -29,6 +29,7 @@ class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
             return old
         }
 
+    @ExperimentalCoroutinesApi
     private fun startActivityOnRefresh(): Boolean {
         if (needsRefresh) {
             startActivity(createStartIntent())
@@ -74,11 +75,13 @@ class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
         return true
     }
 
+    @ExperimentalCoroutinesApi
     override fun onBackPressed() {
         if (!startActivityOnRefresh())
             super.onBackPressed()
     }
 
+    @ExperimentalCoroutinesApi
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             if (!startActivityOnRefresh() && !super.onOptionsItemSelected(item)) {

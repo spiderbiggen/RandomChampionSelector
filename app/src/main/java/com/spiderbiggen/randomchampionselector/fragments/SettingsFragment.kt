@@ -20,7 +20,6 @@ import java.io.IOException
  *
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
 class SettingsFragment : PreferenceFragmentCompat(),
         SharedPreferences.OnSharedPreferenceChangeListener {
 

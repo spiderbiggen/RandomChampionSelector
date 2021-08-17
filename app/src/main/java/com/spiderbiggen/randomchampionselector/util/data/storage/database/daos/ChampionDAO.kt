@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.spiderbiggen.randomchampionselector.models.Champion
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Tells room what methods are used to access [Champion] objects in the database.
@@ -15,31 +16,20 @@ import com.spiderbiggen.randomchampionselector.models.Champion
 interface ChampionDAO {
 
     /**
-     * Retrieve all possible values for roles in the champion Object.
-     * These roles need to be split up to get individual roles.
+     * Retrieve all champions.
      *
-     * @return a list of all possible joined roles.
+     * @return a list of champions
      */
-    @Query("SELECT DISTINCT roles FROM champion")
-    suspend fun getAllRoles(): List<String>
+    @Query("SELECT * FROM champion ORDER BY name")
+    fun getAll(): Flow<List<Champion>>
 
     /**
-     * Retrieve all champions that have the given role. If no role is specified retrieve all champions.
+     * Retrieve a random champion.
      *
-     * @param role the requested role
-     * @return a list of champions matching [role]
+     * @return a champion
      */
-    @Query("SELECT * FROM champion WHERE roles LIKE '%'||:role||'%' ORDER BY name")
-    suspend fun getAll(role: String?): List<Champion>
-
-    /**
-     * Retrieve a random champion that has the given role. If no role is specified retrieve any champion.
-     *
-     * @param role the request role
-     * @return a champion matching [role]
-     */
-    @Query("SELECT * FROM champion WHERE roles LIKE '%'||:role||'%' ORDER BY RANDOM() LIMIT 1")
-    suspend fun getRandom(role: String?): Champion
+    @Query("SELECT * FROM champion ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandom(): Champion?
 
     /**
      * Retrieve the champion with the given [id].
@@ -48,7 +38,7 @@ interface ChampionDAO {
      * @return the champion that matches [id]
      */
     @Query("SELECT * FROM champion WHERE `key` = :id")
-    suspend fun getChampion(id: Int): Champion
+    suspend fun getChampion(id: Int): Champion?
 
     /**
      * Insert all the champions given by [entities]. If a conflict is found the new object replaces the old one.

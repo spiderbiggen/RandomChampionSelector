@@ -1,36 +1,42 @@
 package com.spiderbiggen.randomchampionselector.util.data.storage.database
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 import com.spiderbiggen.randomchampionselector.models.Champion
 import com.spiderbiggen.randomchampionselector.util.data.storage.database.converters.StringArrayConverter
 import com.spiderbiggen.randomchampionselector.util.data.storage.database.daos.ChampionDAO
+import kotlinx.coroutines.flow.Flow
 
 @Database(entities = [(Champion::class)], version = 4, exportSchema = false)
 @TypeConverters(StringArrayConverter::class)
-abstract class SimpleDatabase : RoomDatabase(), IDataInteractor {
-    protected abstract fun championDAO(): ChampionDAO
+abstract class SimpleDatabase : RoomDatabase() {
+    abstract fun championDAO(): ChampionDAO
 
-    override suspend fun addChampions(champions: Collection<Champion>) =
-        championDAO().insertAll(champions)
+    companion object {
+        // Singleton prevents multiple instances of database opening at the
+        // same time.
+        @Volatile
+        private var INSTANCE: SimpleDatabase? = null
 
-    override suspend fun findRoleList(): List<String> {
-        val roleLists = championDAO().getAllRoles()
-        return roleLists.flatMap { it.split(",") }.distinct()
+        fun getDatabase(context: Context): SimpleDatabase {
+            // if the INSTANCE is not null, then return it,
+            // if it is, then create the database
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context,
+                    SimpleDatabase::class.java,
+                    "random_champion_main"
+                )
+                    .fallbackToDestructiveMigration().build()
+                INSTANCE = instance
+                // return instance
+                instance
+            }
+        }
     }
-
-    override suspend fun findChampionList(role: String?): List<Champion> =
-        championDAO().getAll(role.roleTransform())
-
-    override suspend fun findChampion(championKey: Int): Champion =
-        championDAO().getChampion(championKey)
-
-    override suspend fun findRandomChampion(role: String?): Champion =
-        championDAO().getRandom(role.roleTransform())
-
-    private fun String?.roleTransform(): String =
-        if (isNullOrEmpty() || equals("all", ignoreCase = true)) "" else this
 
 }
