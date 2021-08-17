@@ -67,8 +67,7 @@ object DDragon {
     private fun verifySavedChampionBitmap(champion: Champion): Boolean {
         val file = champion.championBitmap
         return if (file.exists()) {
-            val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true
+            val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeFile(file.path, options)
             options.outHeight > 0 && options.outWidth > 0
         } else false
@@ -84,6 +83,7 @@ object DDragon {
         descriptors: Collection<Champion>,
         progress: IProgressCallback
     ) {
+        if (descriptors.isEmpty()) return
         val downloadCount = AtomicInteger()
         val total = descriptors.size
         val compressFormat = PreferenceManager.compressFormat
