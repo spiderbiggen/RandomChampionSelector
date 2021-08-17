@@ -14,8 +14,11 @@ import kotlinx.coroutines.*
  * @param function a mapper function that maps [A] to [B] needs to be a coroutine
  * @return [A] mapped to [B]
  */
-suspend fun <A, B> Iterable<A>.mapAsync(context: CoroutineDispatcher = Dispatchers.Default, function: suspend (A) -> B): Iterable<B> = runBlocking {
-    map { async(context) { function(it) } }.map { it.await() }
+suspend fun <A, B> Iterable<A>.mapAsync(
+    context: CoroutineDispatcher = Dispatchers.Default,
+    function: suspend (A) -> B
+): Iterable<B> = withContext(context) {
+    map { async { function(it) } }.map { it.await() }
 }
 
 /**
