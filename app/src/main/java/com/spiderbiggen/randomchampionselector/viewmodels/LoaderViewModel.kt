@@ -1,8 +1,8 @@
 package com.spiderbiggen.randomchampionselector.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.spiderbiggen.randomchampionselector.interfaces.IProgressCallback
+import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.util.data.ddragon.DDragon
 import com.spiderbiggen.randomchampionselector.util.data.storage.repositories.ChampionRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,9 +19,9 @@ class LoaderViewModel(private val repository: ChampionRepository) : ViewModel() 
             if (champs.isNullOrEmpty()) {
                 updateData(progress)
             } else {
-                val things = DDragon.verifyImages(champs, progress)
-                Log.d("LoaderActivity", things.toString())
-                DDragon.downloadAllImages(things, progress)
+                val incompleteChampions = DDragon.verifyImages(champs, progress)
+                DDragon.downloadAllImages(incompleteChampions, progress)
+                BitmapCache.clear(incompleteChampions)
                 _finished.postValue(true)
             }
         }
@@ -33,14 +33,12 @@ class LoaderViewModel(private val repository: ChampionRepository) : ViewModel() 
             val version = DDragon.getLastVersion()
             val champions = DDragon.getChampionList(version)
             repository.addChampions(champions)
-            val things = DDragon.verifyImages(champions, progress)
-            if (!things.isEmpty()) {
-                DDragon.downloadAllImages(things, progress)
-            }
+            val incompleteChampions = DDragon.verifyImages(champions, progress)
+            DDragon.downloadAllImages(incompleteChampions, progress)
+            BitmapCache.clear(incompleteChampions)
             _finished.postValue(true)
         }
     }
-
 }
 
 class LoaderViewModelFactory(private val repository: ChampionRepository) :

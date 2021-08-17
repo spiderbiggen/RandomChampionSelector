@@ -27,6 +27,11 @@ object BitmapCache {
         }
     }
 
+    fun clear(champions: Collection<Champion>) {
+        mMemoryCache.evictionCount()
+        champions.forEach { mMemoryCache.remove(it.id) }
+    }
+
     /**
      * Load the [Bitmap] identified by the given [champion] from memory if possible, otherwise load from disk storage.
      * Optionally [minWidth] and [minHeight] can be supplied to indicate the expected display size of the [Bitmap].
