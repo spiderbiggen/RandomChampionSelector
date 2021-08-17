@@ -123,21 +123,26 @@
     <string name="cancel" translatable="false">@android:string/cancel</string>
     <string name="progress_error">An unexpected error has occurred!</string>
     <string name="progress_idle">Checking For Updates</string>
-    <string name="progress_downloads">Downloading %d/%d</string>
-    <string name="progress_verified">Verifying %d/%d</string>
+    <string name="progress_downloads">Downloading %1$.2f%%</string>
+    <string name="progress_verified">Verifying %1$.2f%%</string>
     <string name="action_refresh_images">Reload Images</string>
     <string name="checking_version">Checking for new version</string>
     <string name="parsing_data">Parsing data</string>
 
     <string name="champion_splash_content_description">Champion Splash Art</string>
+    <string name="random_fab_content_description">Select a random champion</string>
 
     <string name="champion_name_transition_key" translatable="false">champion_name_key</string>
     <string name="champion_title_transition_key" translatable="false">champion_title_key</string>
     <string name="champion_splash_transition_key" translatable="false">champion_splash_key</string>
     <string name="champion_card_transition_key" translatable="false">champion_card_key</string>
-    <string name="champion_blurb_key">champion_blurb_key</string>
+    <string name="champion_blurb_key" translatable="false">champion_blurb_key</string>
     <string name="random_fab_transition_key" translatable="false">random_fab_key</string>
     <string name="pref_image_type_default" translatable="false">WEBP</string>
     <string name="pref_last_sync_key" translatable="false">DATE_KEY</string>
+    <string name="pref_language_key" translatable="false">pref_language</string>
+    <string name="pref_image_quality_key" translatable="false">pref_image_quality</string>
+    <string name="pref_sync_frequency_key" translatable="false">pref_sync_frequency</string>
+    <string name="pref_image_type_key" translatable="false">pref_image_type</string>
 
 </resources>
