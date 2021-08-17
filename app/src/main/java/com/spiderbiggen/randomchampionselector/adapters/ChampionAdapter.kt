@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.spiderbiggen.randomchampionselector.R
+import com.spiderbiggen.randomchampionselector.databinding.ListChampionItemBinding
 import com.spiderbiggen.randomchampionselector.models.Champion
 import com.spiderbiggen.randomchampionselector.util.data.cache.BitmapCache
 import com.spiderbiggen.randomchampionselector.util.data.onMainThread
@@ -28,9 +29,8 @@ class ChampionAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // create a new view
-        val v =
-            LayoutInflater.from(parent.context).inflate(R.layout.list_champion_item, parent, false)
-        v.setOnClickListener(clickListener)
+        val v = ListChampionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        v.root.setOnClickListener(clickListener)
         return ViewHolder(v)
     }
 
@@ -62,12 +62,10 @@ class ChampionAdapter(
      *
      * @author Stefan Breetveld
      */
-    class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView),
-            CoroutineScope by CoroutineScope(Dispatchers.Default) {
+    class ViewHolder internal constructor(private val binding: ListChampionItemBinding) :
+        RecyclerView.ViewHolder(binding.root),
+        CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
-        private val imageView: ImageView = itemView.findViewById(R.id.champion_splash)
-        private val nameView: TextView = itemView.findViewById(R.id.champion_name)
-        private val titleView: TextView = itemView.findViewById(R.id.champion_title)
         private var a: Job? = null
 
         internal var champion: Champion? = null
@@ -75,8 +73,8 @@ class ChampionAdapter(
                 if (value == null) throw NullPointerException()
                 a?.cancel()
                 updateImage(value)
-                nameView.text = value.name
-                titleView.text = value.capitalizedTitle
+                binding.championName.text = value.name
+                binding.championTitle.text = value.capitalizedTitle
                 field = value
             }
 
@@ -89,7 +87,7 @@ class ChampionAdapter(
                     Log.e("ChampionAdapter", "error ${e.message}")
                     null
                 }
-                onMainThread { imageView.setImageBitmap(bitmap) }
+                onMainThread { binding.championSplash.setImageBitmap(bitmap) }
             }
         }
     }
