@@ -1,0 +1,85 @@
+apply plugin: "com.android.application"
+apply plugin: "dagger.hilt.android.plugin"
+apply from: "../config-android.gradle"
+
+android {
+    signingConfigs {
+        release {
+            Properties keystoreProperties = new Properties()
+            def keystorePropertiesFile = rootProject.file("keystore.properties")
+            keystoreProperties.load(keystorePropertiesFile.newDataInputStream())
+
+            keyAlias = keystoreProperties["keyAlias"]
+            keyPassword = keystoreProperties["keyPassword"]
+            storeFile = file(keystoreProperties["storeFile"])
+            storePassword = keystoreProperties["storePassword"]
+        }
+    }
+    defaultConfig {
+        applicationId Config.applicationId
+        versionCode Config.versionCode
+        versionName Config.versionName
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+    buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".debug"
+        }
+        release {
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(":domain")
+    implementation project(":data")
+    implementation project(":presentation")
+
+    implementation Deps.kotlin
+
+    implementation Deps.constraintLayout
+    implementation Deps.appCompat
+    implementation Deps.activityKtx
+    implementation Deps.annotation
+    implementation Deps.cardview
+    implementation Deps.vectordrawable
+    implementation Deps.recyclerView
+    implementation Deps.preferenceKtx
+    implementation Deps.material
+
+    implementation Deps.coreKtx
+
+    implementation Deps.lifecycleViewmodel
+    implementation Deps.lifecycleLivedata
+    implementation Deps.lifecycleCommon
+
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
+
+    implementation Deps.daggerHilt
+    //Compile time dependencies
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
+}
+
+kapt {
+    javacOptions {
+        //https://github.com/google/dagger/issues/970
+        option("-Adagger.validateTransitiveComponentDependencies=DISABLED")
+    }
+}
+

@@ -16,8 +16,8 @@
 #   public *;
 #}
 
--addconfigurationdebugging
--dontobfuscate
+#-addconfigurationdebugging
+#-dontobfuscate
 
--keep public class kotlin.reflect.* {
-}
+#-keep public class kotlin.reflect.* {
+#}

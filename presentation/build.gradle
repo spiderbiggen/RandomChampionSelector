@@ -1,0 +1,49 @@
+apply plugin: "com.android.library"
+apply plugin: "dagger.hilt.android.plugin"
+apply from: "../config-android.gradle"
+
+
+android {
+    buildTypes {
+        debug {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(":domain")
+
+    implementation Deps.kotlin
+
+    implementation Deps.constraintLayout
+    implementation Deps.appCompat
+    implementation Deps.activityKtx
+    implementation Deps.annotation
+    implementation Deps.cardview
+    implementation Deps.vectordrawable
+    implementation Deps.recyclerView
+    implementation Deps.preferenceKtx
+    implementation Deps.material
+
+    implementation Deps.coreKtx
+
+    implementation Deps.lifecycleViewmodel
+    implementation Deps.lifecycleLivedata
+    implementation Deps.lifecycleCommon
+
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
+
+    implementation Deps.daggerHilt
+    //Compile time dependencies
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
+}
