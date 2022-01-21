@@ -15,6 +15,9 @@ class ChampionDataRepository @Inject constructor(
     override val champions: Flow<List<Champion>> =
         championDAO.getAll().map { it.map(championMapper::fromDatabase) }
 
+    override suspend fun currentChampions(): List<Champion> =
+        championDAO.getCurrent().map(championMapper::fromDatabase)
+
     override suspend fun randomChampion(): Champion? =
         championDAO.getRandom()?.let(championMapper::fromDatabase)
 

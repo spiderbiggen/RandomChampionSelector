@@ -45,30 +45,14 @@ android {
 }
 
 dependencies {
+    implementation project(":presentation")
     implementation project(":domain")
     implementation project(":data")
-    implementation project(":presentation")
 
     implementation Deps.kotlin
 
-    implementation Deps.constraintLayout
     implementation Deps.appCompat
-    implementation Deps.activityKtx
-    implementation Deps.annotation
-    implementation Deps.cardview
-    implementation Deps.vectordrawable
-    implementation Deps.recyclerView
     implementation Deps.preferenceKtx
-    implementation Deps.material
-
-    implementation Deps.coreKtx
-
-    implementation Deps.lifecycleViewmodel
-    implementation Deps.lifecycleLivedata
-    implementation Deps.lifecycleCommon
-
-    implementation Deps.coroutinesCore
-    implementation Deps.coroutinesAndroid
 
     implementation Deps.daggerHilt
     //Compile time dependencies

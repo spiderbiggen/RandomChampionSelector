@@ -25,7 +25,7 @@ import javax.inject.Singleton
 class StorageModule {
     @Provides
     fun provideFileStorage(@ApplicationContext context: Context): FileRepository =
-        FileDataRepository(context.applicationContext.filesDir)
+        FileDataRepository(context.filesDir)
 
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =

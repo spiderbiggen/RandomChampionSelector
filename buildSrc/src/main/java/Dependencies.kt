@@ -24,11 +24,11 @@ object Deps {
     const val appCompat = "androidx.appcompat:appcompat:1.4.0"
     const val activityKtx = "androidx.activity:activity-ktx:1.4.0"
     const val annotation = "androidx.annotation:annotation:1.3.0"
-    const val cardview = "androidx.cardview:cardview:1.0.0"
-    const val vectordrawable = "androidx.vectordrawable:vectordrawable:1.1.0"
+    const val cardView = "androidx.cardview:cardview:1.0.0"
+    const val vectorDrawable = "androidx.vectordrawable:vectordrawable:1.1.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:1.2.1"
     const val preferenceKtx = "androidx.preference:preference-ktx:1.1.1"
-    const val material = "com.google.android.material:material:1.4.0"
+    const val material = "com.google.android.material:material:1.5.0"
     const val coreKtx = "androidx.core:core-ktx:1.7.0"
 
     const val lifecycleViewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"
@@ -52,4 +52,6 @@ object Deps {
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
     const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
+
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.8.1"
 }

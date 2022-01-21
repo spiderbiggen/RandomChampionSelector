@@ -39,10 +39,7 @@ class ChampionViewModel @Inject constructor(
     }
 
     private suspend fun getBitmap(champion: Champion?): Bitmap? {
-        if (champion == null) return null
-        val bitmap: Deferred<Bitmap?> = viewModelScope.async(Dispatchers.IO) {
-            bitmapCache.loadBitmap(champion).getOrNull()
-        }
-        return bitmap.await()
+        return if (champion == null) null
+        else bitmapCache.loadBitmap(champion).getOrNull()
     }
 }

@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface ChampionRepository {
     val champions: Flow<List<Champion>>
 
+    suspend fun currentChampions(): List<Champion>
+
     suspend fun randomChampion(): Champion?
 
     suspend fun addChampions(champions: Collection<Champion>)

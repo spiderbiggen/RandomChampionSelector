@@ -24,6 +24,14 @@ interface ChampionDAO {
     fun getAll(): Flow<List<ChampionEntity>>
 
     /**
+     * Retrieve all champions.
+     *
+     * @return a snapshot of the champions
+     */
+    @Query("SELECT * FROM champion ORDER BY name")
+    suspend fun getCurrent(): List<ChampionEntity>
+
+    /**
      * Retrieve a random champion.
      *
      * @return a champion

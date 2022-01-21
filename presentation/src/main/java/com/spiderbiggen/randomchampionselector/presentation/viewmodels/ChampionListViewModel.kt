@@ -32,7 +32,6 @@ class ChampionListViewModel @Inject constructor(
             repository.randomChampion()?.let {
                 _champion.postValue(it)
             }
-
         }
     }
 

@@ -1,5 +1,6 @@
 package com.spiderbiggen.randomchampionselector.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,8 +26,11 @@ class LoaderViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     @FlowPreview
     fun loadData(forceRefresh: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        updateChampions.get().update(forceRefresh)
-            .debounce(10L)
-            .collect(mutableState::postValue)
+        try {
+            updateChampions.get().update(forceRefresh)
+                .collect { mutableState.postValue(it) }
+        } catch (t: Throwable) {
+            Log.e("LoaderViewModel", t.message, t)
+        }
     }
 }

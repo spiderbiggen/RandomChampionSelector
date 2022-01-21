@@ -8,7 +8,9 @@ import com.spiderbiggen.randomchampionselector.domain.champions.repository.Champ
 import com.spiderbiggen.randomchampionselector.domain.champions.usecase.UpdateChampions
 import com.spiderbiggen.randomchampionselector.domain.storage.repositories.PreferenceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
 import java.util.*
 import javax.inject.Inject
 
@@ -27,14 +29,14 @@ class UpdateDataChampions @Inject constructor(
             var lastVersion = preferenceRepository.version.orEmpty()
 
             if (!force && !preferenceRepository.isOutdated) {
-               champions = championRepository.champions.single()
+                champions = championRepository.currentChampions()
             }
             if (champions.isEmpty()) {
                 send(DownloadProgress.CheckingVersion)
                 val version = dDragon.getLastVersion()
 
                 if (!force && version == preferenceRepository.version) {
-                    champions = championRepository.champions.single()
+                    champions = championRepository.currentChampions()
                 }
                 lastVersion = version
             }

@@ -1,6 +1,7 @@
 package com.spiderbiggen.randomchampionselector.data.storage.repositories
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 import com.spiderbiggen.randomchampionselector.domain.storage.models.CompressionFormat
 import com.spiderbiggen.randomchampionselector.domain.storage.preferences.Preference
@@ -61,11 +62,21 @@ class PreferenceDataRepository @Inject constructor(
     private fun getString(pref: String, default: String): String =
         preferences.getString(pref, default) ?: default
 
-    private fun getInt(pref: String, default: Int): Int =
+    private fun getInt(pref: String, default: Int): Int = try {
         preferences.getInt(pref, default)
+    } catch (e: ClassCastException) {
+        Log.e("PreferenceDataRepository", e.message, e)
+        setInt(pref, default)
+        default
+    }
 
-    private fun getLong(pref: String, default: Long): Long =
+    private fun getLong(pref: String, default: Long): Long = try {
         preferences.getLong(pref, default)
+    } catch (e: ClassCastException) {
+        Log.e("PreferenceDataRepository", e.message, e)
+        setLong(pref, default)
+        default
+    }
 
     companion object {
         private const val MILLIS_IN_MINUTE = 60_000

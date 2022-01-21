@@ -9,9 +9,9 @@ import androidx.preference.Preference.OnPreferenceChangeListener
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.preference.SeekBarPreference
+import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
 import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.activities.SettingsActivity
-import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(),
-        SharedPreferences.OnSharedPreferenceChangeListener {
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     internal lateinit var fileRepository: FileRepository
@@ -35,13 +35,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         setPreferencesFromResource(R.xml.preference, s)
 
-        val barPreference =
-            findPreference(getString(R.string.pref_image_quality_key)) as? SeekBarPreference
+        val barPreference = findPreference(getString(R.string.pref_image_quality_key)) as? SeekBarPreference
         bindIntSummary(barPreference, barPreference?.value ?: 0)
 
         bindStringSummary(findPreference(getString(R.string.pref_language_key)))
         bindStringSummary(findPreference(getString(R.string.pref_image_type_key)))
-        bindStringSummary(findPreference(getString(R.string.pref_sync_frequency_key)))
+        bindIntSummary(findPreference(getString(R.string.pref_sync_frequency_key)))
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -116,7 +115,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
         private val preferenceListener: OnPreferenceChangeListener
             get() = OnPreferenceChangeListener { preference, value ->
                 val stringValue = value.toString()
-                preference.summary
                 when (preference) {
                     is ListPreference -> {
                         val index = preference.findIndexOfValue(stringValue)

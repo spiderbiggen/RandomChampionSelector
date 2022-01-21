@@ -15,13 +15,13 @@
     <string name="pref_title_sync_frequency">Sync-Frequenz</string>
     <string name="pref_language_default">de_DE</string>
     <string name="pref_title_system_sync_settings">System-Synchronisierungseinstellungen</string>
-    <string name="progress_error">" Ein unerwarteter Fehler ist aufgetreten!"</string>
-    <string name="progress_idle">" Nach Updates suchen"</string>
-    <string name="progress_downloads">Herunterladen %d/%d</string>
-    <string name="progress_verified">Verfizieren %d/%d</string>
-    <string name="action_refresh_images">" Bilder neu laden"</string>
+    <string name="progress_error">Ein unerwarteter Fehler ist aufgetreten!</string>
+    <string name="progress_idle">Nach Updates suchen</string>
+    <string name="progress_downloads">Herunterladen %1$.2f%%</string>
+    <string name="progress_verified">Verfizieren %1$.2f%%</string>
+    <string name="action_refresh_images">Bilder neu laden</string>
     <string name="checking_version">Nach neuer Version suchen</string>
-    <string name="parsing_data">" Analysieren von Daten"</string>
+    <string name="parsing_data">Analysieren von Daten</string>
     <string name="champion_splash_content_description">Champion Splash Art</string>
     <string name="random_fab_content_description">Wähle einen zufälligen Champion</string>
 </resources>
