@@ -25,12 +25,14 @@
             android:key="@string/pref_image_quality_key"
             android:title="@string/pref_title_image_quality"
             app:adjustable="true"
+            android:inputType="number"
             app:max="100"
             app:min="40" />
         <ListPreference
             android:defaultValue="@string/pref_sync_frequency_default"
             android:entries="@array/pref_sync_frequency_titles"
             android:entryValues="@array/pref_sync_frequency_values"
+            android:inputType="numberSigned"
             android:key="@string/pref_sync_frequency_key"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"

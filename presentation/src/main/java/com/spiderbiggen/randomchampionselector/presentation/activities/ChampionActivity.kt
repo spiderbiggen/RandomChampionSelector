@@ -11,11 +11,9 @@ import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.databinding.ActivityChampionBinding
 import com.spiderbiggen.randomchampionselector.presentation.viewmodels.ChampionViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 @FlowPreview
-@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class ChampionActivity : AbstractActivity() {
 
@@ -45,8 +43,8 @@ class ChampionActivity : AbstractActivity() {
             toolbar.setDisplayHomeAsUpEnabled(true)
         }
 
-        viewModel.champion.observe(this, { setChampion(it) })
-        viewModel.bitmap.observe(this, { setBitmap(it) })
+        viewModel.champion.observe(this, ::setChampion)
+        viewModel.bitmap.observe(this, ::setBitmap)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -82,6 +80,7 @@ class ChampionActivity : AbstractActivity() {
             else -> super.onOptionsItemSelected(item)
         }
 
+    @Deprecated("Migrate to OnBackPressedDispatcher")
     override fun onBackPressed() {
         if (upOnBack) {
             val upIntent = parentActivityIntent ?: Intent(this, ListChampionsActivity::class.java)

@@ -4,6 +4,7 @@ apply from: "../config-android.gradle"
 
 
 android {
+    namespace "com.spiderbiggen.randomchampionselector.presentation"
     buildTypes {
         debug {
             consumerProguardFiles 'proguard-rules.pro'
@@ -21,30 +22,30 @@ android {
 dependencies {
     implementation project(":domain")
 
-    implementation Deps.kotlin
+    implementation Dependencies.kotlin
 
-    implementation Deps.constraintLayout
-    implementation Deps.appCompat
-    implementation Deps.activityKtx
-    implementation Deps.annotation
-    implementation Deps.cardView
-    implementation Deps.vectorDrawable
-    implementation Deps.recyclerView
-    implementation Deps.preferenceKtx
-    implementation Deps.material
+    implementation Dependencies.constraintLayout
+    implementation Dependencies.appCompat
+    implementation Dependencies.activityKtx
+    implementation Dependencies.annotation
+    implementation Dependencies.cardView
+    implementation Dependencies.vectorDrawable
+    implementation Dependencies.recyclerView
+    implementation Dependencies.preferenceKtx
+    implementation Dependencies.material
 
-    implementation Deps.coreKtx
+    implementation Dependencies.coreKtx
 
-    implementation Deps.lifecycleViewmodel
-    implementation Deps.lifecycleLivedata
-    implementation Deps.lifecycleCommon
+    implementation Dependencies.lifecycleViewmodel
+    implementation Dependencies.lifecycleLivedata
+    implementation Dependencies.lifecycleCommon
 
-    implementation Deps.coroutinesCore
-    implementation Deps.coroutinesAndroid
-    debugImplementation Deps.leakCanary
+    implementation Dependencies.coroutinesCore
+    implementation Dependencies.coroutinesAndroid
+    debugImplementation Dependencies.leakCanary
 
-    implementation Deps.daggerHilt
+    implementation Dependencies.daggerHilt
     //Compile time dependencies
-    kapt Deps.daggerHiltCompiler
-    kapt Deps.daggerHiltJetpackCompiler
+    kapt Dependencies.daggerHiltCompiler
+    kapt Dependencies.daggerHiltJetpackCompiler
 }

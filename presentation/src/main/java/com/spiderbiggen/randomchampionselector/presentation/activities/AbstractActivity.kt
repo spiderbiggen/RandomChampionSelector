@@ -3,21 +3,18 @@ package com.spiderbiggen.randomchampionselector.presentation.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.viewmodels.BaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 /**
  * Created on 2019-01-29.
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
 @FlowPreview
 @AndroidEntryPoint
 abstract class AbstractActivity : AppCompatActivity {

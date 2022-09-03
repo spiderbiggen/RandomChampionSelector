@@ -14,12 +14,10 @@ import com.spiderbiggen.randomchampionselector.presentation.databinding.Activity
 import com.spiderbiggen.randomchampionselector.presentation.databinding.ItemChampionBinding
 import com.spiderbiggen.randomchampionselector.presentation.viewmodels.ChampionListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
 @FlowPreview
-@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class ListChampionsActivity : AbstractActivity() {
     private lateinit var binding: ActivityListChampionsBinding
@@ -41,11 +39,11 @@ class ListChampionsActivity : AbstractActivity() {
 
         binding.championList.adapter = adapter
         binding.fab.setOnClickListener { openChampionActivity() }
-        viewModel.champions.observe(this, {
+        viewModel.champions.observe(this) {
             viewModel.selectRandomChampion()
             adapter.setChampions(it)
-        })
-        viewModel.bitmap.observe(this, { binding.splash.setImageBitmap(it) })
+        }
+        viewModel.bitmap.observe(this) { binding.splash.setImageBitmap(it) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,17 +55,14 @@ class ListChampionsActivity : AbstractActivity() {
     private fun onClick(v: View) {
         val position = binding.championList.getChildAdapterPosition(v)
         val itemBinding = ItemChampionBinding.bind(v)
-        val img = itemBinding.championSplash
-        val name = itemBinding.championName
-        val title = itemBinding.championTitle
         val champion = adapter.getChampion(position)
         val intent = Intent(this, ChampionActivity::class.java)
         intent.putExtra(ChampionActivity.CHAMPION_KEY, champion?.key)
         val options = ActivityOptions.makeSceneTransitionAnimation(
             this,
-            Pair(img, getString(R.string.champion_splash_transition_key)),
-            Pair(name, getString(R.string.champion_name_transition_key)),
-            Pair(title, getString(R.string.champion_title_transition_key))
+            Pair(itemBinding.championSplash, getString(R.string.champion_splash_transition_key)),
+            Pair(itemBinding.championName, getString(R.string.champion_name_transition_key)),
+            Pair( itemBinding.championTitle, getString(R.string.champion_title_transition_key))
         )
         intent.putExtra(ChampionActivity.UP_ON_BACK_KEY, false)
         startActivityWithFade(intent, options.toBundle())

@@ -3,6 +3,7 @@ apply plugin: "dagger.hilt.android.plugin"
 apply from: "../config-android.gradle"
 
 android {
+    namespace "com.spiderbiggen.randomchampionselector"
     signingConfigs {
         release {
             Properties keystoreProperties = new Properties()
@@ -49,15 +50,15 @@ dependencies {
     implementation project(":domain")
     implementation project(":data")
 
-    implementation Deps.kotlin
+    implementation Dependencies.kotlin
 
-    implementation Deps.appCompat
-    implementation Deps.preferenceKtx
+    implementation Dependencies.appCompat
+    implementation Dependencies.preferenceKtx
 
-    implementation Deps.daggerHilt
+    implementation Dependencies.daggerHilt
     //Compile time dependencies
-    kapt Deps.daggerHiltCompiler
-    kapt Deps.daggerHiltJetpackCompiler
+    kapt Dependencies.daggerHiltCompiler
+    kapt Dependencies.daggerHiltJetpackCompiler
 }
 
 kapt {

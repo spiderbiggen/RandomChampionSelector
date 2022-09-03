@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.core.view.postDelayed
-import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.domain.champions.models.DownloadProgress
+import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.databinding.ActivityLoaderBinding
 import com.spiderbiggen.randomchampionselector.presentation.extensions.getColorIntFromAttr
 import com.spiderbiggen.randomchampionselector.presentation.viewmodels.LoaderViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 /**
@@ -20,7 +20,6 @@ import kotlinx.coroutines.FlowPreview
  *
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
 @FlowPreview
 @AndroidEntryPoint
 class LoaderActivity : AbstractActivity() {
@@ -29,9 +28,9 @@ class LoaderActivity : AbstractActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityLoaderBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        viewModel.state.observe(this, { onState(binding, it) })
         val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
+        setContentView(binding.root)
+        viewModel.state.observe(this) { onState(binding, it) }
         viewModel.loadData(forceRefresh)
     }
 
@@ -42,16 +41,23 @@ class LoaderActivity : AbstractActivity() {
         @StringRes
         var text = -1
         when (state) {
-            DownloadProgress.Idle -> text = R.string.progress_idle
+            DownloadProgress.Idle -> {
+                isVisible = false
+                return@with
+            }
             DownloadProgress.NoInternet -> openListActivity()
             is DownloadProgress.Error -> {
-                binding.root.postDelayed(1000L) {
+                isVisible = true
+                binding.root.postDelayed(2500L) {
                     openListActivity()
                 }
                 Log.e("LoaderActivity", state.t.message, state.t)
                 text = R.string.progress_error
             }
-            DownloadProgress.CheckingVersion -> R.string.checking_version
+            DownloadProgress.CheckingVersion -> {
+                isVisible = true
+                R.string.checking_version
+            }
             DownloadProgress.UpdateChampions -> text = R.string.parsing_data
             is DownloadProgress.Unvalidated -> Unit
             is DownloadProgress.Validating -> {
@@ -60,12 +66,16 @@ class LoaderActivity : AbstractActivity() {
                 progressMax = state.total
             }
             is DownloadProgress.Downloaded -> {
+                isVisible = true
                 text = R.string.progress_downloads
                 count = state.completed
                 progressMax = state.total
             }
             DownloadProgress.DownloadedSuccess -> Unit
-            is DownloadProgress.Success -> openListActivity()
+            is DownloadProgress.Success -> {
+                openListActivity()
+                return@with
+            }
         }
 
         if (state is DownloadProgress.Error) {
@@ -78,7 +88,7 @@ class LoaderActivity : AbstractActivity() {
         isIndeterminate = state.indeterminate
         progress = count
         max = progressMax
-        if (text != -1) {
+        if (text != -1 && isVisible) {
             val percent = if (progressMax == 0) 0f else (count.toFloat() / progressMax) * 100
             binding.progressText.text = getString(text, percent)
         }

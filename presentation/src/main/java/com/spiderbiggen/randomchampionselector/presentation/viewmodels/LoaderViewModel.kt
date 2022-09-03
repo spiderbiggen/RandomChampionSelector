@@ -9,10 +9,7 @@ import com.spiderbiggen.randomchampionselector.domain.champions.models.DownloadP
 import com.spiderbiggen.randomchampionselector.domain.champions.usecase.UpdateChampions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +20,6 @@ class LoaderViewModel @Inject constructor(
     private val mutableState = MutableLiveData<DownloadProgress>(DownloadProgress.Idle)
     val state: LiveData<DownloadProgress> = mutableState
 
-    @ExperimentalCoroutinesApi
     @FlowPreview
     fun loadData(forceRefresh: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         try {

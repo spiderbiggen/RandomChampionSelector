@@ -1,6 +1,5 @@
 package com.spiderbiggen.randomchampionselector.data.ddragon
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
@@ -11,8 +10,6 @@ import com.spiderbiggen.randomchampionselector.domain.coroutines.mapAsync
 import com.spiderbiggen.randomchampionselector.domain.coroutines.weakLazy
 import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
 import com.spiderbiggen.randomchampionselector.domain.storage.repositories.PreferenceRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.io.File
 import java.io.FileOutputStream
@@ -27,7 +24,6 @@ import javax.inject.Inject
  * @author Stefan Breetveld
  */
 class DDragon @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val service: dagger.Lazy<DDragonService>,
     private val fileRepository: dagger.Lazy<FileRepository>,
     private val preferenceManager: dagger.Lazy<PreferenceRepository>,
@@ -76,7 +72,6 @@ class DDragon @Inject constructor(
      *
      * @param descriptors the descriptors for which we need to download the [Bitmap]
      */
-    @ExperimentalCoroutinesApi
     suspend fun downloadAllImages(descriptors: Collection<Champion>): Flow<DownloadProgress> = channelFlow {
         if (descriptors.isEmpty()) {
             return@channelFlow send(DownloadProgress.DownloadedSuccess)

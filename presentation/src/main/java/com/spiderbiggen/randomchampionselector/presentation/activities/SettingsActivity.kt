@@ -12,14 +12,12 @@ import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.databinding.ActivitySettingsBinding
 import com.spiderbiggen.randomchampionselector.presentation.settings.SettingsFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 /**
  * Created on 4-7-2018.
  * @author Stefan Breetveld
  */
-@ExperimentalCoroutinesApi
 @FlowPreview
 @AndroidEntryPoint
 class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
@@ -66,18 +64,19 @@ class SettingsActivity : AbstractActivity(), OnPreferenceStartScreenCallback {
         return true
     }
 
-    override fun onPreferenceStartScreen(caller: PreferenceFragmentCompat?, pref: PreferenceScreen?): Boolean {
+    override fun onPreferenceStartScreen(caller: PreferenceFragmentCompat, pref: PreferenceScreen): Boolean {
         val transaction = supportFragmentManager.beginTransaction()
         val fragment = SettingsFragment()
         val args = Bundle()
-        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref?.key)
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref.key)
         fragment.arguments = args
-        transaction.replace(R.id.fragment_container, fragment, pref?.key)
-        transaction.addToBackStack(pref?.key)
+        transaction.replace(R.id.fragment_container, fragment, pref.key)
+        transaction.addToBackStack(pref.key)
         transaction.commit()
         return true
     }
 
+    @Deprecated("Migrate to OnBackPressedDispatcher")
     override fun onBackPressed() {
         if (!startActivityOnRefresh())
             super.onBackPressed()

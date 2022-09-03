@@ -10,13 +10,14 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.preference.SeekBarPreference
 import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
+import com.spiderbiggen.randomchampionselector.domain.storage.repositories.PreferenceRepository
 import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.activities.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import java.io.IOException
 import javax.inject.Inject
+import com.spiderbiggen.randomchampionselector.domain.storage.preferences.Preference as AppPreference
 
 /**
  * Shows the settings menu.
@@ -24,7 +25,6 @@ import javax.inject.Inject
  * @author Stefan Breetveld
  */
 @FlowPreview
-@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -32,15 +32,17 @@ class SettingsFragment : PreferenceFragmentCompat(),
     @Inject
     internal lateinit var fileRepository: FileRepository
 
+    @Inject
+    internal lateinit var preferenceRepository: PreferenceRepository
+
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
         setPreferencesFromResource(R.xml.preference, s)
 
-        val barPreference = findPreference(getString(R.string.pref_image_quality_key)) as? SeekBarPreference
-        bindIntSummary(barPreference, barPreference?.value ?: 0)
-
-        bindStringSummary(findPreference(getString(R.string.pref_language_key)))
-        bindStringSummary(findPreference(getString(R.string.pref_image_type_key)))
-        bindIntSummary(findPreference(getString(R.string.pref_sync_frequency_key)))
+        val barPreference = findPreference(AppPreference.ImageQuality.key) as? SeekBarPreference
+        bindIntSummary(barPreference, barPreference?.value ?: AppPreference.ImageQuality.default)
+        bindStringSummary(findPreference(AppPreference.Language.key), AppPreference.Language.default)
+        bindStringSummary(findPreference(AppPreference.ImageType.key), AppPreference.ImageType.default)
+        bindLongSummary(findPreference(AppPreference.SyncFrequency.key), AppPreference.SyncFrequency.default)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -63,13 +65,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     override fun onResume() {
         super.onResume()
-        getDefaultSharedPreferences(context)
+        getDefaultSharedPreferences(requireContext())
             .registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onPause() {
         super.onPause()
-        getDefaultSharedPreferences(context)
+        getDefaultSharedPreferences(requireContext())
             .unregisterOnSharedPreferenceChangeListener(this)
     }
 
@@ -77,14 +79,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
         private val TAG = this::class.java.simpleName
         const val FRAGMENT_TAG = "SETTINGS_FRAGMENT"
-
-        /**
-         * Binds a preference's summary to its value. When the preference's value is changed, its summary
-         * is updated to reflect the value. The summary is also immediately updated upon calling this method.
-         * The exact display format is dependent on the type of preference.
-         *
-         * @see Preference.OnPreferenceChangeListener
-         */
+        
         private fun bindStringSummary(preference: Preference?, defaultValue: String? = null) {
             if (preference == null) {
                 return
@@ -94,22 +89,24 @@ class SettingsFragment : PreferenceFragmentCompat(),
             preferenceListener.onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getString(preference.key, defaultValue))
         }
 
-        /**
-         * Binds a preference's summary to its value. when the preference's value is changed, its summary
-         * is updated to reflect the value. The summary is also immediately updated upon calling this method.
-         * The exact display format is dependent on the type of preference.
-         *
-         * @param preference   The preference that needs to be bound
-         * @param defaultValue The defaultValue of the preference
-         * @see Preference.OnPreferenceChangeListener
-         */
         private fun bindIntSummary(preference: Preference?, defaultValue: Int = 0) {
             if (preference == null) {
                 return
             }
             // Set the listener to watch for value changes.
-            preference.onPreferenceChangeListener = preferenceListener
-            preferenceListener.onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getInt(preference.key, defaultValue))
+            preference.onPreferenceChangeListener = preferenceListener.apply {
+                onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getInt(preference.key, defaultValue))
+            }
+        }
+
+        private fun bindLongSummary(preference: Preference?, defaultValue: Long = 0L) {
+            if (preference == null) {
+                return
+            }
+            // Set the listener to watch for value changes.
+            preference.onPreferenceChangeListener = preferenceListener.apply {
+                onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getLong(preference.key, defaultValue))
+            }
         }
 
         private val preferenceListener: OnPreferenceChangeListener
