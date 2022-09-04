@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.spiderbiggen.randomchampionselector.presentation.ui.splash.SplashFragment"
+        android:label="LoaderFragment"
+        tools:layout="@layout/fragment_splash">
+        <argument
+            android:name="forceRefresh"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_to_champion_overview"
+            app:destination="@id/championsOverviewFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="clearImages"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/championsOverviewFragment"
+        android:name="com.spiderbiggen.randomchampionselector.presentation.ui.champion.overview.ChampionsOverviewFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_champions_overview">
+        <action
+            android:id="@+id/action_to_champion_details"
+            app:destination="@id/championDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.spiderbiggen.randomchampionselector.presentation.ui.settings.SettingsFragment"
+        android:label="@string/title_activity_settings" />
+    <fragment
+        android:id="@+id/championDetailsFragment"
+        android:name="com.spiderbiggen.randomchampionselector.presentation.ui.champion.details.ChampionDetailsFragment"
+        tools:layout="@layout/fragment_champion_details">
+        <action
+            android:id="@+id/action_to_self"
+            app:destination="@id/championDetailsFragment" />
+        <argument
+            android:name="championKey"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment" />
+    <action
+        android:id="@+id/action_global_splashFragment"
+        app:destination="@id/splashFragment"
+        app:popUpTo="@id/nav_graph" />
+</navigation>

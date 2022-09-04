@@ -1,0 +1,43 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:icon="@drawable/ic_info_black_24dp"
+        android:title="@string/pref_header_general">
+        <ListPreference
+            android:defaultValue="@string/pref_language_default"
+            android:dialogTitle="@string/pref_title_language"
+            android:entries="@array/pref_language_titles"
+            android:entryValues="@array/pref_language_values"
+            android:key="@string/pref_language_key"
+            android:title="@string/pref_title_language" />
+
+        <ListPreference
+            android:defaultValue="WEBP"
+            android:dialogTitle="@string/pref_title_image_type"
+            android:entries="@array/pref_image_type_titles"
+            android:entryValues="@array/pref_image_type_values"
+            android:key="@string/pref_image_type_key"
+            android:title="@string/pref_title_image_type" />
+
+        <SeekBarPreference
+            android:defaultValue="@integer/pref_image_quality_default"
+            android:key="@string/pref_image_quality_key"
+            android:title="@string/pref_title_image_quality"
+            app:adjustable="true"
+            android:inputType="number"
+            app:max="100"
+            app:min="40" />
+        <ListPreference
+            android:defaultValue="@string/pref_sync_frequency_default"
+            android:entries="@array/pref_sync_frequency_titles"
+            android:entryValues="@array/pref_sync_frequency_values"
+            android:inputType="numberSigned"
+            android:key="@string/pref_sync_frequency_key"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_sync_frequency" />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
