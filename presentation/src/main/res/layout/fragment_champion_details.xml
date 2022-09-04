@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.ChampionActivity">
+    tools:context=".ui.champion.details.ChampionDetailsFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -24,7 +24,7 @@
             app:statusBarScrim="@android:color/transparent"
             app:toolbarId="@+id/toolbar">
 
-            <com.spiderbiggen.randomchampionselector.presentation.TopCenteredImageView
+            <com.spiderbiggen.randomchampionselector.presentation.design.TopCenteredImageView
                 android:id="@+id/champion_splash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

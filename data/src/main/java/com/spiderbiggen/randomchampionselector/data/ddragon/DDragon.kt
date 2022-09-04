@@ -3,14 +3,18 @@ package com.spiderbiggen.randomchampionselector.data.ddragon
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
+import android.os.Build
 import com.spiderbiggen.randomchampionselector.data.ddragon.models.ApiChampion
 import com.spiderbiggen.randomchampionselector.domain.champions.models.Champion
 import com.spiderbiggen.randomchampionselector.domain.champions.models.DownloadProgress
 import com.spiderbiggen.randomchampionselector.domain.coroutines.mapAsync
 import com.spiderbiggen.randomchampionselector.domain.coroutines.weakLazy
 import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
+import com.spiderbiggen.randomchampionselector.domain.storage.models.CompressionFormat
 import com.spiderbiggen.randomchampionselector.domain.storage.repositories.PreferenceRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -79,7 +83,12 @@ class DDragon @Inject constructor(
         val downloadCount = AtomicInteger()
         val total = descriptors.size
         val quality = preferenceManager.get().quality
-        val compressFormat = CompressFormat.valueOf(preferenceManager.get().compressFormat.name)
+        val compressFormat = when (preferenceManager.get().compressFormat) {
+            CompressionFormat.JPEG -> CompressFormat.JPEG
+            CompressionFormat.PNG -> CompressFormat.PNG
+            CompressionFormat.WEBP_LOSSY -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) CompressFormat.WEBP_LOSSY else CompressFormat.WEBP
+            CompressionFormat.WEBP_LOSSLESS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) CompressFormat.WEBP_LOSSLESS else CompressFormat.WEBP
+        }
         descriptors.mapAsync {
             val bitmap = service.get().getSplashImage(it.id, 0)
             saveBitmap(fileRepository.get().getBitmapFile(it), bitmap, compressFormat, quality)

@@ -1,8 +1,9 @@
-package com.spiderbiggen.randomchampionselector.presentation
+package com.spiderbiggen.randomchampionselector.presentation.design
 
 import android.content.Context
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 
@@ -17,9 +18,7 @@ class TopCenteredImageView : AppCompatImageView {
     private var viewHeight: Int = 0
 
     constructor(context: Context) : super(context)
-
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
 
@@ -58,8 +57,7 @@ class TopCenteredImageView : AppCompatImageView {
         val height = drawable.intrinsicHeight.toFloat()
         val xScale = this.viewWidth / width
         val yScale = this.viewHeight / height
-        val scale: Float
-        scale = if (xScale > yScale) {
+        val scale: Float = if (xScale > yScale) {
             xScale
         } else {
             val dX = -0.5f * (yScale - xScale) * width
@@ -68,6 +66,11 @@ class TopCenteredImageView : AppCompatImageView {
         }
         matrix.postScale(scale, scale)
         imageMatrix = matrix
+    }
+
+    override fun setImageURI(uri: Uri?) {
+        super.setImageURI(uri)
+        calculateAndSetImageMatrix()
     }
 
     override fun setImageDrawable(drawable: Drawable?) {

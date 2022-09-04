@@ -1,4 +1,4 @@
-package com.spiderbiggen.randomchampionselector.presentation.settings
+package com.spiderbiggen.randomchampionselector.presentation.ui.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -12,7 +12,6 @@ import androidx.preference.SeekBarPreference
 import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
 import com.spiderbiggen.randomchampionselector.domain.storage.repositories.PreferenceRepository
 import com.spiderbiggen.randomchampionselector.presentation.R
-import com.spiderbiggen.randomchampionselector.presentation.activities.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import java.io.IOException
@@ -42,7 +41,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
         bindIntSummary(barPreference, barPreference?.value ?: AppPreference.ImageQuality.default)
         bindStringSummary(findPreference(AppPreference.Language.key), AppPreference.Language.default)
         bindStringSummary(findPreference(AppPreference.ImageType.key), AppPreference.ImageType.default)
-        bindLongSummary(findPreference(AppPreference.SyncFrequency.key), AppPreference.SyncFrequency.default)
+        bindStringSummary(findPreference(AppPreference.SyncFrequency.key), AppPreference.SyncFrequency.default.toString())
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -60,7 +59,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun setRefresh() {
-        (activity as? SettingsActivity)?.shouldRefresh()
+        // TODO
     }
 
     override fun onResume() {
@@ -79,14 +78,21 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
         private val TAG = this::class.java.simpleName
         const val FRAGMENT_TAG = "SETTINGS_FRAGMENT"
-        
+
         private fun bindStringSummary(preference: Preference?, defaultValue: String? = null) {
             if (preference == null) {
                 return
             }
             // Set the listener to watch for value changes.
-            preference.onPreferenceChangeListener = preferenceListener
-            preferenceListener.onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getString(preference.key, defaultValue))
+            preference.onPreferenceChangeListener = preferenceListener.apply {
+                val string = try {
+                    getDefaultSharedPreferences(preference.context).getString(preference.key, defaultValue)
+                } catch (e: ClassCastException) {
+                    Log.e(TAG, e.message, e)
+                    defaultValue
+                }
+                preferenceListener.onPreferenceChange(preference, string)
+            }
         }
 
         private fun bindIntSummary(preference: Preference?, defaultValue: Int = 0) {
@@ -95,7 +101,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
             }
             // Set the listener to watch for value changes.
             preference.onPreferenceChangeListener = preferenceListener.apply {
-                onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getInt(preference.key, defaultValue))
+                val int = try {
+                    getDefaultSharedPreferences(preference.context).getInt(preference.key, defaultValue)
+                } catch (e: ClassCastException) {
+                    Log.e(TAG, e.message, e)
+                    defaultValue
+                }
+                onPreferenceChange(preference, int)
             }
         }
 
@@ -105,7 +117,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
             }
             // Set the listener to watch for value changes.
             preference.onPreferenceChangeListener = preferenceListener.apply {
-                onPreferenceChange(preference, getDefaultSharedPreferences(preference.context).getLong(preference.key, defaultValue))
+                val long = try {
+                    getDefaultSharedPreferences(preference.context).getLong(preference.key, defaultValue)
+                } catch (e: ClassCastException) {
+                    Log.e(TAG, e.message, e)
+                    defaultValue
+                }
+                onPreferenceChange(preference, long)
             }
         }
 

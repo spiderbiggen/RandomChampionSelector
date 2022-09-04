@@ -3,13 +3,17 @@ object Dependencies {
 
     const val appCompat = "androidx.appcompat:appcompat:1.5.0"
     const val activityKtx = "androidx.activity:activity-ktx:1.5.1"
-    const val annotation = "androidx.annotation:annotation:1.4.0"
+    const val annotationX = "androidx.annotation:annotation:1.4.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.1.4"
     const val cardView = "androidx.cardview:cardview:1.0.0"
     const val vectorDrawable = "androidx.vectordrawable:vectordrawable:1.1.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:1.2.1"
     const val preferenceKtx = "androidx.preference:preference-ktx:1.2.0"
     const val material = "com.google.android.material:material:1.6.1"
+    const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
+    const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
+
+
     const val coreKtx = "androidx.core:core-ktx:1.8.0"
 
     const val lifecycleViewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"

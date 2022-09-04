@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.ListChampionsActivity">
+    tools:context=".ui.champion.overview.ChampionsOverviewFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -27,7 +27,7 @@
             app:statusBarScrim="@android:color/transparent"
             app:toolbarId="@+id/toolbar">
 
-            <com.spiderbiggen.randomchampionselector.presentation.TopCenteredImageView
+            <com.spiderbiggen.randomchampionselector.presentation.design.TopCenteredImageView
                 android:id="@+id/splash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -42,7 +42,6 @@
                 android:background="@android:color/transparent"
                 android:elevation="0dp"
                 app:layout_collapseMode="pin"
-                app:menu="@menu/menu"
                 app:title="@string/app_name" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>

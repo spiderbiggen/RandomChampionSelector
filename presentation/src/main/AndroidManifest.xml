@@ -9,7 +9,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="o">
         <activity
-            android:name="com.spiderbiggen.randomchampionselector.presentation.activities.LoaderActivity"
+            android:name="com.spiderbiggen.randomchampionselector.presentation.ui.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:noHistory="true">
@@ -18,19 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.spiderbiggen.randomchampionselector.presentation.activities.ListChampionsActivity"
-            android:theme="@style/AppTheme.TransparentStatusBar" />
-        <activity
-            android:name="com.spiderbiggen.randomchampionselector.presentation.activities.ChampionActivity"
-            android:exported="false"
-            android:noHistory="true"
-            android:parentActivityName="com.spiderbiggen.randomchampionselector.presentation.activities.ListChampionsActivity"
-            android:theme="@style/AppTheme.TransparentStatusBar" />
-        <activity
-            android:name="com.spiderbiggen.randomchampionselector.presentation.activities.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName="com.spiderbiggen.randomchampionselector.presentation.activities.ListChampionsActivity" />
     </application>
 
 </manifest>

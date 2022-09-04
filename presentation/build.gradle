@@ -1,6 +1,7 @@
 apply plugin: "com.android.library"
 apply plugin: "dagger.hilt.android.plugin"
 apply from: "../config-android.gradle"
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 
 android {
@@ -27,12 +28,14 @@ dependencies {
     implementation Dependencies.constraintLayout
     implementation Dependencies.appCompat
     implementation Dependencies.activityKtx
-    implementation Dependencies.annotation
+    implementation Dependencies.annotationX
     implementation Dependencies.cardView
     implementation Dependencies.vectorDrawable
     implementation Dependencies.recyclerView
     implementation Dependencies.preferenceKtx
     implementation Dependencies.material
+    implementation Dependencies.navigationFragment
+    implementation Dependencies.navigationUi
 
     implementation Dependencies.coreKtx
 
