@@ -24,12 +24,12 @@ import java.util.*
  */
 class CustomConverter : Converter.Factory() {
 
-    override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
+    override fun responseBodyConverter(type: Type, annotations: Array<Annotation>, retrofit: Retrofit): Converter<ResponseBody, *> {
         return when (type) {
             LIST_CHAMPION -> ChampionListConverter.INSTANCE
             STRING_ARRAY -> StringArrayConverter.INSTANCE
             BITMAP -> BitmapConverter.INSTANCE
-            else -> retrofit?.nextResponseBodyConverter<Any>(null, type!!, annotations!!)
+            else -> retrofit.nextResponseBodyConverter<Any>(null, type, annotations)
         }
     }
 
