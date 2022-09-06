@@ -48,7 +48,7 @@ jobs:
         run: chmod +x gradlew
       - name: Assemble release build
         env:
-          SIGNING_STORE_PATH: ${RUNNER_TEMP}/keystore
+          SIGNING_STORE_PATH: "${RUNNER_TEMP}/keystore"
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
