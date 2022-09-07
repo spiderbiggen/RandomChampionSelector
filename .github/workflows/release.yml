@@ -32,11 +32,11 @@ jobs:
     steps:
       - name: Decode Keystore
         env:
+          SIGNING_STORE_PATH: ${{ secrets.SIGNING_STORE_PATH }}
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
         run: |
-          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
-          mkdir "${TMP_KEYSTORE_FILE_PATH}"
-          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/your_keystore_file.jks
+          mkdir -p $SIGNING_STORE_PATH
+          echo $ENCODED_STRING | base64 -di > $SIGNING_STORE_PATH
       - uses: actions/checkout@v3
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -48,7 +48,7 @@ jobs:
         run: chmod +x gradlew
       - name: Assemble release build
         env:
-          SIGNING_STORE_PATH: "${RUNNER_TEMP}/keystore"
+          SIGNING_STORE_PATH: ${{ secrets.SIGNING_STORE_PATH }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
