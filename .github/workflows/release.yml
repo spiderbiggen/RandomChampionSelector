@@ -31,12 +31,11 @@ jobs:
 
     steps:
       - name: Decode Keystore
-        env:
-          SIGNING_STORE_DIR: ${{ secrets.SIGNING_STORE_PATH }}
-          ENCODED_STRING: ${{ secrets.KEYSTORE }}
-        run: |
-          mkdir -p $SIGNING_STORE_DIR
-          echo $ENCODED_STRING | base64 -di > $SIGNING_STORE_DIR/custom.jks"
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: ${{ secrets.SIGNING_STORE_PATH }}
+          encodedString: ${{ secrets.KEYSTORE }}
       - uses: actions/checkout@v3
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -48,7 +47,7 @@ jobs:
         run: chmod +x gradlew
       - name: Assemble release build
         env:
-          SIGNING_STORE_PATH: ${{ secrets.SIGNING_STORE_PATH }}/custom.jks
+          SIGNING_STORE_PATH: ${{ secrets.SIGNING_STORE_PATH }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
