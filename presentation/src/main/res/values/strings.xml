@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Champion Randomizer</string>
+
+    <string name="title_activity_list_champions">Champions</string>
+
+    <string name="action_force_refresh">Refresh</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_title_language">Language</string>
+    <string name="pref_title_image_type">Image type</string>
+    <string name="pref_title_image_quality">Image quality</string>
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+    <string name="pref_language_default">en_US</string>
+
+    <string name="ok" translatable="false">@android:string/ok</string>
+    <string name="cancel" translatable="false">@android:string/cancel</string>
+    <string name="progress_error">An unexpected error has occurred!</string>
+    <string name="progress_idle">Checking For Updates</string>
+    <string name="progress_downloads">Downloading %1$.2f%%</string>
+    <string name="progress_verified">Verifying %1$.2f%%</string>
+    <string name="action_refresh_images">Reload Images</string>
+    <string name="checking_version">Checking for new version</string>
+    <string name="parsing_data">Parsing data</string>
+
+    <string name="champion_splash_content_description">Champion Splash Art</string>
+    <string name="random_fab_content_description">Select a random champion</string>
+
+    <string name="champion_name_transition_key" translatable="false">champion_name_key</string>
+    <string name="champion_title_transition_key" translatable="false">champion_title_key</string>
+    <string name="champion_splash_transition_key" translatable="false">champion_splash_key</string>
+    <string name="champion_card_transition_key" translatable="false">champion_card_key</string>
+    <string name="champion_blurb_key" translatable="false">champion_blurb_key</string>
+    <string name="random_fab_transition_key" translatable="false">random_fab_key</string>
+</resources>

@@ -1,0 +1,15 @@
+apply plugin: "java-library"
+apply plugin: "kotlin"
+apply plugin: "kotlin-kapt"
+
+dependencies {
+    implementation Dependencies.kotlin
+    implementation Dependencies.coroutinesCore
+    implementation Dependencies.annotationX
+
+    kapt Dependencies.daggerHiltCompiler
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
