@@ -35,7 +35,7 @@ jobs:
           SIGNING_STORE_DIR: ${{ secrets.SIGNING_STORE_PATH }}
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
         run: |
-          mkdir -p $SIGNING_STORE_PATH
+          mkdir -p $SIGNING_STORE_DIR
           echo $ENCODED_STRING | base64 -di > "${SIGNING_STORE_PATH}/custom.jks"
       - uses: actions/checkout@v3
       - name: set up JDK 11
