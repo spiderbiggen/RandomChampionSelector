@@ -23,32 +23,32 @@ android {
 dependencies {
     implementation project(":domain")
 
-    implementation Dependencies.kotlin
+    implementation Deps.kotlin
 
-    implementation Dependencies.constraintLayout
-    implementation Dependencies.appCompat
-    implementation Dependencies.activityKtx
-    implementation Dependencies.annotationX
-    implementation Dependencies.cardView
-    implementation Dependencies.vectorDrawable
-    implementation Dependencies.recyclerView
-    implementation Dependencies.preferenceKtx
-    implementation Dependencies.material
-    implementation Dependencies.navigationFragment
-    implementation Dependencies.navigationUi
+    implementation Deps.constraintLayout
+    implementation Deps.appCompat
+    implementation Deps.activityKtx
+    implementation Deps.annotationX
+    implementation Deps.cardView
+    implementation Deps.vectorDrawable
+    implementation Deps.recyclerView
+    implementation Deps.preferenceKtx
+    implementation Deps.material
+    implementation Deps.navigationFragment
+    implementation Deps.navigationUi
 
-    implementation Dependencies.coreKtx
+    implementation Deps.coreKtx
 
-    implementation Dependencies.lifecycleViewmodel
-    implementation Dependencies.lifecycleLivedata
-    implementation Dependencies.lifecycleCommon
+    implementation Deps.lifecycleViewmodel
+    implementation Deps.lifecycleLivedata
+    implementation Deps.lifecycleCommon
 
-    implementation Dependencies.coroutinesCore
-    implementation Dependencies.coroutinesAndroid
-    debugImplementation Dependencies.leakCanary
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
+    debugImplementation Deps.leakCanary
 
-    implementation Dependencies.daggerHilt
+    implementation Deps.daggerHilt
     //Compile time dependencies
-    kapt Dependencies.daggerHiltCompiler
-    kapt Dependencies.daggerHiltJetpackCompiler
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
 }

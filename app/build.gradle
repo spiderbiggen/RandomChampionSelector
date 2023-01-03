@@ -60,15 +60,15 @@ dependencies {
     implementation project(":domain")
     implementation project(":data")
 
-    implementation Dependencies.kotlin
+    implementation Deps.kotlin
 
-    implementation Dependencies.appCompat
-    implementation Dependencies.preferenceKtx
+    implementation Deps.appCompat
+    implementation Deps.preferenceKtx
 
-    implementation Dependencies.daggerHilt
+    implementation Deps.daggerHilt
     //Compile time dependencies
-    kapt Dependencies.daggerHiltCompiler
-    kapt Dependencies.daggerHiltJetpackCompiler
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
 }
 
 kapt {
