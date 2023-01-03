@@ -17,19 +17,19 @@ android {
 dependencies {
     implementation project(":domain")
 
-    implementation Dependencies.kotlin
+    implementation Deps.kotlin
 
-    implementation Dependencies.coreKtx
-    implementation Dependencies.appCompat
-    implementation Dependencies.preferenceKtx
+    implementation Deps.coreKtx
+    implementation Deps.appCompat
+    implementation Deps.preferenceKtx
 
-    implementation Dependencies.okhttp3LoggingInterceptor
-    implementation Dependencies.retrofit2
+    implementation Deps.okhttp3LoggingInterceptor
+    implementation Deps.retrofit2
 
-    implementation Dependencies.daggerHilt
-    kapt Dependencies.daggerHiltCompiler
+    implementation Deps.daggerHilt
+    kapt Deps.daggerHiltCompiler
 
-    implementation Dependencies.roomRuntime
-    implementation Dependencies.roomKtx
-    kapt Dependencies.roomCompiler
+    implementation Deps.roomRuntime
+    implementation Deps.roomKtx
+    kapt Deps.roomCompiler
 }
