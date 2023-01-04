@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:icon="@drawable/ic_info_black_24dp"
+        android:icon="@drawable/ic_info"
         android:title="@string/pref_header_general">
         <ListPreference
             android:defaultValue="@string/pref_language_default"

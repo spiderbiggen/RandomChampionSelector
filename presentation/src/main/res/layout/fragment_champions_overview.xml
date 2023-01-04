@@ -12,7 +12,8 @@
         style="@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -72,6 +73,6 @@
         app:layout_anchor="@+id/champion_list"
         app:layout_anchorGravity="right|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.presentation.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp" />
+        app:srcCompat="@drawable/ic_random" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
