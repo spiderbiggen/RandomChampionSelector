@@ -117,7 +117,7 @@
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.presentation.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_cached_24dp"
+        app:srcCompat="@drawable/ic_random"
         android:contentDescription="@null" />
 
 
