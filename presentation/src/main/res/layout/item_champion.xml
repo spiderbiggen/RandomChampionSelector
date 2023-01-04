@@ -19,15 +19,16 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/champion_splash"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:contentDescription="@string/champion_splash_content_description"
             android:minHeight="96dp"
             android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="H,1215:717"
             app:layout_constraintBottom_toTopOf="@+id/champion_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/spinner" />
+            tools:srcCompat="@color/accent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/champion_name"

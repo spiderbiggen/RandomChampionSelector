@@ -1,5 +1,8 @@
 package com.spiderbiggen.randomchampionselector.presentation.ui.champion.overview
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -9,6 +12,12 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.databinding.FragmentChampionsOverviewBinding
 import com.spiderbiggen.randomchampionselector.presentation.extensions.collectScreenState
@@ -18,6 +27,7 @@ import com.spiderbiggen.randomchampionselector.presentation.ui.common.State
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 
+
 @FlowPreview
 @AndroidEntryPoint
 class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview) {
@@ -25,7 +35,24 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
     private val viewBinding by viewBindings(FragmentChampionsOverviewBinding::bind)
     private val viewModel by viewModels<ChampionsOverviewViewModel>()
 
-    private val listAdapter by lazy { ChampionAdapter(::navigateToDetails) }
+    private val glideRequests by lazy { Glide.with(this@ChampionsOverviewFragment) }
+    private val fullRequest by lazy {
+        glideRequests
+            .asDrawable()
+            .centerCrop()
+            .placeholder(ColorDrawable(Color.GRAY));
+    }
+
+    private val thumbRequest by lazy {
+        glideRequests
+            .asDrawable()
+            .override(121, 72)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .transition(withCrossFade())
+    }
+    private val listAdapter by lazy {
+        ChampionAdapter(::navigateToDetails, fullRequest, thumbRequest)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +67,16 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
             setupWithNavController(toolbarLayout, toolbar, findNavController(), AppBarConfiguration.Builder(R.id.championsOverviewFragment).build())
         }
         championList.apply {
+            val sizeProvider = ViewPreloadSizeProvider<Uri>()
+            val preloader = RecyclerViewPreloader(Glide.with(this@ChampionsOverviewFragment), listAdapter, sizeProvider, 10)
             adapter = listAdapter
+            addOnScrollListener(preloader)
+            setItemViewCacheSize(0)
+
+            addRecyclerListener { holder ->
+                val vh = holder as? ChampionAdapter.ViewHolder
+                vh?.binding?.championSplash?.let { glideRequests.clear(it) }
+            }
             removeAdapterOnDestroy(viewLifecycleOwner)
         }
         fab.setOnClickListener { navigateToDetails(null) }
@@ -55,8 +91,10 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
         }
     }
 
-    private fun handleReadyState(viewData: ChampionsOverviewViewData) = with(viewBinding) {
-        splash.setImageURI(viewData.headerImage)
+    private fun handleReadyState(viewData: ChampionsOverviewViewData) {
+        Glide.with(this)
+            .load(viewData.headerImage)
+            .into(viewBinding.splash)
         listAdapter.setChampions(viewData.items)
     }
 
@@ -69,14 +107,17 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
                 findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSettingsFragment())
                 true
             }
+
             R.id.action_force_refresh -> {
                 findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSplashFragment(forceRefresh = true))
                 true
             }
+
             R.id.action_refresh_images -> {
                 findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSplashFragment(clearImages = true))
                 true
             }
+
             else -> false
         }
     }
@@ -84,6 +125,10 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
     private fun navigateToDetails(key: Int?) {
         val directions: NavDirections = ChampionsOverviewFragmentDirections.actionToChampionDetails(key ?: -1)
         findNavController().navigate(directions)
+    }
+
+    private companion object {
+        private const val SQUARE_THUMB_SIZE = 200
     }
 }
 
