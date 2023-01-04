@@ -51,4 +51,8 @@ dependencies {
     //Compile time dependencies
     kapt Deps.daggerHiltCompiler
     kapt Deps.daggerHiltJetpackCompiler
+
+    implementation Deps.glide
+    implementation Deps.glideRecyclerview
+    kapt Deps.glideCompiler
 }

@@ -1,9 +1,13 @@
 package com.spiderbiggen.randomchampionselector.presentation.ui.champion.overview
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestBuilder
 import com.spiderbiggen.randomchampionselector.domain.champions.models.Champion
 import com.spiderbiggen.randomchampionselector.presentation.databinding.ItemChampionBinding
 import com.spiderbiggen.randomchampionselector.presentation.ui.champion.ChampionViewData
@@ -13,7 +17,12 @@ import com.spiderbiggen.randomchampionselector.presentation.ui.champion.Champion
  *
  * @author Stefan Breetveld
  */
-class ChampionAdapter(private val clickListener: (Int) -> Unit) : RecyclerView.Adapter<ChampionAdapter.ViewHolder>() {
+class ChampionAdapter(
+    private val clickListener: (Int) -> Unit,
+    private val fullRequest: RequestBuilder<Drawable>,
+    private val thumbRequest: RequestBuilder<Drawable>
+) : RecyclerView.Adapter<ChampionAdapter.ViewHolder>(),
+    ListPreloader.PreloadModelProvider<Uri> {
 
     init {
         setHasStableIds(true)
@@ -39,12 +48,14 @@ class ChampionAdapter(private val clickListener: (Int) -> Unit) : RecyclerView.A
 
     /**
      * Update the list of champions.
-     * @param champions a list of [Champion] objects
+     * @param newChampions a new list of [Champion] objects
      */
     @SuppressLint("NotifyDataSetChanged")
-    fun setChampions(champions: Collection<ChampionViewData>) {
-        this.champions.clear()
-        this.champions.addAll(champions)
+    fun setChampions(newChampions: Collection<ChampionViewData>) {
+        champions.apply {
+            clear()
+            addAll(newChampions)
+        }
         notifyDataSetChanged()
     }
 
@@ -53,16 +64,21 @@ class ChampionAdapter(private val clickListener: (Int) -> Unit) : RecyclerView.A
      *
      * @author Stefan Breetveld
      */
-    class ViewHolder internal constructor(
-        private val binding: ItemChampionBinding,
-        private val onClick: (Int) -> Unit
-    ) : RecyclerView.ViewHolder(binding.root) {
+    data class ViewHolder internal constructor(
+        internal val binding: ItemChampionBinding,
+        internal val onClick: (Int) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root)
 
-        internal fun bind(viewData: ChampionViewData) = with(binding) {
-            root.setOnClickListener { onClick(viewData.id) }
-            championName.text = viewData.title
-            championTitle.text = viewData.subtitle
-            championSplash.setImageURI(viewData.image)
-        }
+    private fun ViewHolder.bind(viewData: ChampionViewData): Unit = with(binding) {
+        root.setOnClickListener { onClick(viewData.id) }
+        championName.text = viewData.title
+        championTitle.text = viewData.subtitle
+        fullRequest.thumbnail(thumbRequest.load(viewData.image)).load(viewData.image).into(championSplash)
     }
+
+    override fun getPreloadItems(position: Int): List<Uri> =
+        listOfNotNull(champions[position].image)
+
+    override fun getPreloadRequestBuilder(item: Uri): RequestBuilder<Drawable> =
+        fullRequest.thumbnail(thumbRequest.load(item)).load(item)
 }

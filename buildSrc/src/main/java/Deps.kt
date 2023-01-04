@@ -37,5 +37,9 @@ object Deps {
     const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
 
+    const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
+    const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
+    const val glideRecyclerview = "com.github.bumptech.glide:recyclerview-integration:${Versions.glide}"
+
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.9.1"
 }
