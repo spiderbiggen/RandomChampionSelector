@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.NestedScrollingChild
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -21,7 +22,7 @@ class ScrollAwareFABBehavior : CoordinatorLayout.Behavior<FloatingActionButton> 
         coordinatorLayout: CoordinatorLayout,
         child: FloatingActionButton, directTargetChild: View,
         target: View, axes: Int, type: Int
-    ): Boolean = true
+    ): Boolean = directTargetChild is NestedScrollingChild
 
     override fun onNestedScroll(
         coordinatorLayout: CoordinatorLayout, fab: FloatingActionButton,
@@ -29,8 +30,8 @@ class ScrollAwareFABBehavior : CoordinatorLayout.Behavior<FloatingActionButton> 
         dyUnconsumed: Int, type: Int, consumed: IntArray
     ) {
         super.onNestedScroll(coordinatorLayout, fab, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed)
-//        println("dy=$dyConsumed, hidden=${fab.isOrWillBeHidden}, shown=${fab.isOrWillBeShown}")
         when {
+            !target.canScrollVertically(1) && fab.isOrWillBeHidden -> fab.show()
             dyConsumed > 0 && fab.isOrWillBeShown -> fab.hide(FabVisibilityChangedListener())
             dyConsumed < 0 && fab.isOrWillBeHidden -> fab.show()
         }
