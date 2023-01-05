@@ -1,0 +1,58 @@
+apply plugin: "com.android.library"
+apply plugin: "dagger.hilt.android.plugin"
+apply from: "../config-android.gradle"
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
+
+android {
+    namespace "com.spiderbiggen.randomchampionselector.presentation"
+    buildTypes {
+        debug {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(":domain")
+
+    implementation Deps.kotlin
+
+    implementation Deps.constraintLayout
+    implementation Deps.appCompat
+    implementation Deps.activityKtx
+    implementation Deps.annotationX
+    implementation Deps.cardView
+    implementation Deps.vectorDrawable
+    implementation Deps.recyclerView
+    implementation Deps.preferenceKtx
+    implementation Deps.material
+    implementation Deps.navigationFragment
+    implementation Deps.navigationUi
+
+    implementation Deps.coreKtx
+
+    implementation Deps.lifecycleViewmodel
+    implementation Deps.lifecycleLivedata
+    implementation Deps.lifecycleCommon
+
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
+    debugImplementation Deps.leakCanary
+
+    implementation Deps.daggerHilt
+    //Compile time dependencies
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
+
+    implementation Deps.glide
+    implementation Deps.glideRecyclerview
+    kapt Deps.glideCompiler
+}

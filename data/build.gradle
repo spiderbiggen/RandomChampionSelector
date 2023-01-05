@@ -1,0 +1,35 @@
+apply plugin: "com.android.library"
+apply plugin: "dagger.hilt.android.plugin"
+apply from: "../config-android.gradle"
+
+android {
+    namespace "com.spiderbiggen.randomchampionselector.data"
+    buildTypes {
+        debug {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation project(":domain")
+
+    implementation Deps.kotlin
+
+    implementation Deps.coreKtx
+    implementation Deps.appCompat
+    implementation Deps.preferenceKtx
+
+    implementation Deps.okhttp3LoggingInterceptor
+    implementation Deps.retrofit2
+
+    implementation Deps.daggerHilt
+    kapt Deps.daggerHiltCompiler
+
+    implementation Deps.roomRuntime
+    implementation Deps.roomKtx
+    kapt Deps.roomCompiler
+}

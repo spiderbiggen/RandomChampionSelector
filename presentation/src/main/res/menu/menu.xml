@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.activities.ChampionActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        android:enabled="false"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_force_refresh"
+        android:orderInCategory="200"
+        android:title="@string/action_force_refresh"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_refresh_images"
+        android:orderInCategory="210"
+        android:title="@string/action_refresh_images"
+        app:showAsAction="never" />
+
+</menu>

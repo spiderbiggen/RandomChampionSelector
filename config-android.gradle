@@ -1,0 +1,22 @@
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-kapt"
+
+android {
+    buildToolsVersion Config.buildTools
+    compileSdkVersion Config.compileSdk
+
+    defaultConfig {
+        minSdkVersion Config.minSdk
+        targetSdkVersion Config.targetSdk
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+        //Important: keep jvmTarget in sync with root/build.gradle
+    }
+}
