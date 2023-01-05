@@ -9,7 +9,6 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
-        style="@style/AppTheme.AppBarOverlay"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true">
@@ -34,7 +33,6 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 android:background="@android:color/transparent"
@@ -112,13 +110,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
+        android:contentDescription="@null"
         android:focusable="true"
         android:transitionName="@string/random_fab_transition_key"
         app:layout_anchor="@+id/nestedScrollView"
         app:layout_anchorGravity="right|end|bottom"
         app:layout_behavior="com.spiderbiggen.randomchampionselector.presentation.behavior.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_random"
-        android:contentDescription="@null" />
+        app:srcCompat="@drawable/ic_random" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

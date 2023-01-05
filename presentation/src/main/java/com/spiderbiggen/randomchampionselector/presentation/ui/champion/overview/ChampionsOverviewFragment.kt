@@ -71,7 +71,6 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
             val preloader = RecyclerViewPreloader(Glide.with(this@ChampionsOverviewFragment), listAdapter, sizeProvider, 10)
             adapter = listAdapter
             addOnScrollListener(preloader)
-            setItemViewCacheSize(0)
 
             addRecyclerListener { holder ->
                 val vh = holder as? ChampionAdapter.ViewHolder
@@ -79,7 +78,7 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
             }
             removeAdapterOnDestroy(viewLifecycleOwner)
         }
-        fab.setOnClickListener { navigateToDetails(null) }
+        fab.setOnClickListener { navigateToDetails() }
         collectScreenState(viewModel.state, ::handleState)
     }
 
@@ -103,8 +102,6 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
 
         return when (item.itemId) {
             R.id.action_settings -> {
-                println("settings should open")
-                findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSettingsFragment())
                 true
             }
 
@@ -122,7 +119,7 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
         }
     }
 
-    private fun navigateToDetails(key: Int?) {
+    private fun navigateToDetails(key: Int? = null) {
         val directions: NavDirections = ChampionsOverviewFragmentDirections.actionToChampionDetails(key ?: -1)
         findNavController().navigate(directions)
     }

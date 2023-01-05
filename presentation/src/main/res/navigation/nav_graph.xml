@@ -34,10 +34,6 @@
             app:destination="@id/championDetailsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.spiderbiggen.randomchampionselector.presentation.ui.settings.SettingsFragment"
-        android:label="@string/title_activity_settings" />
-    <fragment
         android:id="@+id/championDetailsFragment"
         android:name="com.spiderbiggen.randomchampionselector.presentation.ui.champion.details.ChampionDetailsFragment"
         tools:layout="@layout/fragment_champion_details">
@@ -49,9 +45,6 @@
             android:defaultValue="-1"
             app:argType="integer" />
     </fragment>
-    <action
-        android:id="@+id/action_global_settingsFragment"
-        app:destination="@id/settingsFragment" />
     <action
         android:id="@+id/action_global_splashFragment"
         app:destination="@id/splashFragment"
