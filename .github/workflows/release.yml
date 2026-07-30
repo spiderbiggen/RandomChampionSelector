@@ -2,54 +2,44 @@ name: Release CI
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags: [ 'v*.*.*' ]
   workflow_dispatch: [ ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Run tests
-        run: ./gradlew test
-
   release:
-    needs: test
+    name: Build Release Bundle
     runs-on: ubuntu-latest
 
     steps:
-      - name: Decode Keystore
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-build
+
+      - name: Decode keystore
         env:
-          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          ENCODED_KEYSTORE: ${{ secrets.KEYSTORE }}
         run: |
-          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
-          mkdir "${TMP_KEYSTORE_FILE_PATH}"
-          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/your_keystore_file.jks
-      - uses: actions/checkout@v3
-      - name: set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: gradle
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Assemble release build
+          keystore_path="${RUNNER_TEMP}/keystore.jks"
+          printf '%s' "$ENCODED_KEYSTORE" | base64 -di > "$keystore_path"
+          echo "SIGNING_STORE_PATH=$keystore_path" >> "$GITHUB_ENV"
+
+      - name: Assemble release bundle and APK
         env:
-          SIGNING_STORE_PATH: "${RUNNER_TEMP}/keystore"
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-        run: ./gradlew app:bundleRelease
+        run: ./gradlew app:bundleRelease app:assembleRelease
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/apk/release/*.apk

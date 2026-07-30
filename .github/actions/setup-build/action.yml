@@ -1,0 +1,24 @@
+name: Setup build environment
+description: Install the JDK and configure Gradle for this project
+
+inputs:
+  java-version:
+    description: JVM that Gradle itself runs on; kept in step with the project's jvmToolchain
+    required: false
+    default: '17'
+  java-distribution:
+    description: JDK distribution used for Gradle tasks
+    required: false
+    default: temurin
+
+runs:
+  using: composite
+  steps:
+    - name: Set up JDK ${{ inputs.java-version }}
+      uses: actions/setup-java@v5
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: ${{ inputs.java-distribution }}
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v6
