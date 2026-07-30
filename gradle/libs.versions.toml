@@ -21,7 +21,7 @@ preference = "1.2.1"
 recyclerview = "1.2.1"
 retrofit = "2.9.0"
 room = "2.8.4"
-versionsPlugin = "0.54.0"
+versionsPlugin = "0.57.0"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
