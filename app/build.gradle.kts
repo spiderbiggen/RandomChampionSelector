@@ -2,8 +2,6 @@ import java.util.Properties
 
 plugins {
     id("randomchampion.android.application")
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
 }
 
 android {
