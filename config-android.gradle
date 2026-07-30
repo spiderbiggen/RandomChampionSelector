@@ -2,7 +2,6 @@ apply plugin: "kotlin-android"
 apply plugin: "kotlin-kapt"
 
 android {
-    buildToolsVersion Config.buildTools
     compileSdkVersion Config.compileSdk
 
     defaultConfig {
@@ -11,12 +10,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-        //Important: keep jvmTarget in sync with root/build.gradle
-    }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

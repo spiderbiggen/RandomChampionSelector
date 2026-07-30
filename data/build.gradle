@@ -4,6 +4,11 @@ apply from: "../config-android.gradle"
 
 android {
     namespace "com.spiderbiggen.randomchampionselector.data"
+
+    buildFeatures {
+        buildConfig true
+    }
+
     buildTypes {
         debug {
             consumerProguardFiles 'proguard-rules.pro'

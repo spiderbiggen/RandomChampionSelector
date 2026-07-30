@@ -1,5 +1,5 @@
 object Config {
-    const val compileSdk = 33
+    const val compileSdk = 36
     const val targetSdk = 33
     const val minSdk = 23
     const val buildTools = "33.0.0"
