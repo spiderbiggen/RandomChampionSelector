@@ -9,6 +9,7 @@ import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.R as MaterialR
 import com.spiderbiggen.randomchampionselector.domain.champions.models.DownloadProgress
 import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.databinding.FragmentSplashBinding
@@ -82,7 +83,8 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
             if (state is DownloadProgress.Error) {
                 progressDrawable = indeterminateDrawable.mutate().apply {
-                    val errorColor = requireContext().getColorIntFromAttr(R.attr.colorError)
+                    val errorColor =
+                        requireContext().getColorIntFromAttr(MaterialR.attr.colorError)
                     setTint(errorColor)
                 }
             }

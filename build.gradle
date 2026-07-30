@@ -25,12 +25,6 @@ allprojects {
     }
 }
 
-// JVM target applied to all Kotlin tasks across all subprojects
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_11
-    //Important: keep jvmTarget in sync with root/config-android.gradle
-}
-
 def isNonStable = { version ->
     def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
     def regex = /^[0-9,.v-]+(-r)?$/
