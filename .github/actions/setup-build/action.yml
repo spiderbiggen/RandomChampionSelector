@@ -5,7 +5,7 @@ inputs:
   java-version:
     description: JVM that Gradle itself runs on; kept in step with the project's jvmToolchain
     required: false
-    default: '17'
+    default: '21'
   java-distribution:
     description: JDK distribution used for Gradle tasks
     required: false
