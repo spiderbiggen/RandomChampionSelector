@@ -1,7 +1,5 @@
 plugins {
     id("randomchampion.android.library")
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
 }
 
 android {

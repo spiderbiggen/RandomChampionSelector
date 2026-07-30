@@ -1,8 +1,6 @@
 plugins {
     id("randomchampion.android.library")
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.navigation.safeargs)
+    id("randomchampion.android.navigation")
 }
 
 android {
