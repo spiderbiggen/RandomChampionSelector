@@ -2,6 +2,7 @@ import java.util.Properties
 
 plugins {
     id("randomchampion.android.application")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
 
@@ -67,13 +68,6 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    kapt(libs.androidx.hilt.compiler)
-}
-
-kapt {
-    javacOptions {
-        // https://github.com/google/dagger/issues/970
-        option("-Adagger.validateTransitiveComponentDependencies=DISABLED")
-    }
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 }

@@ -5,6 +5,4 @@ plugins {
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.annotation)
-
-    kapt(libs.hilt.compiler)
 }
