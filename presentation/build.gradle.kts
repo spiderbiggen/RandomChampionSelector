@@ -1,5 +1,6 @@
 plugins {
     id("randomchampion.android.library")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.navigation.safeargs)
 }
@@ -38,10 +39,9 @@ dependencies {
     debugImplementation(libs.leakcanary.android)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     implementation(libs.glide)
     implementation(libs.glide.recyclerview)
-    kapt(libs.glide.compiler)
 }
