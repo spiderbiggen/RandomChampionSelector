@@ -34,8 +34,6 @@ android {
         applicationId = "com.spiderbiggen.randomchampionselector"
         versionCode = 102000
         versionName = "1.2.0"
-
-        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -61,9 +59,6 @@ dependencies {
     implementation(project(":presentation"))
     implementation(project(":domain"))
     implementation(project(":data"))
-
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.preference.ktx)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

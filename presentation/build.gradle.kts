@@ -19,7 +19,6 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.cardview)
-    implementation(libs.androidx.vectordrawable)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.google.material)
