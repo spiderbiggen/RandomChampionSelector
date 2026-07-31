@@ -102,6 +102,7 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
 
         return when (item.itemId) {
             R.id.action_settings -> {
+                findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSettingsFragment())
                 true
             }
 
