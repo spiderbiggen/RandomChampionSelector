@@ -39,6 +39,8 @@ jobs:
         include:
           - task: test
             gradle-tasks: test
+          - task: lint
+            gradle-tasks: lint
     runs-on: ubuntu-latest
 
     steps:
