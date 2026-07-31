@@ -32,8 +32,8 @@ android {
 
     defaultConfig {
         applicationId = "com.spiderbiggen.randomchampionselector"
-        versionCode = 102000
-        versionName = "1.2.0"
+        versionCode = 102001
+        versionName = "1.2.1"
     }
 
     buildTypes {
