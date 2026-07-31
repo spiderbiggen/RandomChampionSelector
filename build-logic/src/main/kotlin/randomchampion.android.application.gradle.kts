@@ -5,11 +5,15 @@ plugins {
 }
 
 android {
-    compileSdk = 36
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
     }
 
     compileOptions {
