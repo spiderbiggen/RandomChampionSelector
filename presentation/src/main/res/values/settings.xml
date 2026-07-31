@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_language_values" translatable="false">
+        <item>ar_AE</item>
         <item>cs_CZ</item>
         <item>de_DE</item>
         <item>el_GR</item>
         <item>en_AU</item>
         <item>en_GB</item>
         <item>en_PH</item>
-        <item>en_PL</item>
         <item>en_SG</item>
         <item>en_US</item>
         <item>es_AR</item>
@@ -19,27 +19,26 @@
         <item>it_IT</item>
         <item>ja_JP</item>
         <item>ko_KR</item>
-        <item>ms_MY</item>
         <item>pl_PL</item>
         <item>pt_BR</item>
         <item>ro_RO</item>
         <item>ru_RU</item>
         <item>th_TH</item>
         <item>tr_TR</item>
-        <item>vn_VN</item>
+        <item>vi_VN</item>
         <item>zh_CN</item>
         <item>zh_MY</item>
         <item>zh_TW</item>
     </string-array>
 
     <string-array name="pref_language_titles" translatable="false">
+        <item>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577; (&#1575;&#1604;&#1573;&#1605;&#1575;&#1585;&#1575;&#1578;)</item>
         <item>&#268;e&#353;tina (&#268;esk&#225; republika)</item>
         <item>Deutsch (Deutschland)</item>
         <item>&#917;&#955;&#955;&#951;&#957;&#953;&#954;&#940; (&#917;&#955;&#955;&#940;&#948;&#945;)</item>
         <item>English (Australia)</item>
         <item>English (United Kingdom)</item>
         <item>English (Philippines)</item>
-        <item>English (Poland)</item>
         <item>English (Singapore)</item>
         <item>English (United States)</item>
         <item>Espa&#241;ol (Argentina)</item>
@@ -51,7 +50,6 @@
         <item>Italiano (Italia)</item>
         <item>&#26085;&#26412;&#35486; (&#26085;&#26412;)</item>
         <item>&#54620;&#44397;&#50612; (&#45824;&#54620;&#48124;&#44397;)</item>
-        <item>Bahasa Melayu (Malaysia)</item>
         <item>Polski (Polska)</item>
         <item>Portugu&#234;s (Brasil)</item>
         <item>Rom&#226;n&#259; (Rom&#226;nia)</item>

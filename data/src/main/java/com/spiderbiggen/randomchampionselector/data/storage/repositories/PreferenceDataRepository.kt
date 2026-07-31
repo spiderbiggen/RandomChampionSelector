@@ -29,7 +29,11 @@ class PreferenceDataRepository @Inject constructor(
         set(value) = setInt(Preference.ImageQuality.key, value.coerceIn(0..100))
 
     override var locale: String
+        // Earlier versions offered locales DDragon rejects, fall back so those installs recover
+        // instead of failing every sync.
         get() = getString(Preference.Language.key, Preference.Language.default)
+            .takeIf { it in Preference.Language.supported }
+            ?: Preference.Language.default
         set(value) = setString(Preference.Language.key, value)
 
     override var compressFormat: CompressionFormat
