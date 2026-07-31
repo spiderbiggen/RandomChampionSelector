@@ -36,6 +36,10 @@ class PreferenceDataRepository @Inject constructor(
             ?: Preference.Language.default
         set(value) = setString(Preference.Language.key, value)
 
+    override val contentLocale: Locale
+        // DDragon separates language and region with an underscore, BCP 47 wants a hyphen.
+        get() = Locale.forLanguageTag(locale.replace('_', '-'))
+
     override var compressFormat: CompressionFormat
         get() = CompressionFormat.valueOf(getString(Preference.ImageType.key, Preference.ImageType.default))
         set(value) = setString(Preference.ImageType.key, value.name)
