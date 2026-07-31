@@ -13,7 +13,7 @@
             android:title="@string/pref_title_language" />
 
         <ListPreference
-            android:defaultValue="WEBP"
+            android:defaultValue="@string/pref_image_type_default"
             android:dialogTitle="@string/pref_title_image_type"
             android:entries="@array/pref_image_type_titles"
             android:entryValues="@array/pref_image_type_values"
