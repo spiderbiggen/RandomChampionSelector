@@ -32,6 +32,9 @@ class ChampionDetailsFragment : Fragment(R.layout.fragment_champion_details) {
 
     private fun setupView() = with(viewBinding) {
         setupWithNavController(toolbarLayout, toolbar, findNavController())
+        // The Up button should always return to the overview, even when several
+        // detail screens are stacked. System back still pops one entry at a time.
+        toolbar.setNavigationOnClickListener { navigateUpToOverview() }
         fab.setOnClickListener { navigateToDetails() }
 
         collectScreenState(viewModel.state, ::handleState)
@@ -48,6 +51,10 @@ class ChampionDetailsFragment : Fragment(R.layout.fragment_champion_details) {
 
     private fun navigateToDetails() {
         findNavController().navigate(ChampionDetailsFragmentDirections.actionToSelf())
+    }
+
+    private fun navigateUpToOverview() {
+        findNavController().popBackStack(R.id.championsOverviewFragment, false)
     }
 
 
