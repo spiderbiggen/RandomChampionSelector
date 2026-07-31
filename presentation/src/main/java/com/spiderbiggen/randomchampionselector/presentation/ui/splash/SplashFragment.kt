@@ -9,7 +9,6 @@ import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.R as MaterialR
 import com.spiderbiggen.randomchampionselector.domain.champions.models.DownloadProgress
 import com.spiderbiggen.randomchampionselector.presentation.R
 import com.spiderbiggen.randomchampionselector.presentation.databinding.FragmentSplashBinding
@@ -17,6 +16,7 @@ import com.spiderbiggen.randomchampionselector.presentation.extensions.getColorI
 import com.spiderbiggen.randomchampionselector.presentation.extensions.viewBindings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
+import com.google.android.material.R as MaterialR
 
 /**
  * Splash Activity that checks for updates and makes sure the images aren't corrupted.
@@ -36,7 +36,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
         viewModel.handleViewCreated()
     }
 
-    private fun onState(state: DownloadProgress) = with(viewBinding) {
+    private fun onState(state: DownloadProgress): Unit = with(viewBinding) {
         var count = 0
         var progressMax = 0
 
@@ -57,7 +57,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
                     Log.e("LoaderActivity", state.t.message, state.t)
                     text = R.string.progress_error
                 }
-                DownloadProgress.CheckingVersion -> {
+                is DownloadProgress.CheckingVersion -> {
                     isVisible = true
                     R.string.checking_version
                 }
@@ -83,8 +83,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
             if (state is DownloadProgress.Error) {
                 progressDrawable = indeterminateDrawable.mutate().apply {
-                    val errorColor =
-                        requireContext().getColorIntFromAttr(MaterialR.attr.colorError)
+                    val errorColor = context.getColorIntFromAttr(MaterialR.attr.colorErrorContainer)
                     setTint(errorColor)
                 }
             }
