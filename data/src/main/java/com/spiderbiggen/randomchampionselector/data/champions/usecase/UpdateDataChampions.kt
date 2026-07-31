@@ -40,7 +40,12 @@ class UpdateDataChampions @Inject constructor(
 
             if (champions.isEmpty()) {
                 send(DownloadProgress.UpdateChampions)
-                champions = dDragon.getChampionList(lastVersion).map(championMapper::fromApi)
+                champions = dDragon.getChampionList(lastVersion).asSequence()
+                    // jade_ prefixed ids are for league classic and should be ignored until we
+                    // add support for separate champion lists
+                    .filter { !it.id.startsWith("jade_", ignoreCase = true) }
+                    .map(championMapper::fromApi)
+                    .toList()
                 championRepository.addChampions(champions)
             }
 
