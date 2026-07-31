@@ -25,6 +25,11 @@ Multi-module, layered by responsibility:
 | `:presentation` | Activity, fragments, adapters, view models, resources                 |
 | `build-logic`   | Shared Gradle convention plugins (`randomchampion.*`)                 |
 
+## License
+
+Released under the [MIT License](LICENSE). Champion data and artwork are property of Riot Games and
+are not covered by this license.
+
 ## Disclaimer
 
 Random Champion Selector is not endorsed by Riot Games and does not reflect the views or opinions of
