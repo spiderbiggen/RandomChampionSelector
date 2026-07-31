@@ -41,7 +41,7 @@ class StorageModule {
     @Singleton
     fun providePostDatabase(@ApplicationContext context: Context): SimpleDatabaseDecorator {
         val room = Room.databaseBuilder(context, SimpleDatabase::class.java, "random_champion_main")
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
         return SimpleDatabaseDecorator(room)
     }

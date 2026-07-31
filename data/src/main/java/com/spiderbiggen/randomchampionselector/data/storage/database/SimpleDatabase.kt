@@ -8,7 +8,7 @@ import com.spiderbiggen.randomchampionselector.data.storage.database.converters.
 import com.spiderbiggen.randomchampionselector.data.storage.database.daos.ChampionDAO
 import com.spiderbiggen.randomchampionselector.data.storage.database.models.ChampionEntity
 
-@Database(entities = [(ChampionEntity::class)], version = 4, exportSchema = false)
+@Database(entities = [(ChampionEntity::class)], version = 4, exportSchema = true)
 @TypeConverters(StringListConverter::class)
 abstract class SimpleDatabase : RoomDatabase() {
     abstract fun championDAO(): ChampionDAO
