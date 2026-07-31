@@ -18,6 +18,7 @@
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string name="settings_sync_pending">Champion data will be refreshed when you leave settings</string>
     <string name="pref_title_system_sync_settings">System sync settings</string>
     <string name="pref_language_default">en_US</string>
 
