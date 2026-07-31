@@ -106,7 +106,7 @@ class ChampionsOverviewFragment : Fragment(R.layout.fragment_champions_overview)
             }
 
             R.id.action_force_refresh -> {
-                findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSplashFragment(forceRefresh = true))
+                findNavController().navigate(ChampionsOverviewFragmentDirections.actionGlobalSplashFragment(refreshChampionData = true))
                 true
             }
 

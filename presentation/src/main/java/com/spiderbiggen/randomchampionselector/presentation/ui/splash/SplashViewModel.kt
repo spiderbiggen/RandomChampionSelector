@@ -27,7 +27,7 @@ class SplashViewModel @Inject constructor(
             if (args.clearImages) {
                 fileRepository.deleteChampionImages()
             }
-            updateChampions.get().update(args.forceRefresh)
+            updateChampions.get().update(args.refreshChampionData)
                 .collect { mutableState.postValue(it) }
         }.onFailure {
             Log.e("LoaderViewModel", it.message, it)

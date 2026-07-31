@@ -11,7 +11,7 @@
         android:label="LoaderFragment"
         tools:layout="@layout/fragment_splash">
         <argument
-            android:name="forceRefresh"
+            android:name="refreshChampionData"
             android:defaultValue="false"
             app:argType="boolean" />
         <action
