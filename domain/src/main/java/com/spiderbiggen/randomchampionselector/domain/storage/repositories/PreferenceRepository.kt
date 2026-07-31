@@ -2,6 +2,8 @@ package com.spiderbiggen.randomchampionselector.domain.storage.repositories
 
 import com.spiderbiggen.randomchampionselector.domain.storage.models.CompressionFormat
 
+import java.util.Locale
+
 interface PreferenceRepository {
     /**
      * Minimum amount of time between each synchronization in minutes.
@@ -17,6 +19,11 @@ interface PreferenceRepository {
      * A string representation of the preferred locale
      */
     var locale: String
+
+    /**
+     * [locale] as a [Locale], the language the champion data is fetched and formatted in.
+     */
+    val contentLocale: Locale
 
     /**
      * The desired [CompressionFormat]

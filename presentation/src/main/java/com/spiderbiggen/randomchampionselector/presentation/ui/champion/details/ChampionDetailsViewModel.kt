@@ -1,12 +1,11 @@
 package com.spiderbiggen.randomchampionselector.presentation.ui.champion.details
 
-import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spiderbiggen.randomchampionselector.domain.champions.repository.ChampionRepository
-import com.spiderbiggen.randomchampionselector.domain.storage.FileRepository
 import com.spiderbiggen.randomchampionselector.presentation.ui.champion.ChampionViewData
+import com.spiderbiggen.randomchampionselector.presentation.ui.champion.MapChampionViewData
 import com.spiderbiggen.randomchampionselector.presentation.ui.common.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +19,10 @@ class ChampionDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     // Repository
     private val deferredChampionRepository: Provider<ChampionRepository>,
-    private val deferredFileRepository: Provider<FileRepository>,
+    private val mapChampionViewData: MapChampionViewData,
 ) : ViewModel() {
 
     private val repository by lazy { deferredChampionRepository.get() }
-    private val fileRepository by lazy { deferredFileRepository.get() }
     private val args = ChampionDetailsFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     private val mutableState: MutableStateFlow<State<ChampionViewData>> = MutableStateFlow(State.Loading())
@@ -35,18 +33,7 @@ class ChampionDetailsViewModel @Inject constructor(
             val championKey = savedStateHandle[CHAMPION_LOADED_KEY] ?: args.championKey.takeIf { it >= 0 }
             val champion = championKey?.let { repository.getChampion(it) } ?: repository.randomChampion()!!
             savedStateHandle[CHAMPION_LOADED_KEY] = champion.key
-            val image = fileRepository.getBitmapFile(champion)
-            mutableState.emit(
-                State.Ready(
-                    ChampionViewData(
-                        id = champion.key,
-                        title = champion.name,
-                        subtitle = champion.capitalizedTitle,
-                        description = champion.lore,
-                        image = Uri.fromFile(image),
-                    )
-                )
-            )
+            mutableState.emit(State.Ready(mapChampionViewData(champion)))
         }.onFailure {
             mutableState.emit(State.Error(it))
         }
