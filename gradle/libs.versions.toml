@@ -21,7 +21,6 @@ preference = "1.2.1"
 recyclerview = "1.4.0"
 retrofit = "3.0.0"
 room = "2.8.4"
-versionsPlugin = "0.57.0"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
@@ -60,4 +59,3 @@ hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", v
 navigation-safeargs-gradlePlugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
 
 [plugins]
-versions = { id = "io.github.ben-manes.versions", version.ref = "versionsPlugin" }
