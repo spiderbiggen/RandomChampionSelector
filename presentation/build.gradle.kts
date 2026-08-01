@@ -33,7 +33,6 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    debugImplementation(libs.leakcanary.android)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
